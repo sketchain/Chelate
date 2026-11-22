@@ -1,0 +1,102 @@
+name: Release
+
+# Version → tag → test & build → GitHub Release, all in one workflow: tags pushed with
+# GITHUB_TOKEN do not trigger other workflows.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: macos-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Fetch tags
+        run: git fetch --force --tags origin
+
+      - name: Compute version
+        id: version
+        run: |
+          # Reuse the tag if this exact commit was already released (re-run).
+          existing="$(git tag --points-at HEAD | grep -E "^v$(tr -d '[:space:]' < VERSION | sed 's/\./\\./')\.[0-9]+$" | sort -V | tail -n 1 || true)"
+          if [[ -n "$existing" ]]; then
+            version="${existing#v}"
+            echo "create_tag=false" >> "$GITHUB_OUTPUT"
+          else
+            version="$(scripts/version.sh next-release)"
+            echo "create_tag=true" >> "$GITHUB_OUTPUT"
+          fi
+          tag="v$version"
+          previous="$(scripts/version.sh previous-tag "$tag")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "previous=$previous" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "Releasing $tag (previous: ${previous:-none})"
+
+      - name: Create and push tag
+        if: steps.version.outputs.create_tag == 'true'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Chelate $TAG"
+          git push origin "refs/tags/$TAG"
+
+      - name: Select latest Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build pipeline
+        env:
+          MARKETING_VERSION: ${{ steps.version.outputs.version }}
+          BUILD_NUMBER: ${{ github.run_number }}
+          GIT_SHA: ${{ steps.version.outputs.sha }}
+          CHANNEL: release
+          IPA_NAME: Chelate-${{ steps.version.outputs.tag }}-unsigned.ipa
+        run: scripts/ci-build.sh
+
+      - name: Checksum
+        working-directory: build
+        env:
+          IPA: Chelate-${{ steps.version.outputs.tag }}-unsigned.ipa
+        run: |
+          shasum -a 256 "$IPA" > "$IPA.sha256"
+          cat "$IPA.sha256"
+
+      - name: Release notes
+        env:
+          PREVIOUS: ${{ steps.version.outputs.previous }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: scripts/release-notes.sh "$PREVIOUS" "$TAG" | tee build/release-notes.md
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          IPA="build/Chelate-$TAG-unsigned.ipa"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$IPA" "$IPA.sha256" --clobber
+          else
+            gh release create "$TAG" "$IPA" "$IPA.sha256" \
+              --title "Chelate $TAG" \
+              --notes-file build/release-notes.md \
+              --verify-tag
+          fi
