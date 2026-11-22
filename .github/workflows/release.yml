@@ -1,7 +1,9 @@
 name: Release
 
-# Version → tag → test & build → GitHub Release, all in one workflow: tags pushed with
-# GITHUB_TOKEN do not trigger other workflows.
+# Version → test & build → (only if everything succeeded) tag → GitHub Release, all in one
+# workflow: tags pushed with GITHUB_TOKEN do not trigger other workflows. Tagging after the
+# build means a failed build never leaves an orphan tag (which would skip a patch number and
+# leak an unreleased version into dev builds).
 on:
   push:
     branches: [main]
@@ -43,17 +45,8 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "previous=$previous" >> "$GITHUB_OUTPUT"
           echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "build=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
           echo "Releasing $tag (previous: ${previous:-none})"
-
-      - name: Create and push tag
-        if: steps.version.outputs.create_tag == 'true'
-        env:
-          TAG: ${{ steps.version.outputs.tag }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "$TAG" -m "Chelate $TAG"
-          git push origin "refs/tags/$TAG"
 
       - name: Select latest Xcode
         run: |
@@ -66,7 +59,7 @@ jobs:
       - name: Build pipeline
         env:
           MARKETING_VERSION: ${{ steps.version.outputs.version }}
-          BUILD_NUMBER: ${{ github.run_number }}
+          BUILD_NUMBER: ${{ steps.version.outputs.build }}
           GIT_SHA: ${{ steps.version.outputs.sha }}
           CHANNEL: release
           IPA_NAME: Chelate-${{ steps.version.outputs.tag }}-unsigned.ipa
@@ -85,6 +78,16 @@ jobs:
           PREVIOUS: ${{ steps.version.outputs.previous }}
           TAG: ${{ steps.version.outputs.tag }}
         run: scripts/release-notes.sh "$PREVIOUS" "$TAG" | tee build/release-notes.md
+
+      - name: Create and push tag
+        if: steps.version.outputs.create_tag == 'true'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Chelate $TAG"
+          git push origin "refs/tags/$TAG"
 
       - name: Create GitHub Release
         env:

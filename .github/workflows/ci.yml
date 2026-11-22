@@ -48,11 +48,12 @@ jobs:
         run: |
           echo "marketing=$(scripts/version.sh latest-released)" >> "$GITHUB_OUTPUT"
           echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "build=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Build pipeline
         env:
           MARKETING_VERSION: ${{ steps.version.outputs.marketing }}
-          BUILD_NUMBER: ${{ github.run_number }}
+          BUILD_NUMBER: ${{ steps.version.outputs.build }}
           GIT_SHA: ${{ steps.version.outputs.sha }}
           CHANNEL: dev
           IPA_NAME: Chelate-dev-${{ steps.version.outputs.sha }}-unsigned.ipa

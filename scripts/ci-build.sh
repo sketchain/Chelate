@@ -5,7 +5,7 @@
 #
 # Required environment:
 #   MARKETING_VERSION   e.g. 0.1.3
-#   BUILD_NUMBER        CURRENT_PROJECT_VERSION (github.run_number)
+#   BUILD_NUMBER        CURRENT_PROJECT_VERSION (git rev-list --count HEAD)
 #   GIT_SHA             short commit sha
 #   CHANNEL             dev | release
 #   IPA_NAME            output file name, written to ./build/

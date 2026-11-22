@@ -60,11 +60,11 @@ swift build && swift test
 | 触发 | Workflow | 内容 |
 | --- | --- | --- |
 | push 到 `dev`、所有 PR | `CI` | PVEKit `swift test`（macOS + Linux）→ `xcodebuild build test`（模拟器）→ 无签名 archive → 打包 ipa |
-| push 到 `main` | `Release` | 按 `VERSION` 计算 `vX.Y.Z` → 打 tag → 测试与构建 → 创建 GitHub Release |
+| push 到 `main` | `Release` | 按 `VERSION` 计算 `vX.Y.Z` → 测试与构建 → 全部成功后才打 tag 并推送 → 创建 GitHub Release |
 
 - **dev 构建**：在 Actions 对应运行的 *Artifacts* 中下载 `Chelate-dev-<short sha>-unsigned.ipa`（保留 30 天）。其 `CFBundleShortVersionString` 为最近一个已发布 tag 的版本（还没有 tag 时为 `0.0.0`）。
-- **正式版**：在 GitHub Releases 下载 `Chelate-vX.Y.Z-unsigned.ipa` 和对应的 `.sha256`。补丁号 = 同一「主.次」下已有 tag 的最大补丁号 + 1（没有则为 0）；要升主/次版本，修改 `VERSION`。
-- 所有构建的 `CFBundleVersion` 为 `github.run_number`；Info.plist 中额外写入 `ChelateGitCommit`（short sha）和 `ChelateChannel`（`dev` / `release`），“关于”页显示「版本 (build) · 渠道 · commit」。
+- **正式版**：在 GitHub Releases 下载 `Chelate-vX.Y.Z-unsigned.ipa` 和对应的 `.sha256`。补丁号 = 同一「主.次」下已有 tag 的最大补丁号 + 1（没有则为 0）。tag 只在构建和测试全部通过后才创建，构建失败不会留下 tag，也不会跳号；同一 commit 重跑时复用已有 tag；要升主/次版本，修改 `VERSION`。
+- 所有构建的 `CFBundleVersion` 为当前 commit 的 `git rev-list --count HEAD`（dev 与正式版同一计数，随提交单调递增，main 上的正式版不会比之前的 dev 包小）；Info.plist 中额外写入 `ChelateGitCommit`（short sha）和 `ChelateChannel`（`dev` / `release`），“关于”页显示「版本 (build) · 渠道 · commit」。
 
 ### 分支约定
 
