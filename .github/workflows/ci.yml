@@ -31,6 +31,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          # Build the PR head itself (not the merge ref) so the ipa name matches its commit.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Select latest Xcode
