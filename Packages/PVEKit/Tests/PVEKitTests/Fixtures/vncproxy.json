@@ -1,0 +1,9 @@
+{
+  "data": {
+    "user": "root@pam",
+    "ticket": "PVEVNC:6921A3F0::dm5jcHJveHlzaWduYXR1cmU=",
+    "port": "5901",
+    "upid": "UPID:pve1:000ABCE0:0123ABCD:6921A3F0:vncproxy:100:root@pam:",
+    "cert": "-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----\n"
+  }
+}

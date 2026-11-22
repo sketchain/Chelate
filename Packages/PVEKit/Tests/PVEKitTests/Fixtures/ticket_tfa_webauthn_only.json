@@ -1,0 +1,8 @@
+{
+  "data": {
+    "username": "bob@pve",
+    "ticket": "PVE:!tfa!%7B%22webauthn%22%3A%7B%22publicKey%22%3A%7B%22challenge%22%3A%22abc%22%7D%7D%2C%22recovery%22%3A%5B%5D%7D:6921A3F0::c2ln",
+    "CSRFPreventionToken": "x",
+    "NeedTFA": 1
+  }
+}

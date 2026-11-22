@@ -1,0 +1,25 @@
+{
+  "data": {
+    "digest": "0123456789abcdef0123456789abcdef01234567",
+    "name": "debian-web",
+    "memory": "4096",
+    "cores": 2,
+    "sockets": 1,
+    "cpu": "x86-64-v2-AES",
+    "ostype": "l26",
+    "boot": "order=scsi0;ide2;net0",
+    "scsihw": "virtio-scsi-single",
+    "scsi0": "local-lvm:vm-100-disk-0,iothread=1,size=32G",
+    "scsi10": "local-lvm:vm-100-disk-1,size=4G",
+    "scsi2": "local-lvm:vm-100-disk-2,size=8G",
+    "net0": "virtio=BC:24:11:AA:BB:CC,bridge=vmbr0,firewall=1",
+    "ide2": "none,media=cdrom",
+    "numa": 0,
+    "onboot": 1,
+    "agent": "1",
+    "vmgenid": "8b3c4f0e-1111-2222-3333-444455556666",
+    "smbios1": "uuid=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+    "meta": "creation-qemu=10.0.2,ctime=1750000000",
+    "description": "Web server\n"
+  }
+}

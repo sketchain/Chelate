@@ -1,0 +1,19 @@
+{
+  "data": {
+    "/vms/100": {
+      "VM.Audit": 1,
+      "VM.PowerMgmt": 1,
+      "VM.Console": 0
+    },
+    "/vms": {
+      "VM.Audit": 1
+    },
+    "/": {
+      "Sys.Audit": 1
+    },
+    "/nodes/pve1": {
+      "Sys.Audit": 1,
+      "Sys.Console": 1
+    }
+  }
+}
