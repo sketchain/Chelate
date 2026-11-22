@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "name": "current",
+      "description": "You are here!",
+      "parent": "before-upgrade",
+      "running": 1,
+      "digest": "abc"
+    },
+    {
+      "name": "base",
+      "description": "fresh install",
+      "snaptime": 1760000000,
+      "vmstate": 0
+    },
+    {
+      "name": "before-upgrade",
+      "description": "",
+      "parent": "base",
+      "snaptime": 1763000000,
+      "vmstate": 1
+    }
+  ]
+}

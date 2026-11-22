@@ -1,0 +1,38 @@
+{
+  "data": [
+    {
+      "upid": "UPID:pve1:000ABCDE:0123ABCD:6921A3F0:qmstart:100:root@pam:",
+      "node": "pve1",
+      "pid": 703710,
+      "pstart": 19114957,
+      "starttime": 1763812336,
+      "type": "qmstart",
+      "id": "100",
+      "user": "root@pam"
+    },
+    {
+      "upid": "UPID:pve1:000ABC10:0123ABCD:6921A000:vzdump:200:alice@pve!automation:",
+      "node": "pve1",
+      "pid": 703504,
+      "pstart": 19114957,
+      "starttime": 1763811328,
+      "endtime": 1763811400,
+      "type": "vzdump",
+      "id": "200",
+      "user": "alice@pve!automation",
+      "tokenid": "automation",
+      "status": "OK",
+      "saved": "1"
+    },
+    {
+      "upid": "UPID:pve2:00001111:00002222:6921A100:qmigrate:101:root@pam:",
+      "node": "pve2",
+      "starttime": 1763811584,
+      "endtime": 1763811590,
+      "type": "qmigrate",
+      "id": "101",
+      "user": "root@pam",
+      "status": "migration aborted"
+    }
+  ]
+}

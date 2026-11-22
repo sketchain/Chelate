@@ -1,0 +1,25 @@
+{
+  "data": {
+    "status": "running",
+    "name": "pihole",
+    "vmid": "200",
+    "type": "lxc",
+    "cpu": 0.0031,
+    "cpus": 1,
+    "mem": 134217728,
+    "maxmem": 536870912,
+    "swap": 0,
+    "maxswap": 536870912,
+    "disk": 1073741824,
+    "maxdisk": 8589934592,
+    "uptime": 3600,
+    "netin": 555,
+    "netout": 777,
+    "diskread": 0,
+    "diskwrite": 0,
+    "pid": "4567",
+    "ha": {
+      "managed": 0
+    }
+  }
+}

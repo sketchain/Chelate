@@ -1,0 +1,141 @@
+{
+  "data": [
+    {
+      "id": "node/pve1",
+      "type": "node",
+      "node": "pve1",
+      "status": "online",
+      "cpu": 0.0423,
+      "maxcpu": 16,
+      "mem": 13421772800,
+      "maxmem": 67324088320,
+      "disk": 9876543210,
+      "maxdisk": 100861726720,
+      "uptime": 1234567,
+      "level": "",
+      "cgroup-mode": 2
+    },
+    {
+      "id": "node/pve2",
+      "type": "node",
+      "node": "pve2",
+      "status": "offline",
+      "maxcpu": 8,
+      "maxmem": 33662044160
+    },
+    {
+      "id": "qemu/101",
+      "type": "qemu",
+      "vmid": 101,
+      "name": "win11",
+      "node": "pve1",
+      "status": "stopped",
+      "cpu": 0,
+      "maxcpu": 4,
+      "mem": 0,
+      "maxmem": 8589934592,
+      "disk": 0,
+      "maxdisk": 68719476736,
+      "uptime": 0,
+      "template": 0,
+      "netin": 0,
+      "netout": 0,
+      "diskread": 0,
+      "diskwrite": 0,
+      "tags": "desktop;windows"
+    },
+    {
+      "id": "qemu/100",
+      "type": "qemu",
+      "vmid": 100,
+      "name": "debian-web",
+      "node": "pve1",
+      "status": "running",
+      "cpu": 0.0215,
+      "maxcpu": 2,
+      "mem": 1288490188,
+      "maxmem": 4294967296,
+      "disk": 0,
+      "maxdisk": 34359738368,
+      "uptime": 86400,
+      "template": 0,
+      "netin": 123456789,
+      "netout": 98765432,
+      "diskread": 2147483648,
+      "diskwrite": 1073741824,
+      "hastate": "started",
+      "tags": "web"
+    },
+    {
+      "id": "lxc/200",
+      "type": "lxc",
+      "vmid": 200,
+      "name": "pihole",
+      "node": "pve1",
+      "status": "running",
+      "cpu": 0.0031,
+      "maxcpu": 1,
+      "mem": 134217728,
+      "maxmem": 536870912,
+      "disk": 1073741824,
+      "maxdisk": 8589934592,
+      "uptime": 3600,
+      "template": 0
+    },
+    {
+      "id": "qemu/9000",
+      "type": "qemu",
+      "vmid": 9000,
+      "name": "tpl-debian",
+      "node": "pve2",
+      "status": "stopped",
+      "maxcpu": 2,
+      "maxmem": 2147483648,
+      "template": 1
+    },
+    {
+      "id": "storage/pve1/local",
+      "type": "storage",
+      "storage": "local",
+      "node": "pve1",
+      "status": "available",
+      "plugintype": "dir",
+      "shared": 0,
+      "content": "iso,vztmpl,backup",
+      "disk": 9876543210,
+      "maxdisk": 100861726720
+    },
+    {
+      "id": "storage/pve1/local-lvm",
+      "type": "storage",
+      "storage": "local-lvm",
+      "node": "pve1",
+      "status": "available",
+      "plugintype": "lvmthin",
+      "shared": 0,
+      "content": "rootdir,images",
+      "disk": 21474836480,
+      "maxdisk": 858993459200
+    },
+    {
+      "id": "pool/prod",
+      "type": "pool",
+      "pool": "prod"
+    },
+    {
+      "id": "sdn/pve1/localnetwork",
+      "type": "sdn",
+      "sdn": "localnetwork",
+      "node": "pve1",
+      "status": "ok"
+    },
+    {
+      "id": "network/pve1/vmbr0",
+      "type": "network",
+      "node": "pve1",
+      "network": "vmbr0",
+      "network-type": "fabric",
+      "status": "ok"
+    }
+  ]
+}

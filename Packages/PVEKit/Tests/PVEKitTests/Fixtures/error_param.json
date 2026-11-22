@@ -1,0 +1,7 @@
+{
+  "data": null,
+  "message": "Parameter verification failed.\n",
+  "errors": {
+    "snapname": "invalid format - invalid configuration ID 'bad name'\n"
+  }
+}

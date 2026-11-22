@@ -1,0 +1,85 @@
+name: Chelate
+
+options:
+  bundleIdPrefix: org.sketchain
+  deploymentTarget:
+    iOS: "26.0"
+  developmentLanguage: zh-Hans
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+packages:
+  # SwiftTerm 1.x stable line. 1.99.x are pre-releases of the 2.0 API, so stay below them.
+  SwiftTerm:
+    url: https://github.com/migueldeicaza/SwiftTerm
+    exactVersion: 1.20.0
+  PVEKit:
+    path: Packages/PVEKit
+
+settings:
+  base:
+    # Version numbers are injected by CI (MARKETING_VERSION / CURRENT_PROJECT_VERSION).
+    CHELATE_GIT_SHA: local
+    CHELATE_CHANNEL: local
+    SWIFT_VERSION: "5.0"
+    SWIFT_STRICT_CONCURRENCY: minimal
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+    STRING_CATALOG_GENERATE_SYMBOLS: NO
+
+targets:
+  Chelate:
+    type: application
+    platform: iOS
+    sources:
+      - path: App/Sources
+      - path: App/Resources
+        excludes:
+          - VNCWeb
+          - VNCWeb/**
+      # Folder reference keeps the directory layout (noVNC ES module imports are relative).
+      - path: App/Resources/VNCWeb
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - package: SwiftTerm
+        product: SwiftTerm
+      - package: PVEKit
+        product: PVEKit
+    settings:
+      base:
+        PRODUCT_NAME: Chelate
+        PRODUCT_BUNDLE_IDENTIFIER: org.sketchain.chelate
+        INFOPLIST_FILE: App/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_PREVIEWS: YES
+
+  ChelateTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: App/Tests
+    dependencies:
+      - target: Chelate
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: org.sketchain.chelate.tests
+
+schemes:
+  Chelate:
+    build:
+      targets:
+        Chelate: all
+        ChelateTests: [test]
+    test:
+      config: Debug
+      targets:
+        - ChelateTests
+    archive:
+      config: Release

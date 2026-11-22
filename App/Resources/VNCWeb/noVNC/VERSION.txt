@@ -1,0 +1,2 @@
+noVNC v1.7.0 (https://github.com/novnc/noVNC/releases/tag/v1.7.0, commit 63107bd06d9e1f6136ff21aeda8cd62cbf0d433e)
+Only core/ and vendor/ are included, unmodified. License: LICENSE.txt (MPL-2.0; see file for bundled components).

@@ -1,0 +1,771 @@
+{
+  "sourceLanguage": "zh-Hans",
+  "strings": {
+    "\n\n当前使用 API Token 认证。如果 Token 启用了“权限分离”，需要单独授予 VM.Console 权限；也可以改用账号密码登录后再试。": {
+      "extractionState": "manual"
+    },
+    "\n\n当前使用 API Token 认证。如果 Token 启用了“权限分离”，需要单独给 Token 授予 %@ 权限；也可以改用账号密码登录后再试。": {
+      "extractionState": "manual"
+    },
+    "%@ · %@": {
+      "extractionState": "manual"
+    },
+    "%@ · %@ 核": {
+      "extractionState": "manual"
+    },
+    "%@ · %@ 线程": {
+      "extractionState": "manual"
+    },
+    "%@ · 共享": {
+      "extractionState": "manual"
+    },
+    "6 位验证码": {
+      "extractionState": "manual"
+    },
+    "API Token": {
+      "extractionState": "manual"
+    },
+    "Build": {
+      "extractionState": "manual"
+    },
+    "CPU": {
+      "extractionState": "manual"
+    },
+    "Chelate": {
+      "extractionState": "manual"
+    },
+    "Commit": {
+      "extractionState": "manual"
+    },
+    "HA": {
+      "extractionState": "manual"
+    },
+    "IO 等待": {
+      "extractionState": "manual"
+    },
+    "PVE": {
+      "extractionState": "manual"
+    },
+    "PVE 只为 root@pam 提供免密 Shell，当前账号会先出现 login: 提示，需要输入节点上的 Linux 用户名和密码。": {
+      "extractionState": "manual"
+    },
+    "Proxmox VE 客户端": {
+      "extractionState": "manual"
+    },
+    "Realm": {
+      "extractionState": "manual"
+    },
+    "SHA-256 指纹": {
+      "extractionState": "manual"
+    },
+    "Secret（留空则不修改）": {
+      "extractionState": "manual"
+    },
+    "Shell": {
+      "extractionState": "manual"
+    },
+    "Swap": {
+      "extractionState": "manual"
+    },
+    "SwiftTerm": {
+      "extractionState": "manual"
+    },
+    "TOTP 验证码": {
+      "extractionState": "manual"
+    },
+    "Token ID": {
+      "extractionState": "manual"
+    },
+    "Token 在“数据中心 › 权限 › API Token”中创建。启用“权限分离”的 Token 需要单独授予权限。用 Token 打开节点 Shell 时需要再输入一次 Linux 账号密码。": {
+      "extractionState": "manual"
+    },
+    "VNC 控制台": {
+      "extractionState": "manual"
+    },
+    "VNC 认证失败。": {
+      "extractionState": "manual"
+    },
+    "VNC 连接被服务器关闭。": {
+      "extractionState": "manual"
+    },
+    "WebSocket 认证失败（HTTP 401）。": {
+      "extractionState": "manual"
+    },
+    "noVNC": {
+      "extractionState": "manual"
+    },
+    "主机": {
+      "extractionState": "manual"
+    },
+    "主机名或 IP": {
+      "extractionState": "manual"
+    },
+    "主题": {
+      "extractionState": "manual"
+    },
+    "之前确认的指纹": {
+      "extractionState": "manual"
+    },
+    "二次验证": {
+      "extractionState": "manual"
+    },
+    "任务": {
+      "extractionState": "manual"
+    },
+    "任务 · %@": {
+      "extractionState": "manual"
+    },
+    "任务历史": {
+      "extractionState": "manual"
+    },
+    "任务日志": {
+      "extractionState": "manual"
+    },
+    "任务进度": {
+      "extractionState": "manual"
+    },
+    "会话已结束。": {
+      "extractionState": "manual"
+    },
+    "保存": {
+      "extractionState": "manual"
+    },
+    "信任新证书": {
+      "extractionState": "manual"
+    },
+    "停止": {
+      "extractionState": "manual"
+    },
+    "入站": {
+      "extractionState": "manual"
+    },
+    "关于": {
+      "extractionState": "manual"
+    },
+    "关机": {
+      "extractionState": "manual"
+    },
+    "关闭提示": {
+      "extractionState": "manual"
+    },
+    "内存": {
+      "extractionState": "manual"
+    },
+    "内核": {
+      "extractionState": "manual"
+    },
+    "写入": {
+      "extractionState": "manual"
+    },
+    "准备启动": {
+      "extractionState": "manual"
+    },
+    "出站": {
+      "extractionState": "manual"
+    },
+    "创建": {
+      "extractionState": "manual"
+    },
+    "创建快照": {
+      "extractionState": "manual"
+    },
+    "创建快照 %@": {
+      "extractionState": "manual"
+    },
+    "删除": {
+      "extractionState": "manual"
+    },
+    "删除“%@”": {
+      "extractionState": "manual"
+    },
+    "删除快照": {
+      "extractionState": "manual"
+    },
+    "删除快照 %@": {
+      "extractionState": "manual"
+    },
+    "删除服务器": {
+      "extractionState": "manual"
+    },
+    "剩余 %lld 个恢复码可用。": {
+      "extractionState": "manual"
+    },
+    "包含内存状态": {
+      "extractionState": "manual"
+    },
+    "包含内存状态时，回滚后虚拟机会恢复到拍快照时的运行状态，但快照更慢、占用更多空间。": {
+      "extractionState": "manual"
+    },
+    "发送 Ctrl+Alt+Del": {
+      "extractionState": "manual"
+    },
+    "发送 Esc": {
+      "extractionState": "manual"
+    },
+    "发送 Tab": {
+      "extractionState": "manual"
+    },
+    "取消": {
+      "extractionState": "manual"
+    },
+    "只读。修改配置请使用 PVE 网页。": {
+      "extractionState": "manual"
+    },
+    "可用": {
+      "extractionState": "manual"
+    },
+    "名称": {
+      "extractionState": "manual"
+    },
+    "名称须以英文字母开头，只能包含字母、数字、- 和 _，最长 40 个字符。": {
+      "extractionState": "manual"
+    },
+    "名称（可选）": {
+      "extractionState": "manual"
+    },
+    "后台运行": {
+      "extractionState": "manual"
+    },
+    "含内存": {
+      "extractionState": "manual"
+    },
+    "启动": {
+      "extractionState": "manual"
+    },
+    "周": {
+      "extractionState": "manual"
+    },
+    "回滚": {
+      "extractionState": "manual"
+    },
+    "回滚到 %@": {
+      "extractionState": "manual"
+    },
+    "回滚到“%@”": {
+      "extractionState": "manual"
+    },
+    "回滚到此快照": {
+      "extractionState": "manual"
+    },
+    "回滚快照": {
+      "extractionState": "manual"
+    },
+    "图形控制台（VNC）": {
+      "extractionState": "manual"
+    },
+    "在左侧选择一台服务器。": {
+      "extractionState": "manual"
+    },
+    "在线": {
+      "extractionState": "manual"
+    },
+    "备份": {
+      "extractionState": "manual"
+    },
+    "天": {
+      "extractionState": "manual"
+    },
+    "失败：%@": {
+      "extractionState": "manual"
+    },
+    "好": {
+      "extractionState": "manual"
+    },
+    "安全连接失败（%@）。": {
+      "extractionState": "manual"
+    },
+    "完成": {
+      "extractionState": "manual"
+    },
+    "完成（%@）": {
+      "extractionState": "manual"
+    },
+    "容器": {
+      "extractionState": "manual"
+    },
+    "密码": {
+      "extractionState": "manual"
+    },
+    "密码在连接时输入，可选择保存到钥匙串。Realm 默认为 pam（Linux PAM），PVE 内置用户为 pve。": {
+      "extractionState": "manual"
+    },
+    "对象": {
+      "extractionState": "manual"
+    },
+    "将同时删除保存在钥匙串中的凭据。": {
+      "extractionState": "manual"
+    },
+    "左滑或长按快照可回滚或删除。": {
+      "extractionState": "manual"
+    },
+    "已休眠": {
+      "extractionState": "manual"
+    },
+    "已信任的证书": {
+      "extractionState": "manual"
+    },
+    "已停止": {
+      "extractionState": "manual"
+    },
+    "已取消二次验证。": {
+      "extractionState": "manual"
+    },
+    "已断开连接。": {
+      "extractionState": "manual"
+    },
+    "已暂停": {
+      "extractionState": "manual"
+    },
+    "已用": {
+      "extractionState": "manual"
+    },
+    "已用时间": {
+      "extractionState": "manual"
+    },
+    "年": {
+      "extractionState": "manual"
+    },
+    "开始": {
+      "extractionState": "manual"
+    },
+    "开源组件": {
+      "extractionState": "manual"
+    },
+    "强制停止": {
+      "extractionState": "manual"
+    },
+    "强制停止“%@”相当于直接断电，未保存的数据会丢失。": {
+      "extractionState": "manual"
+    },
+    "当前位置": {
+      "extractionState": "manual"
+    },
+    "当前使用 API Token 连接。PVE 只为 root@pam 账号密码登录提供免密 Shell，Token 会话会先出现 login: 提示，需要输入节点上的 Linux 用户名和密码。": {
+      "extractionState": "manual"
+    },
+    "当前状态将被快照“%@”覆盖，此后的所有改动都会丢失，且无法撤销。": {
+      "extractionState": "manual"
+    },
+    "快照": {
+      "extractionState": "manual"
+    },
+    "快照“%@”将被永久删除，无法恢复。": {
+      "extractionState": "manual"
+    },
+    "总览": {
+      "extractionState": "manual"
+    },
+    "总量": {
+      "extractionState": "manual"
+    },
+    "恢复": {
+      "extractionState": "manual"
+    },
+    "恢复码": {
+      "extractionState": "manual"
+    },
+    "成功": {
+      "extractionState": "manual"
+    },
+    "我确认证书是我自己更换的": {
+      "extractionState": "manual"
+    },
+    "执行中": {
+      "extractionState": "manual"
+    },
+    "执行中…": {
+      "extractionState": "manual"
+    },
+    "批量停止": {
+      "extractionState": "manual"
+    },
+    "批量启动": {
+      "extractionState": "manual"
+    },
+    "找不到服务器：主机名无法解析。": {
+      "extractionState": "manual"
+    },
+    "指纹一致，信任此证书": {
+      "extractionState": "manual"
+    },
+    "控制台": {
+      "extractionState": "manual"
+    },
+    "控制台 · %@": {
+      "extractionState": "manual"
+    },
+    "控制台操作": {
+      "extractionState": "manual"
+    },
+    "控制台认证失败：服务器拒绝了终端票据。": {
+      "extractionState": "manual"
+    },
+    "控制台连接已关闭。": {
+      "extractionState": "manual"
+    },
+    "控制台连接已断开。": {
+      "extractionState": "manual"
+    },
+    "描述（可选）": {
+      "extractionState": "manual"
+    },
+    "操作已取消。": {
+      "extractionState": "manual"
+    },
+    "操作未完成": {
+      "extractionState": "manual"
+    },
+    "无权限": {
+      "extractionState": "manual"
+    },
+    "无权限查看任务列表": {
+      "extractionState": "manual"
+    },
+    "无权限查看快照": {
+      "extractionState": "manual"
+    },
+    "无权限查看此任务": {
+      "extractionState": "manual"
+    },
+    "无权限查看监控数据": {
+      "extractionState": "manual"
+    },
+    "无权限查看节点状态（需要 Sys.Audit）": {
+      "extractionState": "manual"
+    },
+    "无权限查看配置（需要 VM.Audit）": {
+      "extractionState": "manual"
+    },
+    "无权限管理快照（需要 VM.Snapshot）": {
+      "extractionState": "manual"
+    },
+    "无权限：需要 Sys.Console": {
+      "extractionState": "manual"
+    },
+    "无权限：需要 VM.Console": {
+      "extractionState": "manual"
+    },
+    "无权限：需要 VM.PowerMgmt": {
+      "extractionState": "manual"
+    },
+    "无法建立控制台连接（HTTP %lld）。": {
+      "extractionState": "manual"
+    },
+    "无法解析服务器响应（%@）。服务器版本可能不兼容。": {
+      "extractionState": "manual"
+    },
+    "无法访问局域网：请在“设置 › 隐私与安全性 › 本地网络”中允许 Chelate。": {
+      "extractionState": "manual"
+    },
+    "无法连接服务器：请确认 PVE 正在运行、端口（默认 8006）正确，且手机与服务器网络互通。": {
+      "extractionState": "manual"
+    },
+    "日志": {
+      "extractionState": "manual"
+    },
+    "时": {
+      "extractionState": "manual"
+    },
+    "时间": {
+      "extractionState": "manual"
+    },
+    "时间范围": {
+      "extractionState": "manual"
+    },
+    "显示存储": {
+      "extractionState": "manual"
+    },
+    "暂停": {
+      "extractionState": "manual"
+    },
+    "暂无输出": {
+      "extractionState": "manual"
+    },
+    "更多": {
+      "extractionState": "manual"
+    },
+    "更新于 %@": {
+      "extractionState": "manual"
+    },
+    "更新软件包列表": {
+      "extractionState": "manual"
+    },
+    "月": {
+      "extractionState": "manual"
+    },
+    "服务器": {
+      "extractionState": "manual"
+    },
+    "服务器内部错误（HTTP %lld）。": {
+      "extractionState": "manual"
+    },
+    "服务器出示的证书与你之前确认的不一致。如果你没有更换过 PVE 证书，这可能是中间人攻击，请不要继续。": {
+      "extractionState": "manual"
+    },
+    "服务器地址或端口无效。": {
+      "extractionState": "manual"
+    },
+    "服务器操作": {
+      "extractionState": "manual"
+    },
+    "服务器证书": {
+      "extractionState": "manual"
+    },
+    "服务器证书不受系统信任（%@）。请核对指纹后决定是否信任。": {
+      "extractionState": "manual"
+    },
+    "未知": {
+      "extractionState": "manual"
+    },
+    "未选择服务器": {
+      "extractionState": "manual"
+    },
+    "查看证书": {
+      "extractionState": "manual"
+    },
+    "根分区": {
+      "extractionState": "manual"
+    },
+    "根磁盘": {
+      "extractionState": "manual"
+    },
+    "模板": {
+      "extractionState": "manual"
+    },
+    "正在获取状态…": {
+      "extractionState": "manual"
+    },
+    "正在连接 %@…": {
+      "extractionState": "manual"
+    },
+    "正在连接…": {
+      "extractionState": "manual"
+    },
+    "此服务器的证书不受系统信任（PVE 默认使用自签名证书）。": {
+      "extractionState": "manual"
+    },
+    "没有任务": {
+      "extractionState": "manual"
+    },
+    "没有快照": {
+      "extractionState": "manual"
+    },
+    "没有权限打开控制台（需要 %@）。": {
+      "extractionState": "manual"
+    },
+    "没有权限打开控制台（需要 VM.Console）。": {
+      "extractionState": "manual"
+    },
+    "没有权限执行此操作。": {
+      "extractionState": "manual"
+    },
+    "没有权限执行此操作（%@）。": {
+      "extractionState": "manual"
+    },
+    "没有权限连接控制台（HTTP 403，需要 %@）。": {
+      "extractionState": "manual"
+    },
+    "没有权限连接控制台（HTTP 403，需要 VM.Console）。": {
+      "extractionState": "manual"
+    },
+    "添加一台 Proxmox VE 服务器开始使用。": {
+      "extractionState": "manual"
+    },
+    "添加服务器": {
+      "extractionState": "manual"
+    },
+    "清除后下次连接会重新校验证书。": {
+      "extractionState": "manual"
+    },
+    "清除已信任的证书指纹": {
+      "extractionState": "manual"
+    },
+    "渠道": {
+      "extractionState": "manual"
+    },
+    "点右上角 + 创建第一个快照。": {
+      "extractionState": "manual"
+    },
+    "版本": {
+      "extractionState": "manual"
+    },
+    "状态": {
+      "extractionState": "manual"
+    },
+    "用户": {
+      "extractionState": "manual"
+    },
+    "用户名": {
+      "extractionState": "manual"
+    },
+    "用户（含 realm，如 root@pam）": {
+      "extractionState": "manual"
+    },
+    "电源": {
+      "extractionState": "manual"
+    },
+    "登录": {
+      "extractionState": "manual"
+    },
+    "登录已过期，请重新输入密码。": {
+      "extractionState": "manual"
+    },
+    "监控": {
+      "extractionState": "manual"
+    },
+    "监控图表": {
+      "extractionState": "manual"
+    },
+    "确定要关闭“%@”吗？将向系统发送关机请求。": {
+      "extractionState": "manual"
+    },
+    "确定要重启“%@”吗？": {
+      "extractionState": "manual"
+    },
+    "磁盘": {
+      "extractionState": "manual"
+    },
+    "磁盘 IO": {
+      "extractionState": "manual"
+    },
+    "离线": {
+      "extractionState": "manual"
+    },
+    "端口": {
+      "extractionState": "manual"
+    },
+    "类型": {
+      "extractionState": "manual"
+    },
+    "系列": {
+      "extractionState": "manual"
+    },
+    "系统": {
+      "extractionState": "manual"
+    },
+    "编辑": {
+      "extractionState": "manual"
+    },
+    "编辑服务器": {
+      "extractionState": "manual"
+    },
+    "网络": {
+      "extractionState": "manual"
+    },
+    "网络连接中断。": {
+      "extractionState": "manual"
+    },
+    "网络错误：%@": {
+      "extractionState": "manual"
+    },
+    "节点": {
+      "extractionState": "manual"
+    },
+    "虚拟机": {
+      "extractionState": "manual"
+    },
+    "警告：服务器证书指纹与之前确认的不一致！可能是证书已更换，也可能存在中间人攻击。连接已阻止。": {
+      "extractionState": "manual"
+    },
+    "认证": {
+      "extractionState": "manual"
+    },
+    "认证失败：用户名、密码或 API Token 不正确，或登录已失效。": {
+      "extractionState": "manual"
+    },
+    "认证方式": {
+      "extractionState": "manual"
+    },
+    "记住密码": {
+      "extractionState": "manual"
+    },
+    "记住密码后密码保存在钥匙串中，登录票据彻底过期时自动重新登录；开启了二次验证的账号仍需输入验证码。": {
+      "extractionState": "manual"
+    },
+    "设备未连接网络。": {
+      "extractionState": "manual"
+    },
+    "证书指纹已改变！": {
+      "extractionState": "manual"
+    },
+    "证书验证": {
+      "extractionState": "manual"
+    },
+    "该账号只配置了 WebAuthn/U2F 等本 App 不支持的二次验证方式。请在 PVE 中添加 TOTP 或恢复码，或改用 API Token。": {
+      "extractionState": "manual"
+    },
+    "该账号还配置了 WebAuthn/U2F/Yubico，本 App 暂不支持这些方式。": {
+      "extractionState": "manual"
+    },
+    "请在 PVE 网页的“节点 › 系统 › 证书”中核对下面的 SHA-256 指纹。确认一致后，Chelate 以后只接受这个证书。": {
+      "extractionState": "manual"
+    },
+    "请求失败（HTTP %lld）。": {
+      "extractionState": "manual"
+    },
+    "读取": {
+      "extractionState": "manual"
+    },
+    "负载": {
+      "extractionState": "manual"
+    },
+    "账号 %@ 开启了二次验证。": {
+      "extractionState": "manual"
+    },
+    "账号密码": {
+      "extractionState": "manual"
+    },
+    "资源不存在。": {
+      "extractionState": "manual"
+    },
+    "迁移": {
+      "extractionState": "manual"
+    },
+    "运行中": {
+      "extractionState": "manual"
+    },
+    "运行时间": {
+      "extractionState": "manual"
+    },
+    "连接失败": {
+      "extractionState": "manual"
+    },
+    "连接超时：服务器无响应，请检查地址、端口和网络。": {
+      "extractionState": "manual"
+    },
+    "退出登录": {
+      "extractionState": "manual"
+    },
+    "适配 Proxmox VE 9.x。所有 API 请求直接发往你的服务器，不经过任何第三方。": {
+      "extractionState": "manual"
+    },
+    "配置": {
+      "extractionState": "manual"
+    },
+    "重启": {
+      "extractionState": "manual"
+    },
+    "重新连接": {
+      "extractionState": "manual"
+    },
+    "重试": {
+      "extractionState": "manual"
+    },
+    "锁定": {
+      "extractionState": "manual"
+    },
+    "集群内转发失败：目标节点不可达。": {
+      "extractionState": "manual"
+    },
+    "集群内转发失败：连接目标节点出错。": {
+      "extractionState": "manual"
+    },
+    "验证": {
+      "extractionState": "manual"
+    },
+    "验证方式": {
+      "extractionState": "manual"
+    }
+  },
+  "version": "1.0"
+}
