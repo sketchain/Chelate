@@ -14,6 +14,7 @@ enum Route: Hashable {
     case console(ConsoleTarget)
     case vnc(GuestRef)
     case tasks(node: String?, vmid: Int?)
+    case storage(node: String, storage: String)
 }
 
 enum SidebarItem: Hashable {
@@ -34,6 +35,16 @@ final class AppModel {
     private let store: ServerStore
 
     init(store: ServerStore = ServerStore()) {
+        if DemoMode.isEnabled {
+            // Demo: one fixture server, persisted only in a throw-away file.
+            let demoStore = ServerStore(fileURL: FileManager.default.temporaryDirectory
+                .appendingPathComponent("chelate-demo-\(UUID().uuidString)")
+                .appendingPathComponent("servers.json"))
+            self.store = demoStore
+            servers = [ServerConfig.demo]
+            selection = .overview(ServerConfig.demo.id)
+            return
+        }
         self.store = store
         servers = store.load()
         if let first = servers.first {

@@ -31,6 +31,7 @@ struct TaskListView: View {
                     TaskRow(task: task)
                 }
             }
+            .accessibilityIdentifier("task-row")
         }
         .navigationTitle(title)
         .refreshable { await load() }
@@ -68,35 +69,49 @@ struct TaskListView: View {
     }
 }
 
+/// Task row: fixed status icon, type and object on the first line, "node · user" and the start
+/// time on the second; errors below. All text lines share the same leading edge.
 struct TaskRow: View {
     let task: TaskSummary
+    @ScaledMetric(relativeTo: .body) private var iconWidth = RowMetrics.iconWidth
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
             icon
-                .frame(width: 22)
-            VStack(alignment: .leading, spacing: 3) {
-                HStack {
-                    Text(Names.taskType(task.type))
-                        .font(.body.weight(.medium))
+                .frame(width: iconWidth)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(verbatim: Names.taskType(task.type))
+                        .font(.body)
+                        .lineLimit(1)
                     if let id = task.objectID, !id.isEmpty {
-                        Text(id).foregroundStyle(.secondary)
+                        Text(verbatim: id)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                            .lineLimit(1)
                     }
                 }
-                Text("\(task.node) · \(task.user)")
+                Text(verbatim: "\(task.node) · \(task.user)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Text(task.startTime.formatted(date: .abbreviated, time: .shortened))
-                    .font(.caption2)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Text(verbatim: Format.shortDate(task.startTime))
+                    .font(.caption)
                     .foregroundStyle(.secondary)
+                    .monospacedDigit()
                 if let status = task.status, !task.succeeded {
-                    Text(status)
+                    Text(verbatim: status)
                         .font(.caption)
                         .foregroundStyle(.red)
                         .lineLimit(2)
                 }
             }
+            .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
+            Spacer(minLength: 0)
         }
+        .padding(.vertical, 2)
     }
 
     @ViewBuilder
@@ -125,10 +140,10 @@ struct TaskLogView: View {
         List {
             Section {
                 if let status {
-                    LabeledContent("类型", value: Names.taskType(status.type ?? ""))
-                    if let id = status.id, !id.isEmpty { LabeledContent("对象", value: id) }
-                    if let user = status.user { LabeledContent("用户", value: user) }
-                    LabeledContent("开始", value: Format.date(status.starttime))
+                    InfoRow(title: "类型", value: Names.taskType(status.type ?? ""))
+                    if let id = status.id, !id.isEmpty { InfoRow(title: "对象", value: id) }
+                    if let user = status.user { InfoRow(title: "用户", value: user) }
+                    InfoRow(title: "开始", value: Format.date(status.starttime))
                     LabeledContent("状态") {
                         if status.isRunning {
                             HStack { ProgressView(); Text("执行中") }

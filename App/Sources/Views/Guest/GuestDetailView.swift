@@ -28,6 +28,7 @@ struct GuestDetailView: View {
                 NavigationLink(value: Route.guestCharts(guest)) {
                     Label("监控图表", systemImage: "chart.xyaxis.line")
                 }
+                .accessibilityIdentifier("guest-charts")
                 NavigationLink(value: Route.config(guest)) {
                     Label("配置", systemImage: "slider.horizontal.3")
                 }
@@ -85,25 +86,25 @@ struct GuestDetailView: View {
                         Text(Names.status(status.effectiveState))
                     }
                 }
-                LabeledContent("类型", value: "\(Names.guestType(guest.type)) · \(guest.vmid)")
-                LabeledContent("节点", value: guest.node)
+                InfoRow(title: "类型", value: "\(Names.guestType(guest.type)) · \(guest.vmid)")
+                InfoRow(title: "节点", value: guest.node)
                 if status.isRunning {
                     UsageBar(title: "CPU", fraction: status.cpu, detail: "\(Format.percent(status.cpu)) · \(Int(status.cpus ?? 0)) 核")
                     UsageBar(title: "内存", fraction: fraction(status.mem, status.maxmem), detail: Format.usage(status.mem, status.maxmem))
-                    LabeledContent("运行时间", value: Format.uptime(status.uptime))
+                    InfoRow(title: "运行时间", value: Format.uptime(status.uptime))
                 } else {
-                    LabeledContent("内存", value: Format.bytes(status.maxmem))
+                    InfoRow(title: "内存", value: Format.bytes(status.maxmem))
                 }
                 if guest.type == .lxc, let maxdisk = status.maxdisk, maxdisk > 0 {
                     UsageBar(title: "根磁盘", fraction: fraction(status.disk, status.maxdisk), detail: Format.usage(status.disk, status.maxdisk))
                 } else if let maxdisk = status.maxdisk, maxdisk > 0 {
-                    LabeledContent("磁盘", value: Format.bytes(maxdisk))
+                    InfoRow(title: "磁盘", value: Format.bytes(maxdisk))
                 }
                 if let lock = status.lock {
-                    LabeledContent("锁定", value: lock)
+                    InfoRow(title: "锁定", value: lock)
                 }
                 if let ha = status.haState {
-                    LabeledContent("HA", value: ha)
+                    InfoRow(title: "HA", value: ha)
                 }
             } else if loadError == nil {
                 HStack { Spacer(); ProgressView(); Spacer() }

@@ -6,9 +6,11 @@ Chelate 是一个原生 iOS 版 [Proxmox VE](https://www.proxmox.com/) 客户端
 
 - 多服务器：增删改、切换；API Token 或账号密码（支持 TOTP / 恢复码二次验证、记住密码、ticket 自动续期）
 - 证书：先走系统信任，不受信任时展示 SHA-256 指纹由你确认并固定；指纹变化会明确报警。REST、WebSocket、WKWebView 共用同一套校验
-- 总览：`/cluster/resources` 按节点分组展示 VM / CT / 存储，下拉刷新，前台定时刷新
+- 总览：`/cluster/resources` 按节点分组展示 VM / CT / 存储（两行固定布局：状态点、类型图标 + VMID、名称 + CPU / 内存 / 运行时间），下拉刷新，前台定时刷新
+- 存储：用量、按类型分组的内容列表（ISO、CT 模板、备份、磁盘…）；「从 URL 下载」（自动查询文件名和大小，可填校验和）和「官方模板」（aplinfo，分类筛选 + 搜索），下载任务接入任务跟踪
 - Guest 详情（qemu / lxc）：状态、只读配置、电源操作（危险操作二次确认）
-- 监控图表：节点与 guest 的 CPU / 内存 / 网络 / 磁盘 IO，时 / 天 / 周 / 月 / 年
+- 监控图表：节点与 guest 的 CPU / 内存 / 网络 / 磁盘 IO，时 / 天 / 周 / 月 / 年；长按后左右拖动查看任意时间点的数值。节点内存为总计 / 可用 / 已用 / ZFS ARC 四条线（PVE 9 RRD 的 `memtotal` / `memavailable` / `memused` / `arcsize`，没有的字段不画）
+- 容量统一用二进制单位（KiB / MiB / GiB / TiB，与 PVE 网页一致）
 - 任务：操作后跟踪 UPID 进度，任务列表与任务日志
 - 快照：列表、创建、回滚、删除
 - Shell：节点 Shell、LXC 控制台（termproxy + SwiftTerm 原生渲染，键盘辅助键，尺寸自适应）
@@ -55,14 +57,21 @@ swift build && swift test
 
 测试只用手写的 fixture（照 PVE 9 真实响应的结构），不会连接真实服务器。
 
+### 演示模式与截图
+
+启动参数 `-ChelateDemo` 打开演示模式：App 只显示一台内置的假服务器（节点 `pve`，运行中 / 已停止 / 模板三种状态的 VM 和 CT，`local` 和 `local-zfs` 两个存储，带 ARC 的 RRD 数据），所有 API 请求都由 `App/Sources/Demo` 里的 fixture 应答，不发网络请求，也不读写钥匙串和服务器列表。在 Xcode 里可以在 scheme 的 *Arguments Passed On Launch* 中加上它；再加 `-ChelateDemoChartSelection` 会在 CPU 图上预置一个选中点（用于截图浮层）。
+
+UI 测试 `ChelateUITests` 在演示模式下依次打开总览、节点详情、节点监控（含长按浮层）、guest 详情、存储详情、从 URL 下载表单、官方模板列表和任务列表，并用 `XCTAttachment` 保存截图。
+
 ## CI 与产物
 
 | 触发 | Workflow | 内容 |
 | --- | --- | --- |
-| push 到 `dev`、所有 PR | `CI` | PVEKit `swift test`（macOS + Linux）→ `xcodebuild build test`（模拟器）→ 无签名 archive → 打包 ipa |
+| push 到 `dev`、所有 PR | `CI` | PVEKit `swift test`（macOS + Linux）→ `xcodebuild build test`（模拟器，含单元测试和截图 UI 测试）→ 无签名 archive → 打包 ipa；从 xcresult 导出截图 |
 | push 到 `main` | `Release` | 按 `VERSION` 计算 `vX.Y.Z` → 测试与构建 → 全部成功后才打 tag 并推送 → 创建 GitHub Release |
 
 - **dev 构建**：在 Actions 对应运行的 *Artifacts* 中下载 `Chelate-dev-<short sha>-unsigned.ipa`（保留 30 天）。其 `CFBundleShortVersionString` 为最近一个已发布 tag 的版本（还没有 tag 时为 `0.0.0`）。
+- **截图**：同一运行的 *Artifacts* 中的 `Chelate-screenshots-<short sha>`，内含 `01-overview-<short sha>.png` 等 PNG（保留 30 天，由 `scripts/export-screenshots.sh` 从 xcresult 导出）。
 - **正式版**：在 GitHub Releases 下载 `Chelate-vX.Y.Z-unsigned.ipa` 和对应的 `.sha256`。补丁号 = 同一「主.次」下已有 tag 的最大补丁号 + 1（没有则为 0）。tag 只在构建和测试全部通过后才创建，构建失败不会留下 tag，也不会跳号；同一 commit 重跑时复用已有 tag；要升主/次版本，修改 `VERSION`。
 - 所有构建的 `CFBundleVersion` 为当前 commit 的 `git rev-list --count HEAD`（dev 与正式版同一计数，随提交单调递增，main 上的正式版不会比之前的 dev 包小）；Info.plist 中额外写入 `ChelateGitCommit`（short sha）和 `ChelateChannel`（`dev` / `release`），“关于”页显示「版本 (build) · 渠道 · commit」。
 
