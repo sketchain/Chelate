@@ -28,7 +28,7 @@ struct TaskListView: View {
             }
             ForEach(tasks) { task in
                 NavigationLink(value: Route.taskLog(node: task.node, upid: task.upid)) {
-                    TaskRow(task: task)
+                    TaskRow(task: task, showsNode: node == nil)
                 }
             }
             .accessibilityIdentifier("task-row")
@@ -69,38 +69,28 @@ struct TaskListView: View {
     }
 }
 
-/// Task row: fixed status icon, type and object on the first line, "node · user" and the start
-/// time on the second; errors below. All text lines share the same leading edge.
+/// Task row, two lines: 「操作 目标」, then 「用户 · 时间」 (prefixed with the node in cluster-wide
+/// lists; a node's list already names it in the title). A failed task's error summary follows
+/// as a red third line. Status icon and chevron are vertically centred in the row.
 struct TaskRow: View {
     let task: TaskSummary
+    var showsNode = true
     @ScaledMetric(relativeTo: .body) private var iconWidth = RowMetrics.iconWidth
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
+        HStack(alignment: .center, spacing: 12) {
             icon
                 .frame(width: iconWidth)
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    Text(verbatim: Names.taskType(task.type))
-                        .font(.body)
-                        .lineLimit(1)
-                    if let id = task.objectID, !id.isEmpty {
-                        Text(verbatim: id)
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                            .monospacedDigit()
-                            .lineLimit(1)
-                    }
-                }
-                Text(verbatim: "\(task.node) · \(task.user)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Text(verbatim: title)
+                    .font(.body)
                     .lineLimit(1)
-                    .truncationMode(.middle)
-                Text(verbatim: Format.shortDate(task.startTime))
+                Text(verbatim: detail)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .truncationMode(.middle)
                 if let status = task.status, !task.succeeded {
                     Text(verbatim: status)
                         .font(.caption)
@@ -112,6 +102,22 @@ struct TaskRow: View {
             Spacer(minLength: 0)
         }
         .padding(.vertical, 2)
+    }
+
+    /// 「启动 100」
+    private var title: String {
+        var parts = [Names.taskType(task.type)]
+        if let id = task.objectID, !id.isEmpty { parts.append(id) }
+        return parts.joined(separator: " ")
+    }
+
+    /// 「root@pam · 11/23 15:04」, or 「pve · root@pam · 11/23 15:04」 cluster-wide.
+    private var detail: String {
+        var parts: [String] = []
+        if showsNode { parts.append(task.node) }
+        parts.append(task.user)
+        parts.append(Format.shortDate(task.startTime))
+        return parts.joined(separator: " · ")
     }
 
     @ViewBuilder

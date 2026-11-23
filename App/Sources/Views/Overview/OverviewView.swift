@@ -28,12 +28,14 @@ struct OverviewView: View {
                         ResourceRow(resource: group.nodeResource, kind: .node, name: group.node)
                     }
                     .accessibilityIdentifier("node-\(group.node)")
+                    .overviewRowInsets()
                     ForEach(group.guests) { guest in
                         if let ref = guest.guestRef {
                             NavigationLink(value: Route.guest(ref)) {
                                 ResourceRow(resource: guest, kind: guest.kind, name: guest.displayName)
                             }
                             .accessibilityIdentifier("guest-\(ref.vmid)")
+                            .overviewRowInsets()
                         }
                     }
                     if showStorage {
@@ -42,6 +44,7 @@ struct OverviewView: View {
                                 ResourceRow(resource: storage, kind: .storage, name: storage.displayName)
                             }
                             .accessibilityIdentifier("storage-\(storage.displayName)")
+                            .overviewRowInsets()
                         }
                     }
                 } header: {
@@ -59,6 +62,7 @@ struct OverviewView: View {
             }
         }
         .navigationTitle(connection.config.displayName)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
@@ -86,37 +90,22 @@ struct OverviewView: View {
     }
 }
 
-/// Overview row, two lines high, four columns:
+/// Overview row, two lines high (about 56 pt), four columns:
 ///
 ///     ●   [icon]   name                             ›
 ///         100      CPU 1.0%   内存 13%   29天6小时
 ///
-/// Status dot and chevron are vertically centred; the separator starts at the name column.
+/// The row draws from the card's inner left edge (leading inset 0). The status dot sits in the
+/// gap between that edge and the visible ink of the icon glyphs, centred optically, at the same
+/// x in every row. Dot and chevron are vertically centred; the separator starts at the name.
 struct ResourceRow: View {
     let resource: ClusterResource?
     let kind: ClusterResource.Kind
     let name: String
 
-    @ScaledMetric(relativeTo: .caption) private var typeColumnWidth: CGFloat = 52
-    @ScaledMetric(relativeTo: .body) private var iconSize: CGFloat = 22
-
     var body: some View {
-        HStack(spacing: 12) {
-            OverviewStatusDot(active: isActive)
-            VStack(spacing: 2) {
-                Image(systemName: icon)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .frame(width: iconSize, height: iconSize)
-                Text(verbatim: typeLabel)
-                    .font(.caption)
-                    .monospacedDigit()
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-            }
-            .frame(width: typeColumnWidth)
-            .accessibilityElement(children: .combine)
+        HStack(spacing: 0) {
+            OverviewIconColumn(icon: icon, label: typeLabel, active: isActive)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
                     Text(verbatim: name)
@@ -135,10 +124,10 @@ struct ResourceRow: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
-            .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
+            .padding(.leading, 12)
+            .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] + 12 }
             Spacer(minLength: 0)
         }
-        .padding(.vertical, 4)
     }
 
     private var isActive: Bool {
@@ -146,15 +135,7 @@ struct ResourceRow: View {
         return status == "running" || status == "online" || status == "available"
     }
 
-    private var icon: String {
-        switch kind {
-        case .node: return "server.rack"
-        case .qemu: return "desktopcomputer"
-        case .lxc: return "shippingbox"
-        case .storage: return "externaldrive"
-        default: return "questionmark.square"
-        }
-    }
+    private var icon: String { OverviewIconColumn.symbol(for: kind) }
 
     /// Never empty: vmid for guests, otherwise the kind.
     private var typeLabel: String {
@@ -187,16 +168,72 @@ struct ResourceRow: View {
     }
 }
 
-/// Overview status: green when running / online / available, grey otherwise.
-struct OverviewStatusDot: View {
-    let active: Bool
-    @ScaledMetric(relativeTo: .body) private var size: CGFloat = 9
+/// Leading part of an overview row: the empty gap holding the status dot, then the icon column
+/// (symbol over a caption2 monospaced label).
+struct OverviewIconColumn: View {
+    let icon: String
+    let label: String
+    var active: Bool = false
+
+    /// Every symbol the overview uses; the dot is placed left of the widest one's ink.
+    static let symbols = ["server.rack", "desktopcomputer", "shippingbox", "externaldrive", "questionmark.square"]
+
+    static func symbol(for kind: ClusterResource.Kind) -> String {
+        switch kind {
+        case .node: return "server.rack"
+        case .qemu: return "desktopcomputer"
+        case .lxc: return "shippingbox"
+        case .storage: return "externaldrive"
+        default: return "questionmark.square"
+        }
+    }
+
+    /// Gap between the card's inner left edge and the icon column.
+    @ScaledMetric(relativeTo: .body) private var gap: CGFloat = 34
+    @ScaledMetric(relativeTo: .caption2) private var columnWidth: CGFloat = 48
+    /// Point size of `.body` at the current Dynamic Type size (symbols are drawn with it).
+    @ScaledMetric(relativeTo: .body) private var bodyPointSize: CGFloat = 17
 
     var body: some View {
-        Circle()
-            .fill(active ? Color.green : Color.gray)
-            .frame(width: size, height: size)
-            .accessibilityHidden(true)
+        HStack(spacing: 0) {
+            Color.clear.frame(width: gap, height: 1)
+            VStack(spacing: 1) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                Text(verbatim: label)
+                    .font(.caption2)
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(width: columnWidth)
+            .accessibilityElement(children: .combine)
+        }
+        .overlay(alignment: .leading) {
+            OverviewStatusDot(active: active)
+                .alignmentGuide(.leading) { $0.width / 2 - dotCenterX }
+        }
+    }
+
+    /// x of the dot centre from the card edge: halfway between the edge and the leftmost visible
+    /// glyph ink among all overview symbols (symbols are centred in the column).
+    var dotCenterX: CGFloat {
+        let halfInk = Self.symbols
+            .map { SymbolInk.inkOffsetFromCenter(systemName: $0, pointSize: bodyPointSize).leading }
+            .max() ?? bodyPointSize / 2
+        let inkLeft = gap + columnWidth / 2 - halfInk
+        return inkLeft / 2
+    }
+}
+
+extension View {
+    /// Overview rows start at the card's inner edge (the row draws its own leading gap) and use
+    /// tight vertical insets for a row height of about 56 pt.
+    func overviewRowInsets() -> some View {
+        listRowInsets(.leading, 0)
+            .listRowInsets(.vertical, 8)
     }
 }
 

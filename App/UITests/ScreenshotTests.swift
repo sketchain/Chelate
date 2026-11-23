@@ -5,8 +5,27 @@ import XCTest
 final class ScreenshotTests: XCTestCase {
     private var app: XCUIApplication!
 
+    /// Light / dark suffix appended to every screenshot name of the current pass.
+    private var appearanceSuffix = "light"
+
     override func setUp() {
         continueAfterFailure = false
+    }
+
+    override func tearDown() {
+        XCUIDevice.shared.appearance = .light
+        super.tearDown()
+    }
+
+    /// Runs `body` once in light and once in dark mode (system appearance, so sheets and
+    /// dialogs follow too); screenshot names get a "-light" / "-dark" suffix.
+    private func forEachAppearance(_ body: () -> Void) {
+        for (appearance, suffix) in [(XCUIDevice.Appearance.light, "light"), (.dark, "dark")] {
+            XCUIDevice.shared.appearance = appearance
+            appearanceSuffix = suffix
+            body()
+            app.terminate()
+        }
     }
 
     private func launch(_ extra: [String] = []) {
@@ -31,7 +50,7 @@ final class ScreenshotTests: XCTestCase {
 
     private func snapshot(_ name: String) {
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
-        attachment.name = name
+        attachment.name = "\(name)-\(appearanceSuffix)"
         attachment.lifetime = .keepAlways
         add(attachment)
     }
@@ -65,6 +84,10 @@ final class ScreenshotTests: XCTestCase {
     }
 
     func testScreenshots() {
+        forEachAppearance(walkthrough)
+    }
+
+    private func walkthrough() {
         launch()
         settle()
         snapshot("01-overview")
@@ -116,17 +139,41 @@ final class ScreenshotTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Debian 13 (standard)"].waitForExistence(timeout: 10))
         settle()
         snapshot("08-templates")
-        app.buttons["关闭"].firstMatch.tap()
+
+        // Tap a row in the middle: the confirmation dialog is anchored on that row.
+        let rows = app.descendants(matching: .any).matching(identifier: "template-row")
+        XCTAssertTrue(rows.firstMatch.waitForExistence(timeout: 10))
+        let hittable = rows.allElementsBoundByIndex.filter { $0.isHittable }
+        XCTAssertFalse(hittable.isEmpty, "no visible template rows")
+        hittable[hittable.count / 2].tap()
+        XCTAssertTrue(app.buttons["复制下载链接"].waitForExistence(timeout: 10), "template dialog did not open")
+        settle()
+        snapshot("08-templates-dialog")
+    }
+
+    /// Home (server list) after the title's highlight sweep has finished.
+    func testHomeScreenshot() {
+        forEachAppearance {
+            launch()
+            // Demo mode opens on the overview; go back to the server list.
+            let back = app.navigationBars.buttons["Chelate"].firstMatch
+            if back.waitForExistence(timeout: 5) { back.tap() } else { goBack() }
+            XCTAssertTrue(element("home-title").waitForExistence(timeout: 10), "home title missing")
+            settle(2.5) // the sweep runs once for about 1 s
+            snapshot("00-home")
+        }
     }
 
     /// Long-press popover on the node CPU chart (selection pinned by the demo launch argument,
     /// since a screenshot cannot be taken while XCUITest holds a gesture).
     func testChartSelectionScreenshot() {
-        launch(["-ChelateDemoChartSelection"])
-        tap("node-pve")
-        tap("node-charts")
-        XCTAssertTrue(element("chart-cpu").waitForExistence(timeout: 10))
-        settle(2)
-        snapshot("04-node-monitor-selection")
+        forEachAppearance {
+            launch(["-ChelateDemoChartSelection"])
+            tap("node-pve")
+            tap("node-charts")
+            XCTAssertTrue(element("chart-cpu").waitForExistence(timeout: 10))
+            settle(2)
+            snapshot("04-node-monitor-selection")
+        }
     }
 }

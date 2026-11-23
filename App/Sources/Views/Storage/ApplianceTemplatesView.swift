@@ -1,5 +1,6 @@
 import PVEKit
 import SwiftUI
+import UIKit
 
 /// Official CT templates (`aplinfo`), filterable by section and searchable; tapping one downloads
 /// it to the current storage.
@@ -19,6 +20,8 @@ struct ApplianceTemplatesView: View {
     @State private var query = ""
     @State private var pending: ApplianceTemplate?
     @State private var startError: String?
+    @State private var copyCount = 0
+    @State private var showCopied = false
 
     private var filtered: [ApplianceTemplate] {
         templates
@@ -64,6 +67,23 @@ struct ApplianceTemplatesView: View {
                             ApplianceTemplateRow(template: template, isDownloaded: downloaded.contains(template.template))
                         }
                         .buttonStyle(.plain)
+                        .accessibilityIdentifier("template-row")
+                        // Anchored on the row so the dialog points at the tapped template.
+                        .confirmationDialog(
+                            "下载模板",
+                            isPresented: Binding(
+                                get: { pending?.id == template.id },
+                                set: { if !$0, pending?.id == template.id { pending = nil } }
+                            ),
+                            titleVisibility: .visible
+                        ) {
+                            actions(for: template)
+                        } message: {
+                            Text(verbatim: Self.breakableFileName(template.template))
+                        }
+                        .contextMenu {
+                            actions(for: template)
+                        }
                     }
                 }
             }
@@ -77,19 +97,48 @@ struct ApplianceTemplatesView: View {
             }
             .refreshable { await load() }
             .task { await load() }
-            .confirmationDialog(
-                "下载模板",
-                isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil } }),
-                titleVisibility: .visible,
-                presenting: pending
-            ) { template in
-                Button("下载到 \(storage)") {
-                    Task { await download(template) }
+            .overlay(alignment: .bottom) {
+                if showCopied {
+                    CopiedToast()
+                        .padding(.bottom, 24)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
-            } message: { template in
-                Text(verbatim: template.template)
+            }
+            .animation(.snappy, value: showCopied)
+            .task(id: copyCount) {
+                guard copyCount > 0 else { return }
+                showCopied = true
+                try? await Task.sleep(for: .seconds(1.5))
+                guard !Task.isCancelled else { return }
+                showCopied = false
             }
         }
+    }
+
+    /// Shared by the confirmation dialog and the context menu.
+    @ViewBuilder
+    private func actions(for template: ApplianceTemplate) -> some View {
+        Button("下载到 \(storage)", systemImage: "arrow.down.circle") {
+            Task { await download(template) }
+        }
+        if let location = template.location, !location.isEmpty {
+            Button("复制下载链接", systemImage: "doc.on.doc") {
+                UIPasteboard.general.string = location
+                copyCount += 1
+            }
+        }
+    }
+
+    /// Inserts zero-width spaces after `-`, `_` and `.` so the name wraps only at separators.
+    static func breakableFileName(_ name: String) -> String {
+        var result = ""
+        for character in name {
+            result.append(character)
+            if character == "-" || character == "_" || character == "." {
+                result.append("\u{200B}")
+            }
+        }
+        return result
     }
 
     private func load() async {
@@ -99,7 +148,11 @@ struct ApplianceTemplatesView: View {
         loaded = true
         switch result {
         case .success(let list):
-            templates = list.sorted { ($0.headline ?? $0.template).localizedStandardCompare($1.headline ?? $1.template) == .orderedAscending }
+            templates = list.sorted { lhs, rhs in
+                let order = (lhs.headline ?? lhs.template).localizedStandardCompare(rhs.headline ?? rhs.template)
+                if order != .orderedSame { return order == .orderedAscending }
+                return (lhs.architecture ?? "") < (rhs.architecture ?? "")
+            }
             error = nil
         case .failure(let failure):
             if case .failed(let message) = failure, message == ErrorText.message(for: PVEError.cancelled) { return }
@@ -152,9 +205,23 @@ struct ApplianceTemplateRow: View {
     }
 
     private var detail: String {
-        [template.version, template.os, Names.templateSection(template.section ?? "")]
+        // 「13.6-1 · amd64 · 系统」: the architecture tells same-named templates apart.
+        [template.version, template.architecture, Names.templateSection(template.section ?? "")]
             .compactMap { $0 }
             .filter { !$0.isEmpty }
             .joined(separator: " · ")
+    }
+}
+
+/// Short confirmation after copying.
+struct CopiedToast: View {
+    var body: some View {
+        Label("已复制", systemImage: "checkmark.circle.fill")
+            .font(.subheadline.weight(.medium))
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(.regularMaterial, in: Capsule())
+            .shadow(color: .black.opacity(0.12), radius: 8, y: 2)
+            .accessibilityAddTraits(.isStaticText)
     }
 }

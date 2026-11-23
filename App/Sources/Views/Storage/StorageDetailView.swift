@@ -43,10 +43,13 @@ struct StorageDetailView: View {
         StorageContentType.downloadable.filter { contentTypes.contains($0) }
     }
 
+    private var downloadRequirement: DownloadURLRequirement {
+        DownloadURLRequirement(node: node, storage: storage)
+    }
+
     var body: some View {
-        let canDownload = connection.allows(.datastoreAllocateTemplate, on: aclPath)
         List {
-            headerSection(canDownload: canDownload)
+            headerSection
             if let error {
                 Section {
                     if error.isForbidden {
@@ -78,7 +81,9 @@ struct StorageDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
         .task {
-            await connection.loadPermissions(path: aclPath)
+            for path in downloadRequirement.paths {
+                await connection.loadPermissions(path: path)
+            }
             await load()
         }
         .sheet(item: $sheet) { sheet in
@@ -104,11 +109,15 @@ struct StorageDetailView: View {
         }
     }
 
+    /// One card: name and type, used / total and percentage, progress bar, download buttons
+    /// and, when a download is not permitted, exactly which privilege is missing.
     @ViewBuilder
-    private func headerSection(canDownload: Bool) -> some View {
+    private var headerSection: some View {
         let used = status?.used ?? resource?.disk
         let total = status?.total ?? resource?.maxdisk
         let fraction = status?.fraction ?? resource?.diskFraction
+        let canTemplates = connection.allows(.datastoreAllocateTemplate, on: aclPath)
+        let urlMissing = connection.missing(for: downloadRequirement)
         Section {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 12) {
@@ -135,38 +144,56 @@ struct StorageDetailView: View {
                 .monospacedDigit()
                 ProgressView(value: min(max(fraction ?? 0, 0), 1))
                     .tint(tint(fraction))
-            }
-            .padding(.vertical, 4)
-            if !downloadTypes.isEmpty {
-                HStack(spacing: 12) {
-                    Button {
-                        sheet = .downloadURL
-                    } label: {
-                        Label("从 URL 下载", systemImage: "arrow.down.circle")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .accessibilityIdentifier("storage-download-url")
-                    if contentTypes.contains(.vztmpl) {
+                if !downloadTypes.isEmpty {
+                    HStack(spacing: 12) {
                         Button {
-                            sheet = .templates
+                            sheet = .downloadURL
                         } label: {
-                            Label("官方模板", systemImage: "shippingbox")
+                            Label("从 URL 下载", systemImage: "arrow.down.circle")
                                 .frame(maxWidth: .infinity)
                         }
-                        .accessibilityIdentifier("storage-templates")
+                        .disabled(!urlMissing.isEmpty)
+                        .accessibilityIdentifier("storage-download-url")
+                        if contentTypes.contains(.vztmpl) {
+                            Button {
+                                sheet = .templates
+                            } label: {
+                                Label("官方模板", systemImage: "shippingbox")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .disabled(!canTemplates)
+                            .accessibilityIdentifier("storage-templates")
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .labelStyle(.titleAndIcon)
+                    .padding(.top, 4)
+                    if !urlMissing.isEmpty {
+                        NoPermissionLabel(text: "无法从 URL 下载：\(Self.describe(urlMissing))")
+                            .accessibilityIdentifier("storage-download-url-permission")
+                    }
+                    if contentTypes.contains(.vztmpl) && !canTemplates && urlMissing.isEmpty {
+                        NoPermissionLabel(text: "无法下载官方模板：缺少 \(aclPath) 上的 Datastore.AllocateTemplate")
                     }
                 }
-                .buttonStyle(.bordered)
-                .labelStyle(.titleAndIcon)
-                .disabled(!canDownload)
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
             }
-        } footer: {
-            if !downloadTypes.isEmpty && !canDownload {
-                NoPermissionLabel(text: "无权限下载（需要 Datastore.AllocateTemplate）")
+            .padding(.vertical, 6)
+            .listRowSeparator(.hidden)
+        }
+    }
+
+    /// 「缺少 /storage/local 上的 Datastore.AllocateTemplate；缺少 / 上的 Sys.Modify（或 /nodes/pve 上的 Sys.AccessNetwork）」
+    static func describe(_ missing: [DownloadURLRequirement.Missing]) -> String {
+        missing.map { item -> String in
+            switch item {
+            case .privilege(let privilege, let path):
+                return String(localized: "缺少 \(path) 上的 \(privilege.rawValue)")
+            case .networkAccess(let rootMissing, let rootPath, let nodePath):
+                let names = rootMissing.map(\.rawValue).joined(separator: " + ")
+                return String(localized: "缺少 \(rootPath) 上的 \(names)（或 \(nodePath) 上的 Sys.AccessNetwork）")
             }
         }
+        .joined(separator: String(localized: "；"))
     }
 
     private func tint(_ fraction: Double?) -> Color {

@@ -316,6 +316,9 @@
     "复制": {
       "extractionState": "manual"
     },
+    "复制下载链接": {
+      "extractionState": "manual"
+    },
     "复制镜像": {
       "extractionState": "manual"
     },
@@ -514,9 +517,6 @@
     "无权限": {
       "extractionState": "manual"
     },
-    "无权限下载（需要 Datastore.AllocateTemplate）": {
-      "extractionState": "manual"
-    },
     "无权限查看任务列表": {
       "extractionState": "manual"
     },
@@ -551,6 +551,12 @@
       "extractionState": "manual"
     },
     "无权限：需要 VM.PowerMgmt": {
+      "extractionState": "manual"
+    },
+    "无法下载官方模板：缺少 %@ 上的 Datastore.AllocateTemplate": {
+      "extractionState": "manual"
+    },
+    "无法从 URL 下载：%@": {
       "extractionState": "manual"
     },
     "无法建立控制台连接（HTTP %lld）。": {
@@ -775,6 +781,12 @@
     "编辑服务器": {
       "extractionState": "manual"
     },
+    "缺少 %@ 上的 %@": {
+      "extractionState": "manual"
+    },
+    "缺少 %@ 上的 %@（或 %@ 上的 Sys.AccessNetwork）": {
+      "extractionState": "manual"
+    },
     "网络": {
       "extractionState": "manual"
     },
@@ -902,6 +914,9 @@
       "extractionState": "manual"
     },
     "验证证书": {
+      "extractionState": "manual"
+    },
+    "；": {
       "extractionState": "manual"
     }
   },

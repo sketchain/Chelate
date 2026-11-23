@@ -81,7 +81,10 @@ struct RRDChartsView: View {
         .task(id: timeframe) { await load() }
     }
 
-    /// Node: total (green), available (cyan), used (blue), ZFS ARC (orange).
+    /// "Available": a green-leaning teal (#1D9E75), clearly apart from used (blue) and total (green).
+    static let availableColor = Color(red: 29.0 / 255, green: 158.0 / 255, blue: 117.0 / 255)
+
+    /// Node: total (green), available (teal), used (blue), ZFS ARC (orange).
     /// Guest: used and total, plus host memory for QEMU when PVE 9 reports it.
     /// Columns that are not returned are hidden instead of being drawn as 0.
     private var memorySeries: [Series] {
@@ -92,7 +95,7 @@ struct RRDChartsView: View {
                 series.append(Series(name: String(localized: "总计"), color: .green, samples: points.samples(.memoryTotal)))
             }
             if points.contains(.memoryAvailable) {
-                series.append(Series(name: String(localized: "可用"), color: .cyan, samples: points.samples(.memoryAvailable)))
+                series.append(Series(name: String(localized: "可用"), color: Self.availableColor, samples: points.samples(.memoryAvailable)))
             }
             if points.contains(.memoryUsed) {
                 series.append(Series(name: String(localized: "已用"), color: .blue, samples: points.samples(.memoryUsed)))
@@ -239,6 +242,7 @@ struct SeriesChart: View {
     var body: some View {
         let scale = NiceScale(maxValue: maxValue, kind: unit.scaleKind)
         let selected = selection.flatMap { ChartSelection(series: series, at: $0) }
+        let xAxis = TimeAxis(domain: timeDomain, timeframe: timeframe)
         Chart {
             ForEach(series) { series in
                 ForEach(series.samples) { sample in
@@ -248,7 +252,8 @@ struct SeriesChart: View {
                         series: .value("系列", series.name)
                     )
                     .foregroundStyle(by: .value("系列", series.name))
-                    .interpolationMethod(.monotone)
+                    // Straight segments: smoothing would draw peaks and troughs beyond the data.
+                    .interpolationMethod(.linear)
                 }
             }
             if let selected {
@@ -271,6 +276,19 @@ struct SeriesChart: View {
         }
         .chartForegroundStyleScale(domain: series.map(\.name), range: series.map(\.color))
         .chartYScale(domain: 0...scale.upperBound)
+        .chartXScale(domain: xAxis.domain)
+        .chartXAxis {
+            // Explicit ticks inside the data range; labels near an edge are anchored inwards so
+            // the last one is never cut off.
+            AxisMarks(values: xAxis.ticks) { value in
+                AxisGridLine()
+                AxisTick()
+                AxisValueLabel(anchor: xAxis.anchor(for: value.as(Date.self))) {
+                    Text(verbatim: value.as(Date.self).map(xAxis.label) ?? "")
+                        .monospacedDigit()
+                }
+            }
+        }
         .chartYAxis {
             AxisMarks(position: .leading, values: scale.ticks) { value in
                 AxisGridLine()
@@ -310,6 +328,97 @@ struct SeriesChart: View {
     private var maxValue: Double {
         series.flatMap(\.samples).map(\.value).max() ?? 0
     }
+
+    private var timeDomain: ClosedRange<Date> {
+        let times = series.flatMap(\.samples).map(\.time)
+        guard let first = times.min(), let last = times.max(), first < last else {
+            let now = times.first ?? Date()
+            return now.addingTimeInterval(-60)...now
+        }
+        return first...last
+    }
+}
+
+/// Round time ticks for the X axis (local time), with short labels: 「15:30」 for hour / day,
+/// 「11/20」 for week / month, 「11月」 for year.
+struct TimeAxis {
+    let domain: ClosedRange<Date>
+    let ticks: [Date]
+    private let timeframe: RRDTimeframe
+
+    init(domain: ClosedRange<Date>, timeframe: RRDTimeframe, calendar: Calendar = .current) {
+        self.domain = domain
+        self.timeframe = timeframe
+        self.ticks = Self.ticks(in: domain, timeframe: timeframe, calendar: calendar)
+    }
+
+    static func ticks(in domain: ClosedRange<Date>, timeframe: RRDTimeframe, calendar: Calendar) -> [Date] {
+        var result: [Date] = []
+        switch timeframe {
+        case .year:
+            // First day of every third month (Jan, Apr, Jul, Oct).
+            var components = calendar.dateComponents([.year, .month], from: domain.lowerBound)
+            components.day = 1
+            guard var date = calendar.date(from: components) else { return [] }
+            while date <= domain.upperBound {
+                let month = calendar.component(.month, from: date)
+                if date >= domain.lowerBound && (month - 1) % 3 == 0 { result.append(date) }
+                guard let next = calendar.date(byAdding: .month, value: 1, to: date) else { break }
+                date = next
+            }
+        default:
+            let step: TimeInterval
+            switch timeframe {
+            case .hour: step = 15 * 60
+            case .day: step = 6 * 3600
+            case .week: step = 2 * 86_400
+            default: step = 7 * 86_400
+            }
+            // Align to multiples of the step in local time (midnight-based for day steps).
+            let offset = TimeInterval(calendar.timeZone.secondsFromGMT(for: domain.lowerBound))
+            let start = domain.lowerBound.timeIntervalSince1970 + offset
+            var t = (start / step).rounded(.up) * step
+            while t - offset <= domain.upperBound.timeIntervalSince1970 {
+                result.append(Date(timeIntervalSince1970: t - offset))
+                t += step
+            }
+        }
+        return result
+    }
+
+    /// Labels whose tick lies close to an edge grow inwards instead of being centred.
+    func anchor(for date: Date?) -> UnitPoint {
+        guard let date else { return .top }
+        let span = domain.upperBound.timeIntervalSince(domain.lowerBound)
+        guard span > 0 else { return .top }
+        let fraction = date.timeIntervalSince(domain.lowerBound) / span
+        if fraction > 0.88 { return .topTrailing }
+        if fraction < 0.12 { return .topLeading }
+        return .top
+    }
+
+    func label(_ date: Date) -> String {
+        switch timeframe {
+        case .hour, .day:
+            return Self.timeFormatter.string(from: date)
+        case .week, .month:
+            return Self.dayFormatter.string(from: date)
+        case .year:
+            return date.formatted(.dateTime.month(.abbreviated))
+        }
+    }
+
+    private static let timeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter
+    }()
+
+    private static let dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("Md")
+        return formatter
+    }()
 }
 
 struct SelectionPopover: View {

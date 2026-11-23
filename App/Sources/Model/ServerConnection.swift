@@ -296,6 +296,11 @@ final class ServerConnection {
         return permissions.allows(privilege, on: path)
     }
 
+    /// Missing privileges for `download-url` (empty when allowed or not yet known).
+    func missing(for requirement: DownloadURLRequirement) -> [DownloadURLRequirement.Missing] {
+        requirement.missing { allows($0, on: $1) }
+    }
+
     func markDenied(_ privilege: Privilege, on path: String) {
         deniedActions.insert(key(privilege, path))
     }
