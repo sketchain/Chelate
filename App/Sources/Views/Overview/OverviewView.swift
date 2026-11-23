@@ -237,6 +237,19 @@ extension View {
     }
 }
 
+/// Overview status: green when running / online / available, grey otherwise.
+struct OverviewStatusDot: View {
+    let active: Bool
+    @ScaledMetric(relativeTo: .body) private var size: CGFloat = 9
+
+    var body: some View {
+        Circle()
+            .fill(active ? Color.green : Color.gray)
+            .frame(width: size, height: size)
+            .accessibilityHidden(true)
+    }
+}
+
 /// CPU / memory / uptime with fixed column widths so rows line up.
 struct MetricsLine: View {
     let cpu: Double?
