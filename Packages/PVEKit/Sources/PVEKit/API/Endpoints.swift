@@ -150,6 +150,40 @@ extension PVEClient {
         try await request(.delete, guest.basePath + "/snapshot/" + PathBuilder.escape(name))
     }
 
+    // MARK: Storage
+
+    public func storageStatus(node: String, storage: String) async throws -> StorageStatus {
+        try await request(.get, PathBuilder.path("nodes", node, "storage", storage, "status"))
+    }
+
+    public func storageContent(node: String, storage: String, content: StorageContentType? = nil) async throws -> [StorageContentItem] {
+        try await request(.get, PathBuilder.path("nodes", node, "storage", storage, "content"),
+                          query: content.map { [URLQueryItem(name: "content", value: $0.rawValue)] } ?? [])
+    }
+
+    /// `GET /nodes/{node}/query-url-metadata`: file name, size and MIME type of a URL.
+    public func queryURLMetadata(node: String, url: String, verifyCertificates: Bool = true) async throws -> URLMetadata {
+        try await request(.get, PathBuilder.path("nodes", node, "query-url-metadata"), query: [
+            URLQueryItem(name: "url", value: url.trimmingCharacters(in: .whitespacesAndNewlines)),
+            URLQueryItem(name: "verify-certificates", value: verifyCertificates ? "1" : "0"),
+        ])
+    }
+
+    /// `POST /nodes/{node}/storage/{storage}/download-url`. Returns the UPID.
+    public func downloadURL(node: String, storage: String, _ download: DownloadURLRequest) async throws -> String {
+        try await request(.post, PathBuilder.path("nodes", node, "storage", storage, "download-url"), form: download.form)
+    }
+
+    /// `GET /nodes/{node}/aplinfo`: official appliance / CT templates.
+    public func applianceTemplates(node: String) async throws -> [ApplianceTemplate] {
+        try await request(.get, PathBuilder.path("nodes", node, "aplinfo"))
+    }
+
+    /// `POST /nodes/{node}/aplinfo`: downloads a template to `storage`. Returns the UPID.
+    public func downloadApplianceTemplate(node: String, storage: String, template: String) async throws -> String {
+        try await request(.post, PathBuilder.path("nodes", node, "aplinfo"), form: [("storage", storage), ("template", template)])
+    }
+
     // MARK: Consoles
 
     /// `POST .../termproxy`, then the caller connects `vncwebsocket` and speaks `TermProxyProtocol`.

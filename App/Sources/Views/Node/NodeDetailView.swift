@@ -30,24 +30,28 @@ struct NodeDetailView: View {
                     if let swap = status.swap, (swap.total ?? 0) > 0 {
                         UsageBar(title: "Swap", fraction: swap.fraction, detail: Format.usage(swap.used, swap.total))
                     }
-                    LabeledContent("运行时间", value: Format.uptime(status.uptime))
+                    InfoRow(title: "运行时间", value: Format.uptime(status.uptime))
                     if !status.loadavg.isEmpty {
-                        LabeledContent("负载", value: status.loadavg.joined(separator: " / "))
+                        InfoRow(title: "负载", value: status.loadavg.joined(separator: " / "))
                     }
                     if let wait = status.wait {
-                        LabeledContent("IO 等待", value: Format.percent(wait))
+                        InfoRow(title: "IO 等待", value: Format.percent(wait))
                     }
                 }
-                Section("系统") {
+                Section {
                     if let model = status.cpuinfo?.model {
-                        LabeledContent("CPU", value: model)
+                        InfoRow(title: "CPU", value: model, raw: model)
                     }
                     if let version = status.pveversion {
-                        LabeledContent("PVE", value: version)
+                        InfoRow(title: "PVE", value: status.pveVersionNumber ?? version, raw: version)
                     }
-                    if let kernel = status.kversion {
-                        LabeledContent("内核", value: kernel)
+                    if let kernel = status.kernelRelease {
+                        InfoRow(title: "内核", value: kernel, raw: status.kversion ?? kernel)
                     }
+                } header: {
+                    Text("系统")
+                } footer: {
+                    Text("点击查看完整信息。")
                 }
             } else if error == nil {
                 HStack { Spacer(); ProgressView(); Spacer() }
@@ -57,9 +61,11 @@ struct NodeDetailView: View {
                 NavigationLink(value: Route.nodeCharts(node)) {
                     Label("监控图表", systemImage: "chart.xyaxis.line")
                 }
+                .accessibilityIdentifier("node-charts")
                 NavigationLink(value: Route.tasks(node: node, vmid: nil)) {
                     Label("任务", systemImage: "list.bullet.rectangle")
                 }
+                .accessibilityIdentifier("node-tasks")
                 let consoleAllowed = connection.allows(.sysConsole, on: aclPath)
                 NavigationLink(value: Route.console(.nodeShell(node: node))) {
                     Label("Shell", systemImage: "terminal")

@@ -25,18 +25,23 @@ struct OverviewView: View {
             ForEach(connection.nodeGroups) { group in
                 Section {
                     NavigationLink(value: Route.node(group.node)) {
-                        NodeRow(node: group.node, resource: group.nodeResource)
+                        ResourceRow(resource: group.nodeResource, kind: .node, name: group.node)
                     }
+                    .accessibilityIdentifier("node-\(group.node)")
                     ForEach(group.guests) { guest in
                         if let ref = guest.guestRef {
                             NavigationLink(value: Route.guest(ref)) {
-                                GuestRow(resource: guest)
+                                ResourceRow(resource: guest, kind: guest.kind, name: guest.displayName)
                             }
+                            .accessibilityIdentifier("guest-\(ref.vmid)")
                         }
                     }
                     if showStorage {
                         ForEach(group.storages) { storage in
-                            StorageRow(resource: storage)
+                            NavigationLink(value: Route.storage(node: group.node, storage: storage.displayName)) {
+                                ResourceRow(resource: storage, kind: .storage, name: storage.displayName)
+                            }
+                            .accessibilityIdentifier("storage-\(storage.displayName)")
                         }
                     }
                 } header: {
@@ -81,105 +86,148 @@ struct OverviewView: View {
     }
 }
 
-struct NodeRow: View {
-    let node: String
+/// Overview row, two lines high, four columns:
+///
+///     ●   [icon]   name                             ›
+///         100      CPU 1.0%   内存 13%   29天6小时
+///
+/// Status dot and chevron are vertically centred; the separator starts at the name column.
+struct ResourceRow: View {
     let resource: ClusterResource?
+    let kind: ClusterResource.Kind
+    let name: String
+
+    @ScaledMetric(relativeTo: .caption) private var typeColumnWidth: CGFloat = 52
+    @ScaledMetric(relativeTo: .body) private var iconSize: CGFloat = 22
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                StatusDot(status: resource?.status)
-                Image(systemName: "server.rack")
-                Text(node).font(.headline)
-                Spacer()
-                Text(Names.status(resource?.status))
+        HStack(spacing: 12) {
+            OverviewStatusDot(active: isActive)
+            VStack(spacing: 2) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .frame(width: iconSize, height: iconSize)
+                Text(verbatim: typeLabel)
                     .font(.caption)
+                    .monospacedDigit()
                     .foregroundStyle(.secondary)
-            }
-            if let resource, resource.isOnline {
-                MetricsLine(cpu: resource.cpu, maxcpu: resource.maxcpu, memory: resource.memoryFraction, uptime: resource.uptime)
-            }
-        }
-        .padding(.vertical, 2)
-    }
-}
-
-struct GuestRow: View {
-    let resource: ClusterResource
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 8) {
-                StatusDot(status: resource.status)
-                Image(systemName: resource.kind == .lxc ? "shippingbox" : (resource.template ? "doc.on.doc" : "desktopcomputer"))
-                    .foregroundStyle(.secondary)
-                Text(verbatim: "\(resource.vmid.map(String.init) ?? "") \(resource.displayName)")
                     .lineLimit(1)
-                Spacer()
-                if let lock = resource.lock {
-                    Label(lock, systemImage: "lock")
-                        .font(.caption2)
-                        .foregroundStyle(.orange)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(width: typeColumnWidth)
+            .accessibilityElement(children: .combine)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 4) {
+                    Text(verbatim: name)
+                        .font(.body)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                    if let lock = resource?.lock {
+                        Image(systemName: "lock.fill")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                            .accessibilityLabel(Text("已锁定：\(lock)"))
+                    }
                 }
-                Text(resource.template ? String(localized: "模板") : Names.status(resource.status))
+                secondLine
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
-            if resource.isRunning {
-                MetricsLine(cpu: resource.cpu, maxcpu: resource.maxcpu, memory: resource.memoryFraction, uptime: resource.uptime)
-            }
+            .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
+            Spacer(minLength: 0)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, 4)
+    }
+
+    private var isActive: Bool {
+        guard let status = resource?.status else { return false }
+        return status == "running" || status == "online" || status == "available"
+    }
+
+    private var icon: String {
+        switch kind {
+        case .node: return "server.rack"
+        case .qemu: return "desktopcomputer"
+        case .lxc: return "shippingbox"
+        case .storage: return "externaldrive"
+        default: return "questionmark.square"
+        }
+    }
+
+    /// Never empty: vmid for guests, otherwise the kind.
+    private var typeLabel: String {
+        switch kind {
+        case .node: return String(localized: "节点")
+        case .storage: return String(localized: "存储")
+        case .qemu, .lxc:
+            if let vmid = resource?.vmid { return String(vmid) }
+            return kind == .qemu ? String(localized: "虚拟机") : String(localized: "容器")
+        default: return String(localized: "资源")
+        }
+    }
+
+    @ViewBuilder
+    private var secondLine: some View {
+        if kind == .storage {
+            if let resource, let fraction = resource.diskFraction {
+                Text(verbatim: "\(Format.usage(resource.disk, resource.maxdisk)) · \(Format.percent(fraction))")
+                    .monospacedDigit()
+            } else {
+                Text(Names.status(resource?.status))
+            }
+        } else if let resource, resource.template {
+            Text("模板")
+        } else if let resource, (kind == .node && resource.isOnline) || resource.isRunning {
+            MetricsLine(cpu: resource.cpu, memory: resource.memoryFraction, uptime: resource.uptime)
+        } else {
+            Text(Names.status(resource?.status))
+        }
     }
 }
 
-struct StorageRow: View {
-    let resource: ClusterResource
+/// Overview status: green when running / online / available, grey otherwise.
+struct OverviewStatusDot: View {
+    let active: Bool
+    @ScaledMetric(relativeTo: .body) private var size: CGFloat = 9
 
     var body: some View {
-        HStack(spacing: 8) {
-            StatusDot(status: resource.status)
-            Image(systemName: "externaldrive")
-                .foregroundStyle(.secondary)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(resource.displayName)
-                if let type = resource.plugintype {
-                    Text(resource.shared ? "\(type) · 共享" : type)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            Spacer()
-            if let fraction = resource.diskFraction {
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(Format.percent(fraction)).monospacedDigit()
-                    Text(Format.usage(resource.disk, resource.maxdisk))
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-                .font(.caption)
-            }
-        }
+        Circle()
+            .fill(active ? Color.green : Color.gray)
+            .frame(width: size, height: size)
+            .accessibilityHidden(true)
     }
 }
 
-/// Compact CPU / memory / uptime line.
+/// CPU / memory / uptime with fixed column widths so rows line up.
 struct MetricsLine: View {
     let cpu: Double?
-    let maxcpu: Double?
     let memory: Double?
     let uptime: Int?
 
+    @ScaledMetric(relativeTo: .caption) private var metricWidth: CGFloat = 62
+
     var body: some View {
-        HStack(spacing: 14) {
-            Label(Format.percent(cpu), systemImage: "cpu")
-            Label(Format.percent(memory), systemImage: "memorychip")
-            Label(Format.uptime(uptime), systemImage: "clock")
-            Spacer(minLength: 0)
+        HStack(spacing: 6) {
+            metric("cpu", Format.percent(cpu), label: "CPU")
+                .frame(width: metricWidth, alignment: .leading)
+            metric("memorychip", Format.percent(memory), label: "内存")
+                .frame(width: metricWidth, alignment: .leading)
+            metric("clock", Format.uptime(uptime), label: "运行时间")
         }
-        .font(.caption)
-        .foregroundStyle(.secondary)
         .monospacedDigit()
-        .labelStyle(.titleAndIcon)
+    }
+
+    private func metric(_ icon: String, _ value: String, label: LocalizedStringKey) -> some View {
+        HStack(spacing: 3) {
+            Image(systemName: icon)
+                .imageScale(.small)
+            Text(verbatim: value)
+                .lineLimit(1)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(label))
+        .accessibilityValue(Text(verbatim: value))
     }
 }

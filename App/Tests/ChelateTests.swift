@@ -114,6 +114,31 @@ struct PresentationTests {
         }
     }
 
+    @Test func byteFormattingUsesBinaryUnits() {
+        #expect(Format.bytes(0) == "0")
+        #expect(Format.bytes(13_421_772_800) == "12.5 GiB")
+        #expect(Format.rate(0) == "0")
+        #expect(Format.rate(1536) == "1.50 KiB/s")
+        #expect(Format.bytes(nil) == "–")
+    }
+
+    @Test func taskProgressFromLog() {
+        let log = [
+            TaskLogLine(n: 1, t: "downloading https://example.com/x.iso"),
+            TaskLogLine(n: 2, t: "197.66 MiB of 790.63 MiB (25.00%)"),
+            TaskLogLine(n: 3, t: "395.31 MiB of 790.63 MiB (50.00%)"),
+        ]
+        #expect(TaskProgress.fraction(in: log) == 0.5)
+        #expect(TaskProgress.fraction(in: [TaskLogLine(n: 1, t: "TASK OK")]) == nil)
+        #expect(TaskProgress.fraction(in: "bogus (250%)") == nil)
+    }
+
+    @Test func storageContentNames() {
+        #expect(Names.storageContent("iso") == "ISO 镜像")
+        #expect(Names.storageContent("vztmpl") == "CT 模板")
+        #expect(Names.storageContent("other") == "other")
+    }
+
     @Test func taskTypeNames() {
         #expect(Names.taskType("qmstart") == "启动")
         #expect(Names.taskType("custom") == "custom")

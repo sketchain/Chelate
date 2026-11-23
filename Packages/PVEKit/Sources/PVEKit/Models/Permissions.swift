@@ -9,6 +9,8 @@ public enum Privilege: String, Sendable, Hashable, CaseIterable {
     case vmConsole = "VM.Console"
     case sysAudit = "Sys.Audit"
     case sysConsole = "Sys.Console"
+    case datastoreAudit = "Datastore.Audit"
+    case datastoreAllocateTemplate = "Datastore.AllocateTemplate"
 }
 
 /// Result of `GET /access/permissions[?path=...]`: `{ "<path>": { "<priv>": 0|1 } }`.

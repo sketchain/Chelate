@@ -67,6 +67,19 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Export screenshots
+        if: always()
+        run: scripts/export-screenshots.sh build/TestResults.xcresult build/screenshots "${{ steps.version.outputs.sha }}"
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: Chelate-screenshots-${{ steps.version.outputs.sha }}
+          path: build/screenshots/*.png
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v6

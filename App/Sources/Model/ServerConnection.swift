@@ -60,6 +60,13 @@ final class ServerConnection {
     }
 
     private static func makeClient(config: ServerConfig, keychain: KeychainStore, session: URLSession, trust: TrustEvaluator) -> PVEClient {
+        if DemoMode.isEnabled && config.id == DemoData.serverID {
+            // Fixture-driven fake server: no network, no Keychain.
+            let transport = DemoTransport()
+            let token = APIToken(userID: config.tokenUserID, tokenID: config.tokenID, secret: "demo")
+            let auth = AuthSession(mode: .apiToken(token), endpoint: config.endpoint, transport: transport)
+            return PVEClient(endpoint: config.endpoint, auth: auth, transport: transport)
+        }
         let transport = URLSessionTransport(session: session, trust: trust)
         let mode: AuthSession.Mode
         switch config.authMethod {

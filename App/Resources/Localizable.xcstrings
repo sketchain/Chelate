@@ -7,16 +7,10 @@
     "\n\n当前使用 API Token 认证。如果 Token 启用了“权限分离”，需要单独给 Token 授予 %@ 权限；也可以改用账号密码登录后再试。": {
       "extractionState": "manual"
     },
-    "%@ · %@": {
-      "extractionState": "manual"
-    },
     "%@ · %@ 核": {
       "extractionState": "manual"
     },
     "%@ · %@ 线程": {
-      "extractionState": "manual"
-    },
-    "%@ · 共享": {
       "extractionState": "manual"
     },
     "6 位验证码": {
@@ -31,19 +25,28 @@
     "CPU": {
       "extractionState": "manual"
     },
+    "CT 卷": {
+      "extractionState": "manual"
+    },
+    "CT 模板": {
+      "extractionState": "manual"
+    },
+    "CT 模板的文件名须以 .tar.gz、.tar.xz 或 .tar.zst 等结尾。": {
+      "extractionState": "manual"
+    },
     "Chelate": {
       "extractionState": "manual"
     },
     "Commit": {
       "extractionState": "manual"
     },
-    "HA": {
-      "extractionState": "manual"
-    },
     "IO 等待": {
       "extractionState": "manual"
     },
-    "PVE": {
+    "ISO 镜像": {
+      "extractionState": "manual"
+    },
+    "ISO 镜像的文件名须以 .iso 或 .img 结尾。": {
       "extractionState": "manual"
     },
     "PVE 只为 root@pam 提供免密 Shell，当前账号会先出现 login: 提示，需要输入节点上的 Linux 用户名和密码。": {
@@ -79,6 +82,12 @@
     "Token 在“数据中心 › 权限 › API Token”中创建。启用“权限分离”的 Token 需要单独授予权限。用 Token 打开节点 Shell 时需要再输入一次 Linux 账号密码。": {
       "extractionState": "manual"
     },
+    "URL": {
+      "extractionState": "manual"
+    },
+    "VM 磁盘": {
+      "extractionState": "manual"
+    },
     "VNC 控制台": {
       "extractionState": "manual"
     },
@@ -91,7 +100,28 @@
     "WebSocket 认证失败（HTTP 401）。": {
       "extractionState": "manual"
     },
+    "ZFS ARC": {
+      "extractionState": "manual"
+    },
     "noVNC": {
+      "extractionState": "manual"
+    },
+    "下载": {
+      "extractionState": "manual"
+    },
+    "下载 %@": {
+      "extractionState": "manual"
+    },
+    "下载到 %@": {
+      "extractionState": "manual"
+    },
+    "下载模板": {
+      "extractionState": "manual"
+    },
+    "下载链接（https://…）": {
+      "extractionState": "manual"
+    },
+    "不校验": {
       "extractionState": "manual"
     },
     "主机": {
@@ -107,6 +137,12 @@
       "extractionState": "manual"
     },
     "二次验证": {
+      "extractionState": "manual"
+    },
+    "从 URL 下载": {
+      "extractionState": "manual"
+    },
+    "代码片段": {
       "extractionState": "manual"
     },
     "任务": {
@@ -139,16 +175,25 @@
     "入站": {
       "extractionState": "manual"
     },
+    "全部": {
+      "extractionState": "manual"
+    },
     "关于": {
       "extractionState": "manual"
     },
     "关机": {
       "extractionState": "manual"
     },
+    "关闭": {
+      "extractionState": "manual"
+    },
     "关闭提示": {
       "extractionState": "manual"
     },
     "内存": {
+      "extractionState": "manual"
+    },
+    "内容类型": {
       "extractionState": "manual"
     },
     "内核": {
@@ -161,6 +206,9 @@
       "extractionState": "manual"
     },
     "出站": {
+      "extractionState": "manual"
+    },
+    "分类": {
       "extractionState": "manual"
     },
     "创建": {
@@ -206,6 +254,9 @@
       "extractionState": "manual"
     },
     "取消": {
+      "extractionState": "manual"
+    },
+    "受保护": {
       "extractionState": "manual"
     },
     "只读。修改配置请使用 PVE 网页。": {
@@ -262,6 +313,15 @@
     "备份": {
       "extractionState": "manual"
     },
+    "复制": {
+      "extractionState": "manual"
+    },
+    "复制镜像": {
+      "extractionState": "manual"
+    },
+    "大小": {
+      "extractionState": "manual"
+    },
     "天": {
       "extractionState": "manual"
     },
@@ -269,6 +329,9 @@
       "extractionState": "manual"
     },
     "好": {
+      "extractionState": "manual"
+    },
+    "存储": {
       "extractionState": "manual"
     },
     "安全连接失败（%@）。": {
@@ -280,7 +343,13 @@
     "完成（%@）": {
       "extractionState": "manual"
     },
+    "官方模板": {
+      "extractionState": "manual"
+    },
     "容器": {
+      "extractionState": "manual"
+    },
+    "宿主占用": {
       "extractionState": "manual"
     },
     "密码": {
@@ -292,10 +361,16 @@
     "对象": {
       "extractionState": "manual"
     },
+    "导入": {
+      "extractionState": "manual"
+    },
     "将同时删除保存在钥匙串中的凭据。": {
       "extractionState": "manual"
     },
     "左滑或长按快照可回滚或删除。": {
+      "extractionState": "manual"
+    },
+    "已下载": {
       "extractionState": "manual"
     },
     "已休眠": {
@@ -310,6 +385,9 @@
     "已取消二次验证。": {
       "extractionState": "manual"
     },
+    "已复制": {
+      "extractionState": "manual"
+    },
     "已断开连接。": {
       "extractionState": "manual"
     },
@@ -320,6 +398,9 @@
       "extractionState": "manual"
     },
     "已用时间": {
+      "extractionState": "manual"
+    },
+    "已锁定：%@": {
       "extractionState": "manual"
     },
     "年": {
@@ -355,7 +436,7 @@
     "总览": {
       "extractionState": "manual"
     },
-    "总量": {
+    "总计": {
       "extractionState": "manual"
     },
     "恢复": {
@@ -409,19 +490,43 @@
     "描述（可选）": {
       "extractionState": "manual"
     },
+    "搜索模板": {
+      "extractionState": "manual"
+    },
     "操作已取消。": {
       "extractionState": "manual"
     },
     "操作未完成": {
       "extractionState": "manual"
     },
+    "数值": {
+      "extractionState": "manual"
+    },
+    "文件": {
+      "extractionState": "manual"
+    },
+    "文件名": {
+      "extractionState": "manual"
+    },
+    "文件名不能包含 /。": {
+      "extractionState": "manual"
+    },
     "无权限": {
+      "extractionState": "manual"
+    },
+    "无权限下载（需要 Datastore.AllocateTemplate）": {
       "extractionState": "manual"
     },
     "无权限查看任务列表": {
       "extractionState": "manual"
     },
+    "无权限查看存储内容（需要 Datastore.Audit）": {
+      "extractionState": "manual"
+    },
     "无权限查看快照": {
+      "extractionState": "manual"
+    },
+    "无权限查看模板列表": {
       "extractionState": "manual"
     },
     "无权限查看此任务": {
@@ -451,6 +556,9 @@
     "无法建立控制台连接（HTTP %lld）。": {
       "extractionState": "manual"
     },
+    "无法获取文件信息：%@": {
+      "extractionState": "manual"
+    },
     "无法解析服务器响应（%@）。服务器版本可能不兼容。": {
       "extractionState": "manual"
     },
@@ -473,6 +581,9 @@
       "extractionState": "manual"
     },
     "显示存储": {
+      "extractionState": "manual"
+    },
+    "显示完整内容": {
       "extractionState": "manual"
     },
     "暂停": {
@@ -523,6 +634,12 @@
     "查看证书": {
       "extractionState": "manual"
     },
+    "校验和": {
+      "extractionState": "manual"
+    },
+    "校验算法": {
+      "extractionState": "manual"
+    },
     "根分区": {
       "extractionState": "manual"
     },
@@ -545,6 +662,9 @@
       "extractionState": "manual"
     },
     "没有任务": {
+      "extractionState": "manual"
+    },
+    "没有内容": {
       "extractionState": "manual"
     },
     "没有快照": {
@@ -581,6 +701,9 @@
       "extractionState": "manual"
     },
     "渠道": {
+      "extractionState": "manual"
+    },
+    "点击查看完整信息。": {
       "extractionState": "manual"
     },
     "点右上角 + 创建第一个快照。": {
@@ -632,6 +755,9 @@
       "extractionState": "manual"
     },
     "端口": {
+      "extractionState": "manual"
+    },
+    "第三方 CT 模板请选择「CT 模板」并填写真实的下载链接。": {
       "extractionState": "manual"
     },
     "类型": {
@@ -715,7 +841,13 @@
     "账号密码": {
       "extractionState": "manual"
     },
+    "资源": {
+      "extractionState": "manual"
+    },
     "资源不存在。": {
+      "extractionState": "manual"
+    },
+    "输入链接后会自动查询文件名和大小，文件名可以修改。": {
       "extractionState": "manual"
     },
     "迁移": {
@@ -737,6 +869,9 @@
       "extractionState": "manual"
     },
     "适配 Proxmox VE 9.x。所有 API 请求直接发往你的服务器，不经过任何第三方。": {
+      "extractionState": "manual"
+    },
+    "邮件": {
       "extractionState": "manual"
     },
     "配置": {
@@ -764,6 +899,9 @@
       "extractionState": "manual"
     },
     "验证方式": {
+      "extractionState": "manual"
+    },
+    "验证证书": {
       "extractionState": "manual"
     }
   },

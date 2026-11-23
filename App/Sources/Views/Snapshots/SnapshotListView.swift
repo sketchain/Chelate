@@ -154,40 +154,51 @@ struct SnapshotListView: View {
 struct SnapshotRow: View {
     let snapshot: Snapshot
     let isCurrentParent: Bool
+    @ScaledMetric(relativeTo: .body) private var iconWidth = RowMetrics.iconWidth
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            HStack {
-                Image(systemName: "camera")
-                    .foregroundStyle(.secondary)
-                Text(snapshot.name).font(.body.weight(.medium))
-                if snapshot.vmstate {
-                    Text("含内存")
-                        .font(.caption2)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(.blue.opacity(0.15), in: Capsule())
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Image(systemName: "camera")
+                .foregroundStyle(.secondary)
+                .frame(width: iconWidth)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(verbatim: snapshot.name)
+                        .font(.body)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    if snapshot.vmstate {
+                        badge("含内存", color: .blue)
+                    }
+                    if isCurrentParent {
+                        badge("当前位置", color: .green)
+                    }
                 }
-                if isCurrentParent {
-                    Text("当前位置")
-                        .font(.caption2)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(.green.opacity(0.15), in: Capsule())
+                if let date = snapshot.snaptime {
+                    Text(verbatim: Format.shortDate(date))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                }
+                if let description = snapshot.description {
+                    Text(verbatim: description)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(3)
                 }
             }
-            if let date = snapshot.snaptime {
-                Text(date.formatted(date: .abbreviated, time: .shortened))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            if let description = snapshot.description {
-                Text(description)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(3)
-            }
+            .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
+            Spacer(minLength: 0)
         }
+        .padding(.vertical, 2)
+    }
+
+    private func badge(_ text: LocalizedStringKey, color: Color) -> some View {
+        Text(text)
+            .font(.caption2)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(color.opacity(0.15), in: Capsule())
     }
 }
 

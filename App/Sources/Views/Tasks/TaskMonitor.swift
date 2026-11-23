@@ -10,6 +10,24 @@ struct TrackedTask: Identifiable, Hashable {
     var node: String { UPID(upid)?.node ?? "" }
 }
 
+/// Progress reported in task logs, e.g. downloads: `123.00 MiB of 790.00 MiB (15.57%)`.
+enum TaskProgress {
+    static func fraction(in log: [TaskLogLine]) -> Double? {
+        for line in log.reversed() {
+            if let value = fraction(in: line.t) { return value }
+        }
+        return nil
+    }
+
+    static func fraction(in text: String) -> Double? {
+        guard let close = text.range(of: "%)", options: .backwards),
+              let open = text.range(of: "(", options: .backwards, range: text.startIndex..<close.lowerBound) else { return nil }
+        let number = text[open.upperBound..<close.lowerBound].trimmingCharacters(in: .whitespaces)
+        guard let percent = Double(number), (0...100).contains(percent) else { return nil }
+        return percent / 100
+    }
+}
+
 /// Polls `/nodes/{node}/tasks/{upid}/status` and the log until the task stops.
 struct TaskMonitorSheet: View {
     let connection: ServerConnection
@@ -30,6 +48,14 @@ struct TaskMonitorSheet: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(task.title).font(.headline)
                             Text(stateText).font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    }
+                    if let status, status.isRunning, let progress = TaskProgress.fraction(in: log) {
+                        ProgressView(value: progress) {
+                            EmptyView()
+                        } currentValueLabel: {
+                            Text(verbatim: Format.percent(progress))
+                                .monospacedDigit()
                         }
                     }
                     if let status, status.isRunning {

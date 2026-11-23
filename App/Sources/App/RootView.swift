@@ -5,10 +5,12 @@ struct RootView: View {
     @Environment(AppModel.self) private var model
     @State private var editing: ServerConfig?
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
+    /// Demo / screenshot mode starts on the overview instead of the server list on iPhone.
+    @State private var compactColumn: NavigationSplitViewColumn = DemoMode.isEnabled ? .detail : .sidebar
 
     var body: some View {
         @Bindable var model = model
-        NavigationSplitView(columnVisibility: $columnVisibility) {
+        NavigationSplitView(columnVisibility: $columnVisibility, preferredCompactColumn: $compactColumn) {
             SidebarView(editing: $editing)
                 .navigationTitle("Chelate")
         } detail: {
@@ -159,6 +161,8 @@ struct ServerDetailStack: View {
             VNCConsoleScreen(connection: connection, guest: guest)
         case .tasks(let node, let vmid):
             TaskListView(connection: connection, node: node, vmid: vmid)
+        case .storage(let node, let storage):
+            StorageDetailView(connection: connection, node: node, storage: storage)
         }
     }
 }
