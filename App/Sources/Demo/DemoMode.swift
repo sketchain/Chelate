@@ -66,7 +66,7 @@ final class DemoTransport: HTTPTransport, @unchecked Sendable {
                 return ok(["version": "9.2.21", "release": "9.2", "repoid": "0123abcd"])
             }
             if match("cluster/resources", parts) != nil { return ok(DemoData.clusterResources()) }
-            if match("access/permissions", parts) != nil { return ok(DemoData.permissions()) }
+            if match("access/permissions", parts) != nil { return ok(DemoData.permissions(path: query["path"])) }
             if match("cluster/tasks", parts) != nil || match("nodes/*/tasks", parts) != nil {
                 return ok(DemoData.tasks(started: Array(started.values), vmid: query["vmid"].flatMap { Int($0) }))
             }

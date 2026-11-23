@@ -80,11 +80,14 @@ enum DemoData {
         return list
     }
 
-    static func permissions() -> [String: Any] {
+    /// Like PVE with `?path=`: the effective privileges are keyed by the queried path.
+    static func permissions(path: String?) -> [String: Any] {
         let privileges = ["VM.Audit", "VM.PowerMgmt", "VM.Snapshot", "VM.Snapshot.Rollback", "VM.Console",
                           "Sys.Audit", "Sys.Console", "Datastore.Audit", "Datastore.AllocateTemplate"]
         let map = Dictionary(uniqueKeysWithValues: privileges.map { ($0, 1) })
-        return ["/": map]
+        var result: [String: Any] = ["/": map]
+        if let path, !path.isEmpty { result[path] = map }
+        return result
     }
 
     // MARK: Node

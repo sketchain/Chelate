@@ -53,6 +53,8 @@ final class ScreenshotTests: XCTestCase {
                 attempts += 1
             }
         }
+        let enabled = expectation(for: NSPredicate(format: "isEnabled == true"), evaluatedWith: target)
+        XCTAssertEqual(XCTWaiter.wait(for: [enabled], timeout: 10), .completed, "\(identifier) is disabled")
         target.tap()
     }
 
