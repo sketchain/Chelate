@@ -42,11 +42,13 @@ enum SymbolInk {
             image.withTintColor(.black, renderingMode: .alwaysOriginal).draw(in: CGRect(origin: .zero, size: size))
         }
         guard let cgImage = raster.cgImage else { return nil }
-        var pixels = [UInt8](repeating: 0, count: width * height)
+        // RGBA (a supported bitmap format); only the alpha byte is inspected.
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
         let drawn: Bool = pixels.withUnsafeMutableBytes { buffer in
             guard let context = CGContext(
                 data: buffer.baseAddress, width: width, height: height, bitsPerComponent: 8,
-                bytesPerRow: width, space: nil, bitmapInfo: CGImageAlphaInfo.alphaOnly.rawValue
+                bytesPerRow: width * 4, space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
             ) else { return false }
             context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
             return true
@@ -55,7 +57,7 @@ enum SymbolInk {
         var minX = width, maxX = -1
         for y in 0..<height {
             let row = y * width
-            for x in 0..<width where pixels[row + x] > 24 {
+            for x in 0..<width where pixels[(row + x) * 4 + 3] > 24 {
                 if x < minX { minX = x }
                 if x > maxX { maxX = x }
             }
