@@ -1,0 +1,18 @@
+{
+  "data": [
+    {
+      "time": 1763800000,
+      "maxcpu": 1,
+      "cpu": 0.0031,
+      "maxmem": 536870912,
+      "mem": 134217728,
+      "maxdisk": 8589934592,
+      "disk": 1073741824,
+      "netin": 100,
+      "netout": 50,
+      "diskread": 0,
+      "diskwrite": 512,
+      "pressurecpusome": 0
+    }
+  ]
+}

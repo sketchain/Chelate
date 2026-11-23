@@ -127,10 +127,15 @@ public struct NodeStatus: Decodable, Sendable, Hashable {
     public var cpuinfo: CPUInfo?
     public var pveversion: String?
     public var kversion: String?
+    /// `current-kernel.release` (PVE 8.1+), e.g. `6.17.2-1-pve`.
+    public var currentKernelRelease: String?
 
     enum CodingKeys: String, CodingKey {
         case cpu, wait, uptime, loadavg, memory, swap, rootfs, cpuinfo, pveversion, kversion
+        case currentKernel = "current-kernel"
     }
+
+    enum KernelKeys: String, CodingKey { case release }
 
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -148,6 +153,38 @@ public struct NodeStatus: Decodable, Sendable, Hashable {
         cpuinfo = try? c.decodeIfPresent(CPUInfo.self, forKey: .cpuinfo)
         pveversion = c.flexibleString(.pveversion)
         kversion = c.flexibleString(.kversion)
+        if let kernel = try? c.nestedContainer(keyedBy: KernelKeys.self, forKey: .currentKernel) {
+            currentKernelRelease = kernel.flexibleString(.release)
+        } else {
+            currentKernelRelease = nil
+        }
+    }
+
+    /// PVE version number only: `pve-manager/9.2.1/abcdef` → `9.2.1`.
+    public var pveVersionNumber: String? {
+        guard let pveversion else { return nil }
+        return NodeStatus.versionNumber(fromPVEVersion: pveversion)
+    }
+
+    /// Kernel release: `current-kernel.release`, else parsed from `kversion`
+    /// (`Linux 6.17.2-1-pve #1 SMP ...` → `6.17.2-1-pve`).
+    public var kernelRelease: String? {
+        if let release = currentKernelRelease?.trimmingCharacters(in: .whitespaces), !release.isEmpty { return release }
+        guard let kversion else { return nil }
+        return NodeStatus.kernelRelease(fromKVersion: kversion)
+    }
+
+    static func versionNumber(fromPVEVersion raw: String) -> String {
+        let parts = raw.split(separator: "/").map { $0.trimmingCharacters(in: .whitespaces) }
+        if parts.count >= 2, parts[0].hasPrefix("pve-manager") { return parts[1] }
+        if let first = parts.first(where: { $0.first?.isNumber == true }) { return first }
+        return raw
+    }
+
+    static func kernelRelease(fromKVersion raw: String) -> String {
+        let words = raw.split(separator: " ").map(String.init)
+        if words.count >= 2, words[0] == "Linux" { return words[1] }
+        return words.first ?? raw
     }
 }
 

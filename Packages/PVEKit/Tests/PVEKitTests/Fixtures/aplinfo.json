@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "template": "debian-13-standard_13.1-2_amd64.tar.zst",
+      "package": "debian-13-standard",
+      "version": "13.1-2",
+      "os": "debian-13",
+      "section": "system",
+      "type": "lxc",
+      "headline": "Debian 13 (standard)",
+      "description": "A small Debian Trixie system including all standard packages.",
+      "architecture": "amd64",
+      "infopage": "https://pve.proxmox.com/wiki/Linux_Container#pct_supported_distributions",
+      "location": "http://download.proxmox.com/images/system/debian-13-standard_13.1-2_amd64.tar.zst",
+      "maintainer": "Proxmox Support Team <support@proxmox.com>",
+      "manageurl": "",
+      "sha512sum": "0123abcd",
+      "source": "http://download.proxmox.com/images"
+    },
+    {
+      "template": "alpine-3.22-default_20250617_amd64.tar.xz",
+      "package": "alpine-3.22-default",
+      "version": "20250617",
+      "os": "alpine",
+      "section": "system",
+      "type": "lxc",
+      "headline": "Alpine Linux 3.22 (default)",
+      "description": "Alpine Linux is a security-oriented, lightweight Linux distribution.",
+      "architecture": "amd64",
+      "location": "http://download.proxmox.com/images/system/alpine-3.22-default_20250617_amd64.tar.xz"
+    },
+    {
+      "template": "debian-12-turnkey-nextcloud_18.2-1_amd64.tar.gz",
+      "package": "turnkey-nextcloud",
+      "version": "18.2-1",
+      "os": "debian-12",
+      "section": "turnkeylinux",
+      "type": "lxc",
+      "headline": "TurnKey Nextcloud",
+      "description": "Store, share and access your files",
+      "architecture": "amd64",
+      "infopage": "https://www.turnkeylinux.org/nextcloud"
+    },
+    {
+      "template": "proxmox-mailgateway-9.0-standard_9.0-1_amd64.tar.zst",
+      "package": "proxmox-mailgateway-9.0-standard",
+      "version": "9.0-1",
+      "os": "debian-13",
+      "section": "mail",
+      "type": "lxc",
+      "headline": "Proxmox Mailgateway 9.0"
+    }
+  ]
+}

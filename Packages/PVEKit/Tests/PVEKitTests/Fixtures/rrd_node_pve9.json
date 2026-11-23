@@ -1,0 +1,39 @@
+{
+  "data": [
+    {
+      "time": 1763800000,
+      "loadavg": 0.52,
+      "maxcpu": 32,
+      "cpu": 0.041,
+      "iowait": 0.001,
+      "memtotal": 134217728000,
+      "memused": 60129542144,
+      "swaptotal": 8589930496,
+      "swapused": 0,
+      "roottotal": 100861726720,
+      "rootused": 9876543210,
+      "netin": 12345.6,
+      "netout": 6543.2,
+      "memavailable": 74088185856,
+      "arcsize": 21474836480,
+      "pressurecpusome": 0.01,
+      "pressureiosome": 0.02,
+      "pressureiofull": 0,
+      "pressurememorysome": 0,
+      "pressurememoryfull": 0
+    },
+    {
+      "time": 1763800060,
+      "loadavg": 0.61,
+      "maxcpu": 32,
+      "cpu": 0.052,
+      "iowait": 0.002,
+      "memtotal": 134217728000,
+      "memused": 61203283968,
+      "memavailable": 73014444032,
+      "arcsize": "22548578304",
+      "netin": 22345.6,
+      "netout": 7543.2
+    }
+  ]
+}

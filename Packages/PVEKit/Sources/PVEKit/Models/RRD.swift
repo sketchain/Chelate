@@ -41,6 +41,12 @@ public enum RRDMetric: String, Sendable, Hashable, CaseIterable {
     case cpu
     case memoryUsed
     case memoryTotal
+    /// Node: `MemAvailable` from `/proc/meminfo` (PVE 9 `memavailable`).
+    case memoryAvailable
+    /// Node: ZFS ARC size (PVE 9 `arcsize`; written as 0 when ZFS is not in use).
+    case arcSize
+    /// QEMU guest: memory used on the host by the VM process (PVE 9 `memhost`).
+    case memoryHost
     case netIn
     case netOut
     case diskRead
@@ -53,6 +59,9 @@ public enum RRDMetric: String, Sendable, Hashable, CaseIterable {
         case .cpu: return ["cpu"]
         case .memoryUsed: return ["memused", "mem"]
         case .memoryTotal: return ["memtotal", "maxmem"]
+        case .memoryAvailable: return ["memavailable"]
+        case .arcSize: return ["arcsize"]
+        case .memoryHost: return ["memhost"]
         case .netIn: return ["netin"]
         case .netOut: return ["netout"]
         case .diskRead: return ["diskread"]
@@ -85,5 +94,11 @@ extension Array where Element == RRDPoint {
     /// Whether any row contains this metric (to hide e.g. disk IO for nodes).
     public func contains(_ metric: RRDMetric) -> Bool {
         contains { metric.value(in: $0) != nil }
+    }
+
+    /// Whether the metric has at least one non-zero value. PVE writes `arcsize = 0` on hosts
+    /// without ZFS, which should be treated like a missing column.
+    public func hasNonZero(_ metric: RRDMetric) -> Bool {
+        contains { (metric.value(in: $0) ?? 0) != 0 }
     }
 }
