@@ -66,3 +66,17 @@ struct ServerConfig: Codable, Identifiable, Hashable, Sendable {
         }
     }
 }
+
+extension ServerConfig {
+    /// The fixture server of demo mode (`-ChelateDemo`).
+    static var demo: ServerConfig {
+        var config = ServerConfig()
+        config.id = DemoData.serverID
+        config.name = "Homelab"
+        config.host = "pve.demo.invalid"
+        config.authMethod = .apiToken
+        config.tokenUserID = "root@pam"
+        config.tokenID = "demo"
+        return config
+    }
+}

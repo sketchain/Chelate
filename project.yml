@@ -71,15 +71,31 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: org.sketchain.chelate.tests
 
+  # Screenshot walkthrough in demo mode (-ChelateDemo): fixture server, no network.
+  ChelateUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: App/UITests
+    dependencies:
+      - target: Chelate
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: org.sketchain.chelate.uitests
+        TEST_TARGET_NAME: Chelate
+
 schemes:
   Chelate:
     build:
       targets:
         Chelate: all
         ChelateTests: [test]
+        ChelateUITests: [test]
     test:
       config: Debug
       targets:
         - ChelateTests
+        - ChelateUITests
     archive:
       config: Release
