@@ -1,0 +1,8 @@
+{
+  "data": {
+    "username": "alice@pve",
+    "ticket": "PVE:alice@pve:6921A400::QWxpY2VTaWduYXR1cmU=",
+    "CSRFPreventionToken": "6921A400:YWxpY2Vjc3Jm",
+    "cap": {}
+  }
+}

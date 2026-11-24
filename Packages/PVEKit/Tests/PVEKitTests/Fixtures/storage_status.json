@@ -1,0 +1,12 @@
+{
+  "data": {
+    "type": "dir",
+    "content": "iso,backup,vztmpl,snippets",
+    "total": 100861726720,
+    "used": 9876543210,
+    "avail": 85000000000,
+    "active": 1,
+    "enabled": 1,
+    "shared": 0
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "data": {
+    "status": "running",
+    "qmpstatus": "running",
+    "name": "debian-web",
+    "vmid": 100,
+    "cpu": 0.0215,
+    "cpus": 2,
+    "mem": 1288490188,
+    "maxmem": 4294967296,
+    "freemem": 2006477108,
+    "balloon": 4294967296,
+    "disk": 0,
+    "maxdisk": 34359738368,
+    "uptime": 86400,
+    "netin": 123456789,
+    "netout": 98765432,
+    "diskread": 2147483648,
+    "diskwrite": 1073741824,
+    "pid": 12345,
+    "agent": 1,
+    "ha": {
+      "managed": 1,
+      "state": "started",
+      "group": null
+    },
+    "running-machine": "pc-q35-10.0+pve1",
+    "running-qemu": "10.0.2",
+    "proxmox-support": {
+      "pbs-dirty-bitmap": true
+    },
+    "clipboard": null,
+    "serial": null,
+    "lock": null
+  }
+}

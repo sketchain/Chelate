@@ -1,0 +1,17 @@
+{
+  "total": 3,
+  "data": [
+    {
+      "n": 1,
+      "t": "generating cloud-init ISO"
+    },
+    {
+      "n": 2,
+      "t": "swtpm_setup: Not overwriting existing state file."
+    },
+    {
+      "n": 3,
+      "t": "TASK OK"
+    }
+  ]
+}

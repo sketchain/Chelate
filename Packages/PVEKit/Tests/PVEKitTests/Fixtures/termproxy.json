@@ -1,0 +1,8 @@
+{
+  "data": {
+    "user": "root@pam!chelate",
+    "ticket": "PVEVNC:6921A3F0::dGVybXByb3h5c2lnbmF0dXJl",
+    "port": 5900,
+    "upid": "UPID:pve1:000ABCDF:0123ABCD:6921A3F0:vncshell::root@pam!chelate:"
+  }
+}

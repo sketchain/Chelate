@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "volid": "local-zfs:vm-100-disk-0",
+      "content": "images",
+      "format": "raw",
+      "size": 34359738368,
+      "used": 9663676416,
+      "vmid": 100,
+      "parent": null
+    },
+    {
+      "volid": "local-zfs:subvol-200-disk-0",
+      "content": "rootdir",
+      "format": "subvol",
+      "size": 8589934592,
+      "used": 1073741824,
+      "vmid": "200"
+    }
+  ]
+}

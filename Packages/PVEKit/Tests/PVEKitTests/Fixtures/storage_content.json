@@ -1,0 +1,53 @@
+{
+  "data": [
+    {
+      "volid": "local:iso/debian-13.1.0-amd64-netinst.iso",
+      "content": "iso",
+      "format": "iso",
+      "size": 790626304,
+      "ctime": 1763000000
+    },
+    {
+      "volid": "local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst",
+      "content": "vztmpl",
+      "format": "tzst",
+      "size": "131072000",
+      "ctime": 1763100000
+    },
+    {
+      "volid": "local:backup/vzdump-lxc-200-2026_11_20-03_00_01.tar.zst",
+      "content": "backup",
+      "format": "tar.zst",
+      "size": 412316860,
+      "ctime": 1763607601,
+      "vmid": 200,
+      "notes": "pihole nightly\n",
+      "protected": 1,
+      "subtype": "lxc",
+      "verification": { "state": "ok", "upid": "UPID:pve1:0:0:0:verify::root@pam:" }
+    },
+    {
+      "volid": "local:backup/vzdump-qemu-100-2026_11_21-03_00_02.vma.zst",
+      "content": "backup",
+      "format": "vma.zst",
+      "size": 2147483648,
+      "ctime": 1763694002,
+      "vmid": "100",
+      "notes": ""
+    },
+    {
+      "volid": "local:iso/archlinux-2026.11.01-x86_64.iso",
+      "content": "iso",
+      "format": "iso",
+      "size": 1288490188,
+      "ctime": 1762000000
+    },
+    {
+      "volid": "local:snippets/cloud-init.yaml",
+      "content": "snippets",
+      "format": "snippet",
+      "size": 0,
+      "ctime": 1761000000
+    }
+  ]
+}

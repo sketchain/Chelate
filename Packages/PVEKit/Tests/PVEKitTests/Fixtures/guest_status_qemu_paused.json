@@ -1,0 +1,13 @@
+{
+  "data": {
+    "status": "running",
+    "qmpstatus": "paused",
+    "name": "debian-web",
+    "vmid": 100,
+    "cpus": 2,
+    "uptime": 120,
+    "ha": {
+      "managed": 0
+    }
+  }
+}
