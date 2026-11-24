@@ -2,6 +2,7 @@ import Foundation
 import PVEKit
 
 /// Persisted (non-secret) configuration of one PVE server. Secrets live in the Keychain.
+/// Shared with the widget extension (mirrored into the App Group by the widget variant).
 struct ServerConfig: Codable, Identifiable, Hashable, Sendable {
     enum AuthMethod: String, Codable, CaseIterable, Identifiable, Sendable {
         case apiToken
@@ -27,10 +28,14 @@ struct ServerConfig: Codable, Identifiable, Hashable, Sendable {
     /// SHA-256 fingerprint the user confirmed for this server.
     var pinnedFingerprint: CertificateFingerprint?
 
+    /// The last password login asked for a second factor. The widget then never tries to log in
+    /// by itself (it cannot answer the TFA prompt).
+    var usesTFA: Bool = false
+
     init() {}
 
     enum CodingKeys: String, CodingKey {
-        case id, name, host, port, authMethod, username, realm, rememberPassword, tokenUserID, tokenID, pinnedFingerprint
+        case id, name, host, port, authMethod, username, realm, rememberPassword, tokenUserID, tokenID, pinnedFingerprint, usesTFA
     }
 
     /// Tolerant decoding so new fields never break existing installs.
@@ -47,6 +52,7 @@ struct ServerConfig: Codable, Identifiable, Hashable, Sendable {
         tokenUserID = try c.decodeIfPresent(String.self, forKey: .tokenUserID) ?? "root@pam"
         tokenID = try c.decodeIfPresent(String.self, forKey: .tokenID) ?? ""
         pinnedFingerprint = try? c.decodeIfPresent(CertificateFingerprint.self, forKey: .pinnedFingerprint)
+        usesTFA = (try? c.decodeIfPresent(Bool.self, forKey: .usesTFA)) ?? false
     }
 
     var endpoint: ServerEndpoint { ServerEndpoint(host: host, port: port) }
@@ -64,19 +70,5 @@ struct ServerConfig: Codable, Identifiable, Hashable, Sendable {
         case .password: return account.userID
         case .apiToken: return "\(tokenUserID)!\(tokenID)"
         }
-    }
-}
-
-extension ServerConfig {
-    /// The fixture server of demo mode (`-ChelateDemo`).
-    static var demo: ServerConfig {
-        var config = ServerConfig()
-        config.id = DemoData.serverID
-        config.name = "Homelab"
-        config.host = "pve.demo.invalid"
-        config.authMethod = .apiToken
-        config.tokenUserID = "root@pam"
-        config.tokenID = "demo"
-        return config
     }
 }

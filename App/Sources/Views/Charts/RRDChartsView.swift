@@ -11,17 +11,22 @@ struct RRDChartsView: View {
     let connection: ServerConnection
     let source: Source
 
-    @State private var timeframe: RRDTimeframe = .hour
+    @Environment(AppSettings.self) private var settings
+    @Environment(\.scenePhase) private var scenePhase
+    /// nil until the user picks one: the default comes from Settings › 图表默认时间范围.
+    @State private var chosenTimeframe: RRDTimeframe?
     @State private var points: [RRDPoint] = []
     @State private var error: ActionError?
     @State private var loading = false
 
+    private var timeframe: RRDTimeframe { chosenTimeframe ?? settings.chartTimeframe }
+
     var body: some View {
         List {
             Section {
-                Picker("时间范围", selection: $timeframe) {
+                Picker("时间范围", selection: Binding(get: { timeframe }, set: { chosenTimeframe = $0 })) {
                     ForEach(RRDTimeframe.allCases) { frame in
-                        Text(title(frame)).tag(frame)
+                        Text(frame.title).tag(frame)
                     }
                 }
                 .pickerStyle(.segmented)
@@ -78,7 +83,10 @@ struct RRDChartsView: View {
         .navigationTitle("监控")
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
-        .task(id: timeframe) { await load() }
+        .task(id: ChartsTrigger(timeframe: timeframe, refresh: RefreshTrigger(phase: scenePhase, interval: settings.autoRefresh))) {
+            guard scenePhase == .active else { return }
+            await autoRefresh(settings.autoRefresh) { await load() }
+        }
     }
 
     /// "Available": a green-leaning teal (#1D9E75), clearly apart from used (blue) and total (green).
@@ -133,16 +141,6 @@ struct RRDChartsView: View {
         }
     }
 
-    private func title(_ frame: RRDTimeframe) -> String {
-        switch frame {
-        case .hour: return String(localized: "时")
-        case .day: return String(localized: "天")
-        case .week: return String(localized: "周")
-        case .month: return String(localized: "月")
-        case .year: return String(localized: "年")
-        }
-    }
-
     private func load() async {
         loading = true
         defer { loading = false }
@@ -167,6 +165,11 @@ struct RRDChartsView: View {
             error = failure
         }
     }
+}
+
+private struct ChartsTrigger: Hashable {
+    var timeframe: RRDTimeframe
+    var refresh: RefreshTrigger
 }
 
 struct Series: Identifiable {

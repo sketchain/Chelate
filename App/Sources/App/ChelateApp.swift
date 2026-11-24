@@ -2,13 +2,51 @@ import SwiftUI
 
 @main
 struct ChelateApp: App {
-    @State private var model = AppModel()
+    @State private var model: AppModel
+    @State private var lock: AppLock
+
+    init() {
+        let model = AppModel()
+        _model = State(initialValue: model)
+        _lock = State(initialValue: AppLock(enabled: model.settings.faceIDLock))
+    }
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            AppShell()
                 .environment(model)
+                .environment(model.settings)
+                .environment(lock)
         }
+    }
+}
+
+/// Applies theme and accent, the Face ID lock and the app-switcher cover around `RootView`, and
+/// handles `chelate://` links.
+struct AppShell: View {
+    @Environment(AppModel.self) private var model
+    @Environment(AppSettings.self) private var settings
+    @Environment(AppLock.self) private var lock
+    @Environment(\.scenePhase) private var scenePhase
+
+    var body: some View {
+        RootView()
+            .tint(settings.accent.color)
+            .environment(\.chelateAccent, settings.accent.color)
+            .overlay {
+                if settings.faceIDLock && lock.isLocked {
+                    LockScreen()
+                        .tint(settings.accent.color)
+                        .environment(\.chelateAccent, settings.accent.color)
+                } else if settings.faceIDLock && scenePhase != .active {
+                    PrivacyCover()
+                }
+            }
+            .preferredColorScheme(settings.theme.colorScheme)
+            .onOpenURL { url in model.open(url) }
+            .onChange(of: scenePhase, initial: true) { _, phase in
+                lock.scenePhaseChanged(phase, enabled: settings.faceIDLock)
+            }
     }
 }
 

@@ -6,9 +6,8 @@ import SwiftUI
 struct OverviewView: View {
     let connection: ServerConnection
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(AppSettings.self) private var settings
     @State private var showStorage = true
-
-    static let refreshInterval: Duration = .seconds(10)
 
     var body: some View {
         List {
@@ -80,11 +79,10 @@ struct OverviewView: View {
         .refreshable {
             await connection.refreshResources()
         }
-        .task(id: scenePhase) {
+        .task(id: RefreshTrigger(phase: scenePhase, interval: settings.autoRefresh)) {
             guard scenePhase == .active else { return }
-            while !Task.isCancelled {
+            await autoRefresh(settings.autoRefresh) {
                 await connection.refreshResources()
-                try? await Task.sleep(for: Self.refreshInterval)
             }
         }
     }

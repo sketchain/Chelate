@@ -54,4 +54,11 @@ if ((${#others[@]})); then
   echo
 fi
 echo "---"
-echo "未签名 ipa，安装前需自行重签（例如 zsign）。校验：\`shasum -a 256 -c Chelate-$current-unsigned.ipa.sha256\`"
+echo "### 安装包"
+echo
+echo "| 文件 | 内容 |"
+echo "| --- | --- |"
+echo "| \`Chelate-$current-unsigned.ipa\` | 标准版：不含小组件，不需要 App Group，只用一份描述文件签名 |"
+echo "| \`Chelate-$current-widget-unsigned.ipa\` | 小组件版：内嵌小组件扩展（\`org.sketchain.chelate.widget\`），需要 App Group \`group.org.sketchain.chelate\`，主 App 和扩展各用一份描述文件签名 |"
+echo
+echo "两个包的 bundle id 相同（\`org.sketchain.chelate\`），用同一证书签名时可以互相覆盖安装，数据保留。均未签名，安装前需自行重签（见 README「签名与安装」）。校验：\`shasum -a 256 -c <文件>.sha256\`"

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Regenerates App/Resources/Localizable.xcstrings from string literals in App/Sources.
+"""Regenerates App/Resources/Localizable.xcstrings from string literals in App/Sources,
+App/Shared and App/Widget.
 
 The source language is zh-Hans and the UI is written in Chinese directly in code, so the
 catalog mainly serves as the single list of user-facing strings (and the starting point for
@@ -12,7 +13,7 @@ import pathlib
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SOURCES = ROOT / "App" / "Sources"
+SOURCES = [ROOT / "App" / "Sources", ROOT / "App" / "Shared", ROOT / "App" / "Widget"]
 CATALOG = ROOT / "App" / "Resources" / "Localizable.xcstrings"
 
 # Calls whose first string literal argument is localized by SwiftUI or String(localized:).
@@ -76,7 +77,7 @@ def literals(source: str):
 
 def main() -> None:
     keys = set()
-    for path in sorted(SOURCES.rglob("*.swift")):
+    for path in sorted(p for root in SOURCES for p in root.rglob("*.swift")):
         text = path.read_text(encoding="utf-8")
         for prefix, literal in literals(text):
             if CJK_RE.search(literal) or CALL_PREFIX_RE.search(prefix):

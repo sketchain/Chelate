@@ -20,18 +20,24 @@ jobs:
     container: swift:6.2-noble
     steps:
       - uses: actions/checkout@v6
+      - name: Install Python
+        run: command -v python3 >/dev/null || (apt-get update && apt-get install -y --no-install-recommends python3)
+      - name: Generator tests
+        run: python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+      - name: Generated API is up to date
+        run: python3 scripts/generate-pvekit-api.py --check
       - name: swift build && swift test
         working-directory: Packages/PVEKit
         run: swift build && swift test
 
-  build:
-    name: Build, test & package (iOS)
+  # Unit + UI tests (screenshots) on the widget variant, in parallel with packaging.
+  test:
+    name: Test widget variant (iOS)
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
         with:
-          # Build the PR head itself (not the merge ref) so the ipa name matches its commit.
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
@@ -50,22 +56,15 @@ jobs:
           echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
           echo "build=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Build pipeline
+      - name: Test
         env:
+          STEPS: test
+          VARIANT: widget
           MARKETING_VERSION: ${{ steps.version.outputs.marketing }}
           BUILD_NUMBER: ${{ steps.version.outputs.build }}
           GIT_SHA: ${{ steps.version.outputs.sha }}
           CHANNEL: dev
-          IPA_NAME: Chelate-dev-${{ steps.version.outputs.sha }}-unsigned.ipa
         run: scripts/ci-build.sh
-
-      - name: Upload unsigned ipa
-        uses: actions/upload-artifact@v6
-        with:
-          name: Chelate-dev-${{ steps.version.outputs.sha }}-unsigned.ipa
-          path: build/Chelate-dev-${{ steps.version.outputs.sha }}-unsigned.ipa
-          if-no-files-found: error
-          retention-days: 30
 
       - name: Export screenshots
         if: always()
@@ -88,3 +87,57 @@ jobs:
           path: build/TestResults.xcresult
           if-no-files-found: ignore
           retention-days: 7
+
+  # Unsigned archives of both variants (no tests).
+  package:
+    name: Package ${{ matrix.variant }} (iOS)
+    runs-on: macos-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: widget
+            suffix: "-widget"
+          - variant: standard
+            suffix: ""
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # Build the PR head itself (not the merge ref) so the ipa name matches its commit.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Select latest Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Compute version
+        id: version
+        run: |
+          echo "marketing=$(scripts/version.sh latest-released)" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "build=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Archive and package
+        env:
+          STEPS: package
+          VARIANT: ${{ matrix.variant }}
+          MARKETING_VERSION: ${{ steps.version.outputs.marketing }}
+          BUILD_NUMBER: ${{ steps.version.outputs.build }}
+          GIT_SHA: ${{ steps.version.outputs.sha }}
+          CHANNEL: dev
+          IPA_NAME: Chelate-dev-${{ steps.version.outputs.sha }}${{ matrix.suffix }}-unsigned.ipa
+        run: scripts/ci-build.sh
+
+      - name: Upload unsigned ipa
+        uses: actions/upload-artifact@v6
+        with:
+          name: Chelate-dev-${{ steps.version.outputs.sha }}${{ matrix.suffix }}-unsigned.ipa
+          path: build/Chelate-dev-${{ steps.version.outputs.sha }}${{ matrix.suffix }}-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 30

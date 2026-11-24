@@ -67,7 +67,7 @@ final class ServerConnection {
             let auth = AuthSession(mode: .apiToken(token), endpoint: config.endpoint, transport: transport)
             return PVEClient(endpoint: config.endpoint, auth: auth, transport: transport)
         }
-        let transport = URLSessionTransport(session: session, trust: trust)
+        let transport = LoggingTransport(URLSessionTransport(session: session, trust: trust), label: String(config.id.uuidString.prefix(8)))
         let mode: AuthSession.Mode
         switch config.authMethod {
         case .apiToken:
@@ -94,6 +94,8 @@ final class ServerConnection {
             },
             ticketChanged: { ticket in
                 keychain.setTicket(ticket, for: id)
+                WidgetMirror.syncTicket(ticket, for: id)
+                AppLog.shared.log(.auth, ticket == nil ? "ticket cleared (\(id.uuidString.prefix(8)))" : "ticket updated (\(id.uuidString.prefix(8)))")
             }
         )
         let auth = client.auth
@@ -166,11 +168,21 @@ final class ServerConnection {
         }
         keychain.set(remember ? password : nil, for: config.id, .password)
         await preparation?.value
+        sawTFAPrompt = false
         do {
             try await client.auth.login(password: password)
+            AppLog.shared.log(.auth, "login succeeded (\(config.id.uuidString.prefix(8)), tfa: \(sawTFAPrompt))")
+            if config.usesTFA != sawTFAPrompt {
+                var updated = config
+                updated.usesTFA = sawTFAPrompt
+                config = updated
+                onConfigChange(updated)
+            }
+            WidgetMirror.syncCredentials(for: config, keychain: keychain)
             version = try await client.version()
             state = .ready
         } catch {
+            AppLog.shared.log(.auth, "login failed (\(config.id.uuidString.prefix(8))): \(ErrorText.message(for: error))")
             handleConnectError(error)
         }
     }
@@ -178,11 +190,14 @@ final class ServerConnection {
     func logout() async {
         await client.auth.logout()
         keychain.set(nil, for: config.id, .password)
+        WidgetMirror.clearTicket(for: config.id)
+        AppLog.shared.log(.auth, "logout (\(config.id.uuidString.prefix(8)))")
         state = .needsLogin(message: nil)
         resources = []
     }
 
     private func handleConnectError(_ error: Error) {
+        AppLog.shared.log(.error, "connect \(config.id.uuidString.prefix(8)): \(ErrorText.message(for: error))")
         if !absorb(error) {
             state = .failed(message: ErrorText.message(for: error))
             return
@@ -228,12 +243,18 @@ final class ServerConnection {
         trust.pinned = fingerprint
         certificateIssue = nil
         onConfigChange(updated)
+        AppLog.shared.log(.auth, "certificate pinned for \(config.id.uuidString.prefix(8)): \(fingerprint.description.prefix(23))…")
     }
 
     // MARK: - TFA
 
+    /// Set when the server asked for a second factor during the current login.
+    @ObservationIgnored private var sawTFAPrompt = false
+
     private func askForTFA(_ challenge: TFAChallenge) async throws -> TFAResponse {
-        try await withCheckedThrowingContinuation { continuation in
+        sawTFAPrompt = true
+        AppLog.shared.log(.auth, "second factor requested (\(config.id.uuidString.prefix(8)))")
+        return try await withCheckedThrowingContinuation { continuation in
             tfaPrompt = TFAPrompt(challenge: challenge, continuation: continuation)
         }
     }
@@ -256,12 +277,14 @@ final class ServerConnection {
             resources = try await client.clusterResources()
             lastRefresh = Date()
             refreshError = nil
+            WidgetMirror.store(resources: resources, server: config)
         } catch PVEError.cancelled {
             // View disappeared.
         } catch is CancellationError {
         } catch {
             absorb(error)
             refreshError = ErrorText.message(for: error)
+            AppLog.shared.log(.error, "refresh \(config.id.uuidString.prefix(8)): \(refreshError ?? "")")
         }
     }
 

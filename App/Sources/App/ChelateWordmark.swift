@@ -1,27 +1,27 @@
 import SwiftUI
 
 /// Home screen title: 「Chelate²⁻」 in heavy SF Mono with the charge as a real superscript
-/// (U+2212 minus), filled with a left-to-right gradient from the accent colour (orange) to pink.
+/// (U+2212 minus), filled with a left-to-right gradient from the accent colour to pink (to orange
+/// when the accent itself is pink).
 ///
 /// A soft highlight sweeps across once (about 1 s) whenever the app is opened: on cold launch
 /// and when it returns from the background. Skipped with Reduce Motion.
 struct ChelateWordmark: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(AppSettings.self) private var settings
 
     @ScaledMetric(relativeTo: .largeTitle) private var size: CGFloat = 34
     @State private var sweep = 0
     @State private var wasInBackground = false
 
-    static let gradient = LinearGradient(
-        colors: [Color.accentColor, Color.pink],
-        startPoint: .leading,
-        endPoint: .trailing
-    )
+    static func gradient(_ accent: AccentPreset) -> LinearGradient {
+        LinearGradient(colors: [accent.color, accent.gradientEnd], startPoint: .leading, endPoint: .trailing)
+    }
 
     var body: some View {
         wordmark
-            .foregroundStyle(Self.gradient)
+            .foregroundStyle(Self.gradient(settings.accent))
             .overlay {
                 highlight
                     .mask(wordmark)
