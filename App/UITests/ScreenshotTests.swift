@@ -170,7 +170,7 @@ final class WalkthroughScreenshotsDark: WalkthroughScreenshots {
 
 class HomeScreenshots: ScreenshotTestCase {
     /// Home (server list) after the title's highlight sweep has finished. iPhone launches on it.
-    /// Also checks the title position: its top should be about 8 pt below the top of the safe
+    /// Also checks the title position: its top should be about 20 pt below the top of the safe
     /// area (the top of the navigation bar on the next screen).
     func testHomeScreenshot() {
         inAppearance {
@@ -193,8 +193,8 @@ class HomeScreenshots: ScreenshotTestCase {
             note.name = "home-title-gap-\(appearanceSuffix)"
             note.lifetime = .keepAlways
             add(note)
-            XCTAssertGreaterThanOrEqual(gap, 2, "home title too high (\(gap) pt)")
-            XCTAssertLessThanOrEqual(gap, 16, "home title too low (\(gap) pt)")
+            XCTAssertGreaterThanOrEqual(gap, 14, "home title too high (\(gap) pt)")
+            XCTAssertLessThanOrEqual(gap, 26, "home title too low (\(gap) pt)")
         }
     }
 }

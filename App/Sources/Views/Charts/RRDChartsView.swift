@@ -241,6 +241,46 @@ struct SeriesChart: View {
     var pinnedSelection: Date?
 
     @State private var selection: Date?
+    @State private var popoverSize: CGSize = .zero
+
+    /// Gap between the popover and the rule / plot edges.
+    static let popoverGap: CGFloat = 10
+
+    /// Where the popover goes, in the overlay's coordinates: on the side of the rule with room
+    /// for it (the opposite half from the selected point), at the top of the plot unless the
+    /// selected points sit up there, in which case at the bottom; always inside the plot.
+    static func popoverCenter(size: CGSize, plot: CGRect, ruleX: CGFloat?, pointYs: [CGFloat]) -> CGPoint {
+        let gap = popoverGap
+        let x = ruleX ?? plot.midX
+        let rightRoom = plot.maxX - x - gap
+        let leftRoom = x - plot.minX - gap
+        // Prefer the far side: right of the rule when the point is in the left half.
+        let goRight: Bool
+        if x < plot.midX {
+            goRight = rightRoom >= size.width || rightRoom >= leftRoom
+        } else {
+            goRight = !(leftRoom >= size.width || leftRoom >= rightRoom)
+        }
+        var minX = goRight ? x + gap : x - gap - size.width
+        minX = min(max(minX, plot.minX), max(plot.minX, plot.maxX - size.width))
+
+        // Vertically: away from the selected points.
+        let topY = plot.minY + 4
+        let bottomY = plot.maxY - 4 - size.height
+        var minY = topY
+        if let highest = pointYs.min(), let lowest = pointYs.max() {
+            let coversTop = highest < topY + size.height + gap
+            let coversBottom = lowest > bottomY - gap
+            if coversTop && !coversBottom {
+                minY = bottomY
+            } else if coversTop && coversBottom {
+                // Points at both extremes: the side with more clearance.
+                minY = (highest - plot.minY) >= (plot.maxY - lowest) ? topY : bottomY
+            }
+        }
+        minY = min(max(minY, plot.minY), max(plot.minY, plot.maxY - size.height))
+        return CGPoint(x: minX + size.width / 2, y: minY + size.height / 2)
+    }
 
     var body: some View {
         let scale = NiceScale(maxValue: maxValue, kind: unit.scaleKind)
@@ -263,13 +303,6 @@ struct SeriesChart: View {
                 RuleMark(x: .value("时间", selected.time))
                     .foregroundStyle(Color.secondary.opacity(0.6))
                     .lineStyle(StrokeStyle(lineWidth: 1))
-                    .annotation(
-                        position: .top,
-                        spacing: 0,
-                        overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))
-                    ) {
-                        SelectionPopover(selection: selected, unit: unit, timeframe: timeframe)
-                    }
                 ForEach(selected.values) { value in
                     PointMark(x: .value("时间", value.time), y: .value("数值", value.value))
                         .foregroundStyle(value.color)
@@ -304,6 +337,27 @@ struct SeriesChart: View {
             }
         }
         .chartLegend(series.count > 1 ? .visible : .hidden)
+        // The popover lives in the overlay, above every mark (rule and selection dots).
+        .chartOverlay { proxy in
+            GeometryReader { geometry in
+                if let selected, let plotFrame = proxy.plotFrame {
+                    let plot = geometry[plotFrame]
+                    SelectionPopover(selection: selected, unit: unit, timeframe: timeframe)
+                        .fixedSize()
+                        .onGeometryChange(for: CGSize.self) { $0.size } action: { popoverSize = $0 }
+                        .position(Self.popoverCenter(
+                            size: popoverSize,
+                            plot: plot,
+                            ruleX: proxy.position(forX: selected.time).map { plot.minX + $0 },
+                            pointYs: selected.values.compactMap { value in
+                                proxy.position(forY: value.value).map { plot.minY + $0 }
+                            }
+                        ))
+                        .opacity(popoverSize == .zero ? 0 : 1)
+                        .allowsHitTesting(false)
+                }
+            }
+        }
         .chartXSelection(value: $selection)
         .chartGesture { proxy in
             LongPressGesture(minimumDuration: 0.3)
@@ -450,7 +504,14 @@ struct SelectionPopover: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .frame(minWidth: 140)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .background {
+            // Mostly opaque frosted card: curves and grid lines must not show through.
+            let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
+            shape.fill(.thickMaterial)
+                .overlay(shape.fill(Color(uiColor: .tertiarySystemGroupedBackground).opacity(0.9)))
+                .overlay(shape.strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5))
+                .shadow(color: .black.opacity(0.15), radius: 6, y: 2)
+        }
         .accessibilityIdentifier("chart-selection-popover")
     }
 
