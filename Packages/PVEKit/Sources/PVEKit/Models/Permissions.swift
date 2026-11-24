@@ -8,6 +8,8 @@ public enum Privilege: String, Sendable, Hashable, CaseIterable {
     case vmSnapshotRollback = "VM.Snapshot.Rollback"
     case vmConsole = "VM.Console"
     case sysAudit = "Sys.Audit"
+    case sysModify = "Sys.Modify"
+    case sysAccessNetwork = "Sys.AccessNetwork"
     case sysConsole = "Sys.Console"
     case datastoreAudit = "Datastore.Audit"
     case datastoreAllocateTemplate = "Datastore.AllocateTemplate"
@@ -53,5 +55,51 @@ public struct PermissionMap: Decodable, Sendable, Hashable {
         for (path, privs) in other.paths {
             paths[path] = privs
         }
+    }
+}
+
+/// Privilege requirement of `POST /nodes/{node}/storage/{storage}/download-url`, as defined in
+/// pve-storage: `Datastore.AllocateTemplate` on `/storage/{storage}`, plus either `Sys.Audit`
+/// and `Sys.Modify` on `/`, or `Sys.AccessNetwork` on `/nodes/{node}`.
+public struct DownloadURLRequirement: Sendable, Hashable {
+    public var node: String
+    public var storage: String
+
+    public init(node: String, storage: String) {
+        self.node = node
+        self.storage = storage
+    }
+
+    public var storagePath: String { "/storage/\(storage)" }
+    public var nodePath: String { "/nodes/\(node)" }
+    public static let rootPath = "/"
+
+    /// ACL paths whose effective privileges are needed for the check.
+    public var paths: [String] { [storagePath, Self.rootPath, nodePath] }
+
+    /// What is missing, given a lookup `granted(privilege, path)`. Empty when allowed.
+    public func missing(_ granted: (Privilege, String) -> Bool) -> [Missing] {
+        var result: [Missing] = []
+        if !granted(.datastoreAllocateTemplate, storagePath) {
+            result.append(.privilege(.datastoreAllocateTemplate, path: storagePath))
+        }
+        let audit = granted(.sysAudit, Self.rootPath)
+        let modify = granted(.sysModify, Self.rootPath)
+        let network = granted(.sysAccessNetwork, nodePath)
+        if !(audit && modify) && !network {
+            var rootMissing: [Privilege] = []
+            if !audit { rootMissing.append(.sysAudit) }
+            if !modify { rootMissing.append(.sysModify) }
+            result.append(.networkAccess(rootMissing: rootMissing, rootPath: Self.rootPath, nodePath: nodePath))
+        }
+        return result
+    }
+
+    public enum Missing: Sendable, Hashable {
+        /// A single privilege on a path.
+        case privilege(Privilege, path: String)
+        /// Neither alternative is satisfied: `rootMissing` lists what is lacking on `/`
+        /// (`Sys.AccessNetwork` on the node path would also do).
+        case networkAccess(rootMissing: [Privilege], rootPath: String, nodePath: String)
     }
 }

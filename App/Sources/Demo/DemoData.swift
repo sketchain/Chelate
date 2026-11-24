@@ -83,7 +83,7 @@ enum DemoData {
     /// Like PVE with `?path=`: the effective privileges are keyed by the queried path.
     static func permissions(path: String?) -> [String: Any] {
         let privileges = ["VM.Audit", "VM.PowerMgmt", "VM.Snapshot", "VM.Snapshot.Rollback", "VM.Console",
-                          "Sys.Audit", "Sys.Console", "Datastore.Audit", "Datastore.AllocateTemplate"]
+                          "Sys.Audit", "Sys.Modify", "Sys.AccessNetwork", "Sys.Console", "Datastore.Audit", "Datastore.AllocateTemplate"]
         let map = Dictionary(uniqueKeysWithValues: privileges.map { ($0, 1) })
         var result: [String: Any] = ["/": map]
         if let path, !path.isEmpty { result[path] = map }
@@ -275,18 +275,21 @@ enum DemoData {
     }
 
     static func applianceTemplates() -> [[String: Any]] {
-        func template(_ file: String, _ package: String, _ version: String, _ os: String, _ section: String, _ headline: String, _ description: String) -> [String: Any] {
+        func template(_ file: String, _ package: String, _ version: String, _ os: String, _ section: String, _ headline: String, _ description: String, architecture: String = "amd64") -> [String: Any] {
             [
                 "template": file, "package": package, "version": version, "os": os, "section": section, "type": "lxc",
-                "headline": headline, "description": description, "architecture": "amd64",
+                "headline": headline, "description": description, "architecture": architecture,
                 "location": "http://download.proxmox.com/images/\(section)/\(file)",
             ]
         }
         return [
             template("debian-13-standard_13.1-2_amd64.tar.zst", "debian-13-standard", "13.1-2", "debian-13", "system", "Debian 13 (standard)", "A small Debian Trixie system including all standard packages."),
+            // Same template for two architectures: told apart by the second line.
+            template("debian-13-standard_13.1-2_arm64.tar.zst", "debian-13-standard", "13.1-2", "debian-13", "system", "Debian 13 (standard)", "A small Debian Trixie system including all standard packages.", architecture: "arm64"),
             template("debian-12-standard_12.12-1_amd64.tar.zst", "debian-12-standard", "12.12-1", "debian-12", "system", "Debian 12 (standard)", "A small Debian Bookworm system including all standard packages."),
             template("ubuntu-25.04-standard_25.04-1.1_amd64.tar.zst", "ubuntu-25.04-standard", "25.04-1.1", "ubuntu-25.04", "system", "Ubuntu 25.04 (standard)", "A small Ubuntu 25.04 Plucky Puffin system."),
             template("alpine-3.22-default_20250617_amd64.tar.xz", "alpine-3.22-default", "20250617", "alpine", "system", "Alpine Linux 3.22 (default)", "A security-oriented, lightweight Linux distribution."),
+            template("alpine-3.22-default_20250617_arm64.tar.xz", "alpine-3.22-default", "20250617", "alpine", "system", "Alpine Linux 3.22 (default)", "A security-oriented, lightweight Linux distribution.", architecture: "arm64"),
             template("archlinux-base_20250705-1_amd64.tar.zst", "archlinux-base", "20250705-1", "archlinux", "system", "Arch Linux (base)", "A lightweight and flexible Linux distribution."),
             template("rockylinux-10-default_20250615_amd64.tar.xz", "rockylinux-10-default", "20250615", "rockylinux", "system", "Rocky Linux 10 (default)", "An enterprise operating system."),
             template("fedora-42-default_20250428_amd64.tar.xz", "fedora-42-default", "20250428", "fedora", "system", "Fedora 42 (default)", "A Linux distribution developed by the Fedora Project."),

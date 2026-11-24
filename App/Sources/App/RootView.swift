@@ -12,7 +12,13 @@ struct RootView: View {
         @Bindable var model = model
         NavigationSplitView(columnVisibility: $columnVisibility, preferredCompactColumn: $compactColumn) {
             SidebarView(editing: $editing)
+                // The title is drawn by the list (ChelateWordmark); the bar stays inline and
+                // empty but keeps "Chelate" for the back button and accessibility.
                 .navigationTitle("Chelate")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1) }
+                }
         } detail: {
             detail
         }
@@ -67,6 +73,15 @@ struct SidebarView: View {
     var body: some View {
         @Bindable var model = model
         List(selection: $model.selection) {
+            // Scrolls with the list. As a clear row it shares the leading edge of section
+            // headers and of the row icons inside the cards.
+            Section {
+                ChelateWordmark()
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(.vertical, 0)
+            }
+            .listSectionSpacing(4)
             ForEach(model.servers) { server in
                 Section {
                     NavigationLink(value: SidebarItem.overview(server.id)) {

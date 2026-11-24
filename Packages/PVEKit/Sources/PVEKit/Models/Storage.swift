@@ -214,7 +214,8 @@ public struct DownloadURLRequest: Sendable, Hashable {
 
 /// Entry of `GET /nodes/{node}/aplinfo` (appliance / CT template index).
 public struct ApplianceTemplate: Decodable, Sendable, Hashable, Identifiable {
-    public var id: String { template }
+    /// The index can list the same file name for several architectures.
+    public var id: String { "\(template)|\(architecture ?? "")" }
     /// File name used for `POST aplinfo` (`template` parameter).
     public var template: String
     public var package: String?

@@ -73,14 +73,15 @@ enum Names {
         }
     }
 
+    /// One style for all power actions: outline symbols, like the other list labels.
     static func powerIcon(_ action: PowerAction) -> String {
         switch action {
-        case .start: return "play.fill"
+        case .start: return "play"
         case .shutdown: return "power"
         case .reboot: return "arrow.clockwise"
-        case .stop: return "stop.fill"
-        case .suspend: return "pause.fill"
-        case .resume: return "playpause.fill"
+        case .stop: return "stop"
+        case .suspend: return "pause"
+        case .resume: return "playpause"
         }
     }
 
