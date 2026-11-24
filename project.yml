@@ -28,12 +28,18 @@ settings:
     SWIFT_EMIT_LOC_STRINGS: YES
     STRING_CATALOG_GENERATE_SYMBOLS: NO
 
-targets:
-  Chelate:
+# Two app variants share every source file and the bundle id org.sketchain.chelate:
+#   Chelate         standard: no widget extension, no App Group
+#   ChelateWidgets  embeds ChelateWidgetExtension (org.sketchain.chelate.widget) and uses the
+#                   App Group group.org.sketchain.chelate; compiled with CHELATE_WIDGETS
+# Both write the same product (Chelate.app); build them with separate schemes / derived data.
+targetTemplates:
+  ChelateApp:
     type: application
     platform: iOS
     sources:
       - path: App/Sources
+      - path: App/Shared
       - path: App/Resources
         excludes:
           - VNCWeb
@@ -50,6 +56,7 @@ targets:
     settings:
       base:
         PRODUCT_NAME: Chelate
+        PRODUCT_MODULE_NAME: Chelate
         PRODUCT_BUNDLE_IDENTIFIER: org.sketchain.chelate
         INFOPLIST_FILE: App/Info.plist
         GENERATE_INFOPLIST_FILE: NO
@@ -59,13 +66,55 @@ targets:
         CODE_SIGN_STYLE: Automatic
         ENABLE_PREVIEWS: YES
 
+targets:
+  Chelate:
+    templates: [ChelateApp]
+
+  ChelateWidgets:
+    templates: [ChelateApp]
+    dependencies:
+      - target: ChelateWidgetExtension
+        embed: true
+    settings:
+      base:
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) CHELATE_WIDGETS"
+        CODE_SIGN_ENTITLEMENTS: App/ChelateWidgets.entitlements
+
+  ChelateWidgetExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: App/Widget
+        excludes:
+          - Info.plist
+          - "*.entitlements"
+      - path: App/Shared
+    dependencies:
+      - package: PVEKit
+        product: PVEKit
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    settings:
+      base:
+        PRODUCT_NAME: ChelateWidgetExtension
+        PRODUCT_BUNDLE_IDENTIFIER: org.sketchain.chelate.widget
+        INFOPLIST_FILE: App/Widget/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) CHELATE_WIDGETS CHELATE_EXTENSION"
+        CODE_SIGN_ENTITLEMENTS: App/Widget/ChelateWidget.entitlements
+        CODE_SIGN_STYLE: Automatic
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
+
+  # Unit and UI tests run against the widget variant only.
   ChelateTests:
     type: bundle.unit-test
     platform: iOS
     sources:
       - path: App/Tests
     dependencies:
-      - target: Chelate
+      - target: ChelateWidgets
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
@@ -78,18 +127,27 @@ targets:
     sources:
       - path: App/UITests
     dependencies:
-      - target: Chelate
+      - target: ChelateWidgets
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: org.sketchain.chelate.uitests
-        TEST_TARGET_NAME: Chelate
+        TEST_TARGET_NAME: ChelateWidgets
 
 schemes:
+  # Standard variant: build and archive only.
   Chelate:
     build:
       targets:
         Chelate: all
+    archive:
+      config: Release
+
+  # Widget variant: build, unit + UI tests (screenshots), archive.
+  Chelate-Widget:
+    build:
+      targets:
+        ChelateWidgets: all
         ChelateTests: [test]
         ChelateUITests: [test]
     test:

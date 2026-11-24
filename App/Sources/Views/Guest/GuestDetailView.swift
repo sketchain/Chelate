@@ -6,6 +6,7 @@ struct GuestDetailView: View {
     let guest: GuestRef
 
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(AppSettings.self) private var settings
     @State private var status: GuestStatus?
     @State private var loadError: String?
     @State private var pendingAction: PowerAction?
@@ -44,13 +45,10 @@ struct GuestDetailView: View {
         .navigationTitle(name)
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
-        .task(id: scenePhase) {
+        .task(id: RefreshTrigger(phase: scenePhase, interval: settings.autoRefresh)) {
             guard scenePhase == .active else { return }
             await connection.loadPermissions(path: guest.aclPath)
-            while !Task.isCancelled {
-                await load()
-                try? await Task.sleep(for: .seconds(5))
-            }
+            await autoRefresh(settings.autoRefresh) { await load() }
         }
         .confirmationDialog(
             pendingAction.map(Names.power) ?? "",
@@ -118,14 +116,14 @@ struct GuestDetailView: View {
         Section {
             ForEach(availableActions, id: \.self) { action in
                 Button {
-                    if action.isDestructive {
+                    if settings.needsConfirmation(action) {
                         pendingAction = action
                     } else {
                         Task { await perform(action) }
                     }
                 } label: {
                     Label(Names.power(action), systemImage: Names.powerIcon(action))
-                        .foregroundStyle(action == .stop ? Color.red : Color.accentColor)
+                        .foregroundStyle(action == .stop ? AnyShapeStyle(Color.red) : AnyShapeStyle(.tint))
                 }
                 .disabled(!allowed || busy)
             }

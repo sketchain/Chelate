@@ -18,7 +18,7 @@ concurrency:
 jobs:
   release:
     runs-on: macos-latest
-    timeout-minutes: 75
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v6
         with:
@@ -56,8 +56,19 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Build pipeline
+      - name: Build pipeline (widget variant, with tests)
         env:
+          VARIANT: widget
+          MARKETING_VERSION: ${{ steps.version.outputs.version }}
+          BUILD_NUMBER: ${{ steps.version.outputs.build }}
+          GIT_SHA: ${{ steps.version.outputs.sha }}
+          CHANNEL: release
+          IPA_NAME: Chelate-${{ steps.version.outputs.tag }}-widget-unsigned.ipa
+        run: scripts/ci-build.sh
+
+      - name: Build pipeline (standard variant)
+        env:
+          VARIANT: standard
           MARKETING_VERSION: ${{ steps.version.outputs.version }}
           BUILD_NUMBER: ${{ steps.version.outputs.build }}
           GIT_SHA: ${{ steps.version.outputs.sha }}
@@ -65,13 +76,15 @@ jobs:
           IPA_NAME: Chelate-${{ steps.version.outputs.tag }}-unsigned.ipa
         run: scripts/ci-build.sh
 
-      - name: Checksum
+      - name: Checksums
         working-directory: build
         env:
-          IPA: Chelate-${{ steps.version.outputs.tag }}-unsigned.ipa
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
-          shasum -a 256 "$IPA" > "$IPA.sha256"
-          cat "$IPA.sha256"
+          for ipa in "Chelate-$TAG-unsigned.ipa" "Chelate-$TAG-widget-unsigned.ipa"; do
+            shasum -a 256 "$ipa" > "$ipa.sha256"
+            cat "$ipa.sha256"
+          done
 
       - name: Release notes
         env:
@@ -94,11 +107,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
         run: |
-          IPA="build/Chelate-$TAG-unsigned.ipa"
+          STANDARD="build/Chelate-$TAG-unsigned.ipa"
+          WIDGET="build/Chelate-$TAG-widget-unsigned.ipa"
+          FILES=("$STANDARD" "$STANDARD.sha256" "$WIDGET" "$WIDGET.sha256")
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "$IPA" "$IPA.sha256" --clobber
+            gh release upload "$TAG" "${FILES[@]}" --clobber
           else
-            gh release create "$TAG" "$IPA" "$IPA.sha256" \
+            gh release create "$TAG" "${FILES[@]}" \
               --title "Chelate $TAG" \
               --notes-file build/release-notes.md \
               --verify-tag

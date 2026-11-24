@@ -131,3 +131,19 @@ final class DemoTransport: HTTPTransport, @unchecked Sendable {
         }
     }
 }
+
+extension ServerConfig {
+    /// The fixture server of demo mode (`-ChelateDemo`).
+    static var demo: ServerConfig {
+        var config = ServerConfig()
+        config.id = DemoData.serverID
+        config.name = "Homelab"
+        config.host = "pve.demo.invalid"
+        config.authMethod = .apiToken
+        config.tokenUserID = "root@pam"
+        config.tokenID = "demo"
+        // A trusted self-signed certificate, so Settings shows a pinned fingerprint.
+        config.pinnedFingerprint = CertificateFingerprint(bytes: (0..<32).map { UInt8(($0 * 37 + 11) % 256) })
+        return config
+    }
+}

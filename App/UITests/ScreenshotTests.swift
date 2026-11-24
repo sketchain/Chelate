@@ -28,14 +28,14 @@ final class ScreenshotTests: XCTestCase {
         }
     }
 
-    private func launch(_ extra: [String] = []) {
+    private func launch(_ extra: [String] = [], openOverview: Bool = true) {
         app = XCUIApplication()
         app.launchArguments = ["-ChelateDemo"] + extra
         app.launch()
-        openOverviewIfNeeded()
+        if openOverview { openOverviewIfNeeded() }
     }
 
-    /// On iPhone the split view may start on the server list.
+    /// On iPhone the app starts on the home screen (server list).
     private func openOverviewIfNeeded() {
         let node = element("node-pve")
         if node.waitForExistence(timeout: 5) { return }
@@ -151,16 +151,51 @@ final class ScreenshotTests: XCTestCase {
         snapshot("08-templates-dialog")
     }
 
-    /// Home (server list) after the title's highlight sweep has finished.
+    /// Home (server list) after the title's highlight sweep has finished. iPhone launches on it.
+    /// Also checks the title position: its top should be about 8 pt below the top of the safe
+    /// area (the top of the navigation bar on the next screen).
     func testHomeScreenshot() {
         forEachAppearance {
-            launch()
-            // Demo mode opens on the overview; go back to the server list.
-            let back = app.navigationBars.buttons["Chelate"].firstMatch
-            if back.waitForExistence(timeout: 5) { back.tap() } else { goBack() }
-            XCTAssertTrue(element("home-title").waitForExistence(timeout: 10), "home title missing")
+            launch(openOverview: false)
+            let title = element("home-title")
+            XCTAssertTrue(title.waitForExistence(timeout: 10), "app did not launch on the home screen")
+            XCTAssertFalse(element("node-pve").exists, "app should not open the overview on launch")
             settle(2.5) // the sweep runs once for about 1 s
             snapshot("00-home")
+
+            let titleTop = title.frame.minY
+            app.buttons["总览"].firstMatch.tap()
+            let bar = app.navigationBars.firstMatch
+            XCTAssertTrue(bar.waitForExistence(timeout: 10))
+            let gap = titleTop - bar.frame.minY
+            let note = XCTAttachment(string: "home title top \(titleTop), safe area top \(bar.frame.minY), gap \(gap)")
+            note.name = "home-title-gap-\(appearanceSuffix)"
+            note.lifetime = .keepAlways
+            add(note)
+            XCTAssertGreaterThanOrEqual(gap, 2, "home title too high (\(gap) pt)")
+            XCTAssertLessThanOrEqual(gap, 16, "home title too low (\(gap) pt)")
+        }
+    }
+
+    /// Settings, a server's settings and (demo only) the widget gallery.
+    func testSettingsScreenshots() {
+        forEachAppearance {
+            launch(openOverview: false)
+            tap("home-settings")
+            XCTAssertTrue(element("settings-auto-refresh").waitForExistence(timeout: 10), "settings did not open")
+            settle()
+            snapshot("10-settings")
+
+            tap("settings-server-Homelab")
+            XCTAssertTrue(element("server-fingerprint").waitForExistence(timeout: 10), "server settings did not open")
+            settle()
+            snapshot("11-server-settings")
+            goBack()
+
+            tap("settings-widget-gallery")
+            XCTAssertTrue(element("widget-gallery").waitForExistence(timeout: 10), "widget gallery did not open")
+            settle()
+            snapshot("12-widget-gallery")
         }
     }
 
