@@ -20,6 +20,12 @@ jobs:
     container: swift:6.2-noble
     steps:
       - uses: actions/checkout@v6
+      - name: Install Python
+        run: command -v python3 >/dev/null || (apt-get update && apt-get install -y --no-install-recommends python3)
+      - name: Generator tests
+        run: python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+      - name: Generated API is up to date
+        run: python3 scripts/generate-pvekit-api.py --check
       - name: swift build && swift test
         working-directory: Packages/PVEKit
         run: swift build && swift test

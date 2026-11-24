@@ -197,18 +197,21 @@ public struct DownloadURLRequest: Sendable, Hashable {
         self.verifyCertificates = verifyCertificates
     }
 
-    var form: [(String, String)] {
-        var form: [(String, String)] = [
-            ("url", url.trimmingCharacters(in: .whitespacesAndNewlines)),
-            ("content", content.rawValue),
-            ("filename", filename.trimmingCharacters(in: .whitespacesAndNewlines)),
-            ("verify-certificates", verifyCertificates ? "1" : "0"),
-        ]
+    /// The generated request for `POST /nodes/{node}/storage/{storage}/download-url`.
+    func request(node: String, storage: String) -> PVEAPI.PostNodesStorageDownloadUrl {
+        var request = PVEAPI.PostNodesStorageDownloadUrl(
+            node: node,
+            storage: storage,
+            content: PVEAPI.PostNodesStorageDownloadUrl.Content(rawValue: content.rawValue) ?? .iso,
+            filename: filename.trimmingCharacters(in: .whitespacesAndNewlines),
+            url: url.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+        request.verifyCertificates = verifyCertificates
         if let checksum = checksum?.trimmingCharacters(in: .whitespacesAndNewlines), !checksum.isEmpty, let checksumAlgorithm {
-            form.append(("checksum", checksum))
-            form.append(("checksum-algorithm", checksumAlgorithm.rawValue))
+            request.checksum = checksum
+            request.checksumAlgorithm = PVEAPI.PostNodesStorageDownloadUrl.ChecksumAlgorithm(rawValue: checksumAlgorithm.rawValue)
         }
-        return form
+        return request
     }
 }
 
