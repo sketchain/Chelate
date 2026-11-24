@@ -1,21 +1,31 @@
 #!/usr/bin/env bash
-# Shared build pipeline for CI (dev) and release, one app variant per run:
+# Shared build pipeline for CI (dev) and release. STEPS selects what runs (space separated):
 #
-#   VARIANT=widget    swift test (PVEKit) → xcodegen → xcodebuild build + test (simulator, unit
-#                     + screenshot UI tests) → archive → Payload/Chelate.app (+ PlugIns/*.appex)
-#                     → unsigned .ipa
-#   VARIANT=standard  xcodegen → archive → unsigned .ipa (no tests)
+#   pvekit   swift test of PVEKit on macOS (CI covers this in its Linux job; release runs it)
+#   test     widget variant: xcodebuild test on the simulator (unit + screenshot UI tests,
+#            UI test classes spread over parallel simulator clones)
+#   package  VARIANT: unsigned archive → Payload/Chelate.app (+ PlugIns/*.appex) → .ipa
 #
-# Required environment:
-#   VARIANT             standard | widget
+# CI runs "test" and "package" in separate parallel jobs; release runs all three in one job.
+#
+# Environment:
+#   STEPS               default "test package"
+#   VARIANT             standard | widget (for package; tests always use the widget variant)
 #   MARKETING_VERSION   e.g. 0.2.0
 #   BUILD_NUMBER        CURRENT_PROJECT_VERSION (git rev-list --count HEAD)
 #   GIT_SHA             short commit sha
 #   CHANNEL             dev | release
-#   IPA_NAME            output file name, written to ./build/
+#   IPA_NAME            output file name, written to ./build/ (package only)
 set -euo pipefail
 
-: "${VARIANT:?}" "${MARKETING_VERSION:?}" "${BUILD_NUMBER:?}" "${GIT_SHA:?}" "${CHANNEL:?}" "${IPA_NAME:?}"
+STEPS=" ${STEPS:-test package} "
+VARIANT="${VARIANT:-widget}"
+: "${MARKETING_VERSION:?}" "${BUILD_NUMBER:?}" "${GIT_SHA:?}" "${CHANNEL:?}"
+has_step() { [[ "$STEPS" == *" $1 "* ]]; }
+if has_step package; then : "${IPA_NAME:?}"; fi
+if has_step test && [[ "$VARIANT" != widget ]]; then
+  echo "tests run on the widget variant only" >&2; exit 2
+fi
 
 case "$VARIANT" in
   standard) SCHEME=Chelate ;;
@@ -50,7 +60,7 @@ xcodebuild -version
 swift --version
 endgroup
 
-if [[ "$VARIANT" == widget ]]; then
+if has_step pvekit; then
   group "PVEKit: swift test"
   (cd Packages/PVEKit && swift test)
   endgroup
@@ -64,7 +74,7 @@ group "Resolve packages"
 xcodebuild -resolvePackageDependencies "${COMMON_FLAGS[@]}"
 endgroup
 
-if [[ "$VARIANT" == widget ]]; then
+if has_step test; then
   group "Pick simulator"
   SIMULATOR_ID="$(xcrun simctl list devices available --json | python3 -c '
 import json, re, sys
@@ -87,15 +97,22 @@ print(udid)
 ')"
   endgroup
 
-  group "xcodebuild build + test"
-  xcodebuild build test \
+  group "xcodebuild test"
+  # UI test classes (light / dark per screen) run on parallel simulator clones.
+  xcodebuild test \
     "${COMMON_FLAGS[@]}" \
     -configuration Debug \
     -destination "id=$SIMULATOR_ID" \
+    -parallel-testing-enabled YES \
+    -parallel-testing-worker-count "${TEST_WORKERS:-3}" \
     -derivedDataPath "$BUILD_DIR/DerivedData-test" \
     -resultBundlePath "$BUILD_DIR/TestResults.xcresult" \
     "${COMMON_SETTINGS[@]}"
   endgroup
+fi
+
+if ! has_step package; then
+  exit 0
 fi
 
 ARCHIVE="$BUILD_DIR/Chelate-$VARIANT.xcarchive"

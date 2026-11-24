@@ -2,11 +2,17 @@ import XCTest
 
 /// Walks through the app in demo mode (`-ChelateDemo`, fixture server, no network) and attaches
 /// a screenshot of every main screen. CI exports the attachments from the xcresult bundle.
-final class ScreenshotTests: XCTestCase {
-    private var app: XCUIApplication!
+///
+/// The screens are split into small test classes, each with a light and a dark subclass, so CI
+/// can spread them over parallel simulator clones (`-parallel-testing-enabled`).
+class ScreenshotTestCase: XCTestCase {
+    var app: XCUIApplication!
 
-    /// Light / dark suffix appended to every screenshot name of the current pass.
-    private var appearanceSuffix = "light"
+    /// Overridden by the dark subclasses.
+    var appearance: XCUIDevice.Appearance { .light }
+
+    /// Light / dark suffix appended to every screenshot name.
+    var appearanceSuffix: String { appearance == .dark ? "dark" : "light" }
 
     override func setUp() {
         continueAfterFailure = false
@@ -17,18 +23,15 @@ final class ScreenshotTests: XCTestCase {
         super.tearDown()
     }
 
-    /// Runs `body` once in light and once in dark mode (system appearance, so sheets and
-    /// dialogs follow too); screenshot names get a "-light" / "-dark" suffix.
-    private func forEachAppearance(_ body: () -> Void) {
-        for (appearance, suffix) in [(XCUIDevice.Appearance.light, "light"), (.dark, "dark")] {
-            XCUIDevice.shared.appearance = appearance
-            appearanceSuffix = suffix
-            body()
-            app.terminate()
-        }
+    /// Runs `body` in this class's appearance (system appearance, so sheets and dialogs follow
+    /// too); screenshot names get a "-light" / "-dark" suffix.
+    func inAppearance(_ body: () -> Void) {
+        XCUIDevice.shared.appearance = appearance
+        body()
+        app.terminate()
     }
 
-    private func launch(_ extra: [String] = [], openOverview: Bool = true) {
+    func launch(_ extra: [String] = [], openOverview: Bool = true) {
         app = XCUIApplication()
         app.launchArguments = ["-ChelateDemo"] + extra
         app.launch()
@@ -36,19 +39,18 @@ final class ScreenshotTests: XCTestCase {
     }
 
     /// On iPhone the app starts on the home screen (server list).
-    private func openOverviewIfNeeded() {
+    func openOverviewIfNeeded() {
         let node = element("node-pve")
-        if node.waitForExistence(timeout: 5) { return }
         let overview = app.buttons["总览"].firstMatch
-        if overview.exists { overview.tap() }
+        if overview.waitForExistence(timeout: 10), !node.exists { overview.tap() }
         XCTAssertTrue(node.waitForExistence(timeout: 15), "overview did not load")
     }
 
-    private func element(_ identifier: String) -> XCUIElement {
+    func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any).matching(identifier: identifier).firstMatch
     }
 
-    private func snapshot(_ name: String) {
+    func snapshot(_ name: String) {
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = "\(name)-\(appearanceSuffix)"
         attachment.lifetime = .keepAlways
@@ -56,13 +58,13 @@ final class ScreenshotTests: XCTestCase {
     }
 
     /// Lets loading finish and animations settle before a screenshot.
-    private func settle(_ seconds: TimeInterval = 1.5) {
+    func settle(_ seconds: TimeInterval = 1.5) {
         let expectation = expectation(description: "settle")
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { expectation.fulfill() }
         wait(for: [expectation], timeout: seconds + 5)
     }
 
-    private func tap(_ identifier: String, scrolling: Bool = true) {
+    func tap(_ identifier: String, scrolling: Bool = true) {
         let target = element(identifier)
         // Rows of long lists only exist once scrolled into view.
         if scrolling && !target.waitForExistence(timeout: 5) {
@@ -85,17 +87,19 @@ final class ScreenshotTests: XCTestCase {
         target.tap()
     }
 
-    private func goBack() {
+    func goBack() {
         let back = app.navigationBars.buttons.element(boundBy: 0)
         XCTAssertTrue(back.waitForExistence(timeout: 5))
         back.tap()
     }
+}
 
+class WalkthroughScreenshots: ScreenshotTestCase {
     func testScreenshots() {
-        forEachAppearance(walkthrough)
+        inAppearance(walkthrough)
     }
 
-    private func walkthrough() {
+    func walkthrough() {
         launch()
         settle()
         snapshot("01-overview")
@@ -158,12 +162,18 @@ final class ScreenshotTests: XCTestCase {
         settle()
         snapshot("08-templates-dialog")
     }
+}
 
+final class WalkthroughScreenshotsDark: WalkthroughScreenshots {
+    override var appearance: XCUIDevice.Appearance { .dark }
+}
+
+class HomeScreenshots: ScreenshotTestCase {
     /// Home (server list) after the title's highlight sweep has finished. iPhone launches on it.
     /// Also checks the title position: its top should be about 8 pt below the top of the safe
     /// area (the top of the navigation bar on the next screen).
     func testHomeScreenshot() {
-        forEachAppearance {
+        inAppearance {
             launch(openOverview: false)
             let title = element("home-title")
             XCTAssertTrue(title.waitForExistence(timeout: 10), "app did not launch on the home screen")
@@ -184,10 +194,16 @@ final class ScreenshotTests: XCTestCase {
             XCTAssertLessThanOrEqual(gap, 16, "home title too low (\(gap) pt)")
         }
     }
+}
 
+final class HomeScreenshotsDark: HomeScreenshots {
+    override var appearance: XCUIDevice.Appearance { .dark }
+}
+
+class SettingsScreenshots: ScreenshotTestCase {
     /// Settings, a server's settings and (demo only) the widget gallery.
     func testSettingsScreenshots() {
-        forEachAppearance {
+        inAppearance {
             launch(openOverview: false)
             tap("home-settings")
             XCTAssertTrue(element("settings-auto-refresh").waitForExistence(timeout: 10), "settings did not open")
@@ -206,11 +222,17 @@ final class ScreenshotTests: XCTestCase {
             snapshot("12-widget-gallery")
         }
     }
+}
 
+final class SettingsScreenshotsDark: SettingsScreenshots {
+    override var appearance: XCUIDevice.Appearance { .dark }
+}
+
+class ChartSelectionScreenshots: ScreenshotTestCase {
     /// Long-press popover on the node CPU chart (selection pinned by the demo launch argument,
     /// since a screenshot cannot be taken while XCUITest holds a gesture).
     func testChartSelectionScreenshot() {
-        forEachAppearance {
+        inAppearance {
             launch(["-ChelateDemoChartSelection"])
             tap("node-pve")
             tap("node-charts")
@@ -219,4 +241,8 @@ final class ScreenshotTests: XCTestCase {
             snapshot("04-node-monitor-selection")
         }
     }
+}
+
+final class ChartSelectionScreenshotsDark: ChartSelectionScreenshots {
+    override var appearance: XCUIDevice.Appearance { .dark }
 }

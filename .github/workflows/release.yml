@@ -58,6 +58,7 @@ jobs:
 
       - name: Build pipeline (widget variant, with tests)
         env:
+          STEPS: pvekit test package
           VARIANT: widget
           MARKETING_VERSION: ${{ steps.version.outputs.version }}
           BUILD_NUMBER: ${{ steps.version.outputs.build }}
@@ -68,6 +69,7 @@ jobs:
 
       - name: Build pipeline (standard variant)
         env:
+          STEPS: package
           VARIANT: standard
           MARKETING_VERSION: ${{ steps.version.outputs.version }}
           BUILD_NUMBER: ${{ steps.version.outputs.build }}

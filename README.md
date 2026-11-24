@@ -98,7 +98,7 @@ UI 测试 `ChelateUITests`（只在小组件版上跑）在演示模式下依次
 
 | 触发 | Workflow | 内容 |
 | --- | --- | --- |
-| push 到 `dev`、所有 PR | `CI` | Linux：生成器测试 + 检查生成代码是否最新 + PVEKit `swift build && swift test`；macOS 小组件版：PVEKit `swift test` → `xcodebuild build test`（模拟器，单元测试和截图 UI 测试）→ 无签名 archive → 打包 ipa，导出截图；macOS 标准版：只 build + 无签名 archive + 打包 |
+| push 到 `dev`、所有 PR | `CI` | 三组 job 并行：Linux：生成器测试 + 检查生成代码是否最新 + PVEKit `swift build && swift test`；macOS 测试（小组件版）：`xcodebuild test`（模拟器，单元测试和截图 UI 测试，UI 测试按「页面 × 浅色/深色」拆成多个类在并行模拟器上跑），导出截图；macOS 打包（两个变体各一个 job）：无签名 archive + 打包 ipa，不跑测试 |
 | push 到 `main` | `Release` | 按 `VERSION` 计算 `vX.Y.Z` → 两个变体测试与构建 → 全部成功后才打 tag 并推送 → 创建 GitHub Release |
 
 - **dev 构建**：在 Actions 对应运行的 *Artifacts* 中下载 `Chelate-dev-<short sha>-unsigned.ipa`（标准版）和 `Chelate-dev-<short sha>-widget-unsigned.ipa`（小组件版），保留 30 天。其 `CFBundleShortVersionString` 为最近一个已发布 tag 的版本（还没有 tag 时为 `0.0.0`）。
