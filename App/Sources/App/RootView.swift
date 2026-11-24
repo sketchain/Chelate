@@ -87,6 +87,8 @@ struct SidebarView: View {
     /// The list's own space above the first row, measured from the title (compact only).
     @State private var listLeadingPadding: CGFloat?
     @State private var safeTop: CGFloat = 0
+    /// How far the list is scrolled away from its resting position (0 at rest).
+    @State private var scrollDisplacement: CGFloat = 0
 
     static let titleOffset: CGFloat = 8
 
@@ -141,6 +143,11 @@ struct SidebarView: View {
         }
         .contentMargins(.top, compact ? topMargin : 0, for: .scrollContent)
         .ignoresSafeArea(.container, edges: compact ? .top : [])
+        .onScrollGeometryChange(for: CGFloat.self) { geometry in
+            geometry.contentOffset.y + geometry.contentInsets.top
+        } action: { _, displacement in
+            scrollDisplacement = displacement
+        }
         .navigationTitle("Chelate")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(compact ? .hidden : .automatic, for: .navigationBar)
@@ -156,15 +163,20 @@ struct SidebarView: View {
         var margin: CGFloat
     }
 
-    /// First layout: the title sits at `padding + margin` from the window top (the list ignores
-    /// the top safe area), which gives the list's own leading padding.
+    /// At rest the title sits at `padding + margin` from the window top (the list ignores the top
+    /// safe area), which gives the list's own leading padding. Re-measured whenever the list is
+    /// at rest, so an early layout (e.g. before the bar is hidden) cannot leave a wrong value;
+    /// the result does not depend on the margin, so this settles after one correction.
     private func measure(_ position: TitlePosition) {
         guard compact else { return }
         let top = HomeLayout.windowSafeTop
         // Rotation changes the safe area; keep the margin in step.
         if top != safeTop { safeTop = top }
-        guard listLeadingPadding == nil, top > 0 else { return }
-        listLeadingPadding = max(0, position.minY - position.margin)
+        guard top > 0, abs(scrollDisplacement) < 0.5 else { return }
+        let padding = max(0, position.minY - position.margin)
+        if listLeadingPadding.map({ abs($0 - padding) > 0.5 }) ?? true {
+            listLeadingPadding = padding
+        }
     }
 }
 

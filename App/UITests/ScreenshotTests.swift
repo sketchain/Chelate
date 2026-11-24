@@ -64,6 +64,14 @@ final class ScreenshotTests: XCTestCase {
 
     private func tap(_ identifier: String, scrolling: Bool = true) {
         let target = element(identifier)
+        // Rows of long lists only exist once scrolled into view.
+        if scrolling && !target.waitForExistence(timeout: 5) {
+            var attempts = 0
+            while !target.exists && attempts < 6 {
+                app.swipeUp()
+                attempts += 1
+            }
+        }
         XCTAssertTrue(target.waitForExistence(timeout: 15), "missing \(identifier)")
         if scrolling {
             var attempts = 0
