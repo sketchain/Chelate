@@ -57,6 +57,7 @@ struct ServerSettingsView: View {
                         confirmingForget = true
                     } label: {
                         Label("忘记证书", systemImage: "xmark.seal")
+                            .foregroundStyle(.red)
                     }
                 } else {
                     Text("使用系统信任的证书。连接到自签名证书的服务器时，会显示指纹由你确认。")

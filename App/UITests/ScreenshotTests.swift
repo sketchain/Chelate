@@ -181,7 +181,10 @@ class HomeScreenshots: ScreenshotTestCase {
             settle(2.5) // the sweep runs once for about 1 s
             snapshot("00-home")
 
-            let titleTop = title.frame.minY
+            // The identifier can also surface on the containing list cell; use the tightest
+            // match, which is the title text itself.
+            let matches = app.descendants(matching: .any).matching(identifier: "home-title").allElementsBoundByIndex
+            let titleTop = (matches.min { $0.frame.height < $1.frame.height } ?? title).frame.minY
             app.buttons["总览"].firstMatch.tap()
             let bar = app.navigationBars.firstMatch
             XCTAssertTrue(bar.waitForExistence(timeout: 10))

@@ -219,9 +219,11 @@ struct MediumNodeWidgetView: View {
                             .foregroundStyle(.secondary)
                     }
                     .font(.caption)
+                    .foregroundStyle(.primary)
                     .frame(maxHeight: .infinity)
                     .contentShape(Rectangle())
                 }
+                .tint(.primary)
             }
             if busiest.isEmpty {
                 Text("没有运行中的虚拟机")

@@ -104,16 +104,18 @@ struct SidebarView: View {
             // Scrolls with the list. As a clear row it shares the leading edge of section
             // headers and of the row icons inside the cards.
             Section {
+                // Row modifiers stay outermost so the row keeps its clear background and zero
+                // vertical insets.
                 ChelateWordmark()
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(.vertical, 0)
                     .onGeometryChange(for: TitlePosition.self) { [margin = topMargin] proxy in
                         // Carries the margin of the layout it was measured in.
                         TitlePosition(minY: proxy.frame(in: .global).minY, margin: margin)
                     } action: { position in
                         measure(position)
                     }
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(.vertical, 0)
             }
             .listSectionSpacing(4)
             ForEach(model.servers) { server in
