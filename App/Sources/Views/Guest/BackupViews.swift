@@ -300,7 +300,7 @@ struct BackupNowView: View {
                 }
                 if draft.prune, let retention, !retention.keeps.isEmpty {
                     Section("存储保留配置") {
-                        ForEach(retention.keeps, id: \.name) { keep in
+                        ForEach(Array(retention.keeps.enumerated()), id: \.offset) { _, keep in
                             InfoRow(title: LocalizedStringKey(Self.keepTitle(keep.name)), value: String(keep.value))
                         }
                     }
