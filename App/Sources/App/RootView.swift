@@ -51,6 +51,13 @@ struct RootView: View {
             } else {
                 noSelection
             }
+        case .datacenter(let id)?:
+            if let connection = model.connection(for: id) {
+                ServerDetailStack(connection: connection, root: .datacenter)
+                    .id("datacenter-\(id)")
+            } else {
+                noSelection
+            }
         case .settings?:
             SettingsStack()
         case nil:
@@ -126,6 +133,10 @@ struct SidebarView: View {
                     NavigationLink(value: SidebarItem.tasks(server.id)) {
                         Label("任务", systemImage: "list.bullet.rectangle")
                     }
+                    NavigationLink(value: SidebarItem.datacenter(server.id)) {
+                        Label("数据中心", systemImage: "building.2")
+                    }
+                    .accessibilityIdentifier("home-datacenter")
                 } header: {
                     Text(server.displayName)
                 }
@@ -193,7 +204,7 @@ enum HomeLayout {
 
 /// Root of a server's navigation stack with all destinations registered.
 struct ServerDetailStack: View {
-    enum Root { case overview, tasks }
+    enum Root { case overview, tasks, datacenter }
 
     let connection: ServerConnection
     let root: Root
@@ -206,6 +217,7 @@ struct ServerDetailStack: View {
                 switch root {
                 case .overview: OverviewView(connection: connection)
                 case .tasks: TaskListView(connection: connection, node: nil, vmid: nil)
+                case .datacenter: DatacenterView(connection: connection)
                 }
             }
             .navigationDestination(for: Route.self) { route in
@@ -257,6 +269,14 @@ struct ServerDetailStack: View {
             TaskListView(connection: connection, node: node, vmid: vmid)
         case .storage(let node, let storage):
             StorageDetailView(connection: connection, node: node, storage: storage)
+        case .hardware(let guest):
+            HardwareView(connection: connection, guest: guest)
+        case .syslog(let node):
+            SyslogView(connection: connection, node: node)
+        case .aptUpdates(let node):
+            AptUpdatesView(connection: connection, node: node)
+        case .firewall(let scope):
+            FirewallView(connection: connection, scope: scope)
         }
     }
 }

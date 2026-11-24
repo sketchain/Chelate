@@ -9,6 +9,8 @@ struct NodeDetailView: View {
     @Environment(AppSettings.self) private var settings
     @State private var status: NodeStatus?
     @State private var error: ActionError?
+    @State private var creating: CreateGuestKind?
+    @State private var tracked: TrackedTask?
 
     private var aclPath: String { "/nodes/\(node)" }
 
@@ -75,10 +77,51 @@ struct NodeDetailView: View {
                 if !consoleAllowed {
                     NoPermissionLabel(text: "无权限：需要 Sys.Console")
                 }
+                NavigationLink(value: Route.syslog(node)) {
+                    Label("系统日志", systemImage: "doc.text.magnifyingglass")
+                }
+                .accessibilityIdentifier("node-syslog")
+                NavigationLink(value: Route.aptUpdates(node)) {
+                    Label("更新", systemImage: "arrow.triangle.2.circlepath")
+                }
+                .accessibilityIdentifier("node-updates")
+                NavigationLink(value: Route.firewall(.node(node))) {
+                    Label("防火墙", systemImage: "flame")
+                }
             }
+            Section("新建") {
+                Button { creating = .vm } label: {
+                    Label("新建虚拟机", systemImage: "desktopcomputer.and.arrow.down")
+                }
+                .accessibilityIdentifier("node-create-vm")
+                Button { creating = .ct } label: {
+                    Label("新建容器", systemImage: "shippingbox")
+                }
+                .accessibilityIdentifier("node-create-ct")
+            }
+            NotesSection(
+                canEdit: connection.missing([PermissionNeed(.sysModify, on: aclPath)]).isEmpty,
+                missingText: {
+                    let missing = connection.missing([PermissionNeed(.sysModify, on: aclPath)])
+                    return missing.isEmpty ? nil : ServerConnection.describe(missing)
+                }(),
+                load: { try await connection.client.nodeNotes(node: node) },
+                save: { text in try await connection.client.setNodeNotes(node: node, text) }
+            )
         }
         .navigationTitle(node)
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $creating) { kind in
+            CreateGuestWizard(connection: connection, kind: kind, presetNode: node) { task in
+                creating = nil
+                tracked = task
+            }
+        }
+        .sheet(item: $tracked) { task in
+            TaskMonitorSheet(connection: connection, task: task) {
+                Task { await connection.refreshResources() }
+            }
+        }
         .refreshable { await load() }
         .task(id: RefreshTrigger(phase: scenePhase, interval: settings.autoRefresh)) {
             guard scenePhase == .active else { return }

@@ -11,12 +11,14 @@ struct StorageDetailView: View {
     enum ActiveSheet: Identifiable {
         case downloadURL
         case templates
+        case restore(BackupVolume)
         case task(TrackedTask)
 
         var id: String {
             switch self {
             case .downloadURL: return "download"
             case .templates: return "templates"
+            case .restore(let backup): return "restore-" + backup.volid
             case .task(let task): return task.id
             }
         }
@@ -68,7 +70,18 @@ struct StorageDetailView: View {
             ForEach(items.groupedByContent()) { group in
                 Section {
                     ForEach(group.items) { item in
-                        StorageContentRow(item: item)
+                        if item.contentType == .backup {
+                            Button {
+                                sheet = .restore(BackupVolume(storage: storage, item: item))
+                            } label: {
+                                StorageContentRow(item: item)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("storage-backup")
+                        } else {
+                            StorageContentRow(item: item)
+                        }
                     }
                 } header: {
                     Text(verbatim: Names.storageContent(group.content))
@@ -99,6 +112,18 @@ struct StorageDetailView: View {
                     node: node,
                     storage: storage,
                     downloaded: Set(items.filter { $0.contentType == .vztmpl }.map(\.fileName))
+                ) { task in
+                    self.sheet = .task(task)
+                }
+            case .restore(let backup):
+                let source = backup.vmid.flatMap { vmid in connection.resources.first { $0.vmid == vmid && $0.node == node } }
+                RestoreView(
+                    connection: connection,
+                    node: node,
+                    backup: backup,
+                    sourceGuest: source?.guestRef,
+                    sourceName: source?.name,
+                    sourceIsStopped: source.map { $0.status != "running" } ?? true
                 ) { task in
                     self.sheet = .task(task)
                 }
