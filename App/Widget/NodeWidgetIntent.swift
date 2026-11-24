@@ -63,11 +63,11 @@ struct NodeQuery: EntityQuery {
     }
 
     func suggestedEntities() async throws -> [NodeEntity] {
-        all(server: widgetIntent?.server?.id)
+        all(server: widgetIntent?.server.id)
     }
 
     func defaultResult() async -> NodeEntity? {
-        all(server: widgetIntent?.server?.id).first
+        all(server: widgetIntent?.server.id).first
     }
 
     /// Nodes of one server (or of all servers), from the snapshot cache.
