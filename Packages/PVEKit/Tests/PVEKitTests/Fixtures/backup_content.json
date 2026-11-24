@@ -1,0 +1,8 @@
+{
+  "data": [
+    { "volid": "local:backup/vzdump-qemu-100-2026_11_21-03_00_02.vma.zst", "content": "backup", "format": "vma.zst",
+      "size": 2147483648, "ctime": 1763694002, "vmid": 100, "notes": "debian-web", "subtype": "qemu" },
+    { "volid": "local:backup/vzdump-qemu-100-2026_11_14-03_00_03.vma.zst", "content": "backup", "format": "vma.zst",
+      "size": 2040109465, "ctime": 1763089203, "vmid": 100, "protected": 1, "subtype": "qemu" }
+  ]
+}

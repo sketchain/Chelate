@@ -1,0 +1,6 @@
+{
+  "data": [
+    { "id": "100-0", "guest": 100, "target": "pve2", "type": "local", "last_sync": 1764000000, "next_sync": 1764000900, "duration": 4.21, "fail_count": 0, "last_try": 1764000000 },
+    { "id": "200-0", "guest": 200, "target": "pve2", "type": "local", "last_sync": 0, "next_sync": 0, "fail_count": 3, "error": "storage 'local-zfs' is not available on node 'pve2'" }
+  ]
+}

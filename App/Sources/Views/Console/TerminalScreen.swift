@@ -63,6 +63,7 @@ struct TerminalScreen: View {
     private var title: String {
         switch target {
         case .nodeShell(let node): return "Shell · \(node)"
+        case .nodeUpgrade(let node): return String(localized: "升级 · \(node)")
         case .lxc(let guest): return String(localized: "控制台 · \(String(guest.vmid))")
         }
     }

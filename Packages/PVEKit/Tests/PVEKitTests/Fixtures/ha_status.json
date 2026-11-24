@@ -1,0 +1,8 @@
+{
+  "data": [
+    { "id": "quorum", "type": "quorum", "node": "pve", "status": "OK", "quorate": 1 },
+    { "id": "master", "type": "master", "node": "pve", "status": "pve (active, Tue Nov 24 16:00:00 2026)" },
+    { "id": "lrm:pve", "type": "lrm", "node": "pve", "status": "pve (active, Tue Nov 24 16:00:01 2026)" },
+    { "id": "service:vm:100", "type": "service", "sid": "vm:100", "node": "pve", "state": "started", "crm_state": "started", "request_state": "started", "status": "vm:100 (pve, started)" }
+  ]
+}

@@ -17,7 +17,7 @@ public enum ConsoleAdvisory: Sendable, Hashable {
 
     public static func evaluate(target: ConsoleTarget, authID: String, usesToken: Bool) -> ConsoleAdvisory {
         switch target {
-        case .nodeShell:
+        case .nodeShell, .nodeUpgrade:
             if usesToken || authID != "root@pam" {
                 return .nodeShellRequiresLogin(viaToken: usesToken)
             }

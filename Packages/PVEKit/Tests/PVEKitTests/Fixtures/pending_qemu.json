@@ -1,0 +1,13 @@
+{
+  "data": [
+    { "key": "cores", "value": 2, "pending": 4 },
+    { "key": "sockets", "value": 1 },
+    { "key": "memory", "value": "4096" },
+    { "key": "balloon", "value": 1024, "pending": 2048 },
+    { "key": "scsi0", "value": "local-zfs:vm-100-disk-0,iothread=1,size=32G" },
+    { "key": "ide2", "value": "local:iso/debian-13.2.0-amd64-netinst.iso,media=cdrom,size=754M" },
+    { "key": "efidisk0", "value": "local-zfs:vm-100-disk-1,efitype=4m,size=1M" },
+    { "key": "virtio1", "value": "local-zfs:vm-100-disk-2,size=512G" },
+    { "key": "onboot", "value": 1, "delete": 1 }
+  ]
+}

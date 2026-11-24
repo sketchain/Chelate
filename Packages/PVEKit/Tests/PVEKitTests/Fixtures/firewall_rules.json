@@ -1,0 +1,7 @@
+{
+  "data": [
+    { "pos": 1, "type": "in", "action": "ACCEPT", "proto": "tcp", "dport": "22", "source": "10.0.0.0/24", "enable": 1, "comment": "ssh" },
+    { "pos": 0, "type": "in", "action": "ACCEPT", "macro": "Web", "enable": 1 },
+    { "pos": 2, "type": "group", "action": "management", "enable": 0 }
+  ]
+}
