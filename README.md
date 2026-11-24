@@ -2,7 +2,7 @@
 
 Chelate 是一个原生 iOS 版 [Proxmox VE](https://www.proxmox.com/) 客户端（SwiftUI），面向 PVE 9.x，所有请求直连 `https://<host>:<port>/api2/json`（默认端口 8006）。
 
-## 功能（v0.2）
+## 功能（v0.3）
 
 - 多服务器：增删改、切换；API Token 或账号密码（支持 TOTP / 恢复码二次验证、记住密码、ticket 自动续期）
 - 证书：先走系统信任，不受信任时展示 SHA-256 指纹由你确认并固定；指纹变化会明确报警。REST、WebSocket、WKWebView 共用同一套校验
@@ -18,6 +18,14 @@ Chelate 是一个原生 iOS 版 [Proxmox VE](https://www.proxmox.com/) 客户端
 - 403 视为“无权限”（置灰并提示），不当作故障；回到前台时 Shell / 控制台自动重连
 - 设置：服务器（编辑、查看 / 复制 / 忘记证书指纹、删除）、自动刷新间隔、图表默认时间范围、主题、五种强调色、Face ID 解锁（含多任务界面遮罩）、危险操作二次确认、导出脱敏日志
 - 小组件（小组件版）：小号、中号、锁屏圆形、锁屏长条，可选服务器和节点，约 15 分钟刷新，离线时显示缓存；点击进入节点 / guest 详情（`chelate://`）
+- 备份：guest 详情的「备份」区列出该 VMID 在所有备份存储上的备份（时间、大小、存储、模式）；「立即备份」字段对齐 WebUI（存储、模式、压缩、通知、备注模板、保护、清理、PBS 变更检测）；删除始终确认，受保护的备份不能删除
+- 恢复：从备份列表或存储详情进入；覆盖原 VMID（须停机，始终确认）或恢复成新机器（VMID 默认 `/cluster/nextid`），目标存储、恢复后启动、唯一、带宽限制、特权级别、实时恢复、覆盖设置等对齐 WebUI
+- 克隆、迁移（单节点集群时隐藏）、删除（须输入 VMID）、转换为模板（不可逆，始终确认）
+- 新建虚拟机 / 新建容器向导：完整复刻 WebUI 的各个页签和字段（含「高级」字段），字段清单见 `docs/create-wizard-fields.md`；入口在总览页右上角 ··· 菜单和节点详情
+- 备注：节点和 guest 的 description，查看时按 Markdown 渲染，编辑为纯文本
+- 硬件：处理器、内存修改，磁盘扩容（只能扩大，提交前确认新大小）；需要重启才生效的项标「重启后生效」
+- 节点：系统日志（journal，往上滑加载更早记录，关键词搜索，时间范围）、更新（可更新软件包、changelog、apt update、升级 Shell）
+- 数据中心：HA（仲裁、资源状态）、复制任务状态（只读）；数据中心 / 节点 / guest 三层防火墙开关和规则（只读），开启数据中心防火墙前始终警告
 - 接口层由 PVE 9.2 API schema 生成（全部 716 个接口的带类型请求），见 `Schema/README.md`
 
 ## 仓库结构
@@ -88,11 +96,11 @@ python3 -m unittest discover -s scripts/tests -p 'test_*.py'
 
 ### 演示模式与截图
 
-启动参数 `-ChelateDemo` 打开演示模式：App 只显示一台内置的假服务器（节点 `pve`，运行中 / 已停止 / 模板三种状态的 VM 和 CT，`local` 和 `local-zfs` 两个存储，带 ARC 的 RRD 数据），所有 API 请求都由 `App/Sources/Demo` 里的 fixture 应答，不发网络请求，也不读写钥匙串和服务器列表。在 Xcode 里可以在 scheme 的 *Arguments Passed On Launch* 中加上它；再加 `-ChelateDemoChartSelection` 会在 CPU 图上预置一个选中点（用于截图浮层）。
+启动参数 `-ChelateDemo` 打开演示模式：App 只显示一台内置的假服务器（两个节点 `pve`、`pve2`，运行中 / 已停止 / 模板三种状态的 VM 和 CT，`local` 和 `local-zfs` 两个存储，带 ARC 的 RRD 数据），所有 API 请求都由 `App/Sources/Demo` 里的 fixture 应答，不发网络请求，也不读写钥匙串和服务器列表。在 Xcode 里可以在 scheme 的 *Arguments Passed On Launch* 中加上它；再加 `-ChelateDemoChartSelection` 会在 CPU 图上预置一个选中点（用于截图浮层）。
 
 演示模式下设置里多一个「小组件展示」页，用假数据按真实尺寸渲染四种小组件（以及小号的离线状态）；不会改动真实设置、App Group 和钥匙串。
 
-UI 测试 `ChelateUITests`（只在小组件版上跑）在演示模式下依次截取首页（并检查标题位置）、总览、节点详情、节点监控（含长按浮层）、guest 详情、存储详情、从 URL 下载表单、官方模板列表、任务列表、设置、服务器详情和小组件展示页，浅色、深色各一套，用 `XCTAttachment` 保存截图。这些测试只在手动触发 *Test widget variant* 时运行。
+UI 测试 `ChelateUITests`（只在小组件版上跑）在演示模式下依次截取首页（并检查标题位置）、总览、节点详情、节点监控（含长按浮层）、guest 详情、存储详情、从 URL 下载表单、官方模板列表、任务列表、设置、服务器详情、小组件展示页，以及新建虚拟机 / 新建容器向导的若干步骤和确认页、备份区、立即备份、恢复、克隆、迁移、删除确认、硬件、系统日志、更新、数据中心和防火墙，浅色、深色各一套，用 `XCTAttachment` 保存截图。这些测试只在手动触发 *Test widget variant* 时运行。
 
 ## CI 与产物
 

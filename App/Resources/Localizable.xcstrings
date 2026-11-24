@@ -7,13 +7,28 @@
     "\n\n当前使用 API Token 认证。如果 Token 启用了“权限分离”，需要单独给 Token 授予 %@ 权限；也可以改用账号密码登录后再试。": {
       "extractionState": "manual"
     },
+    "%@ / %@ 在线": {
+      "extractionState": "manual"
+    },
     "%@ · %@ 核": {
       "extractionState": "manual"
     },
     "%@ · %@ 线程": {
       "extractionState": "manual"
     },
+    "%@ – %@": {
+      "extractionState": "manual"
+    },
     "%@ 台运行": {
+      "extractionState": "manual"
+    },
+    "%@ 将从 %@ 扩大到 %@。磁盘无法再缩小。": {
+      "extractionState": "manual"
+    },
+    "%@ 将转换为模板，此操作不可逆：模板无法再启动，只能用来克隆。": {
+      "extractionState": "manual"
+    },
+    "%@ 的当前数据将被备份覆盖，且无法撤销。": {
       "extractionState": "manual"
     },
     "%@ 秒": {
@@ -22,10 +37,25 @@
     "%@ 解锁": {
       "extractionState": "manual"
     },
+    "%@ 防火墙": {
+      "extractionState": "manual"
+    },
+    "%@（离线）": {
+      "extractionState": "manual"
+    },
+    "(e.g., eth0)": {
+      "extractionState": "manual"
+    },
     "+%@ 台已停止": {
       "extractionState": "manual"
     },
+    "/some/path": {
+      "extractionState": "manual"
+    },
     "6 位验证码": {
+      "extractionState": "manual"
+    },
+    "ACLs": {
       "extractionState": "manual"
     },
     "API Token": {
@@ -34,10 +64,25 @@
     "App Group 不可用，请检查签名": {
       "extractionState": "manual"
     },
+    "Ballooning 设备": {
+      "extractionState": "manual"
+    },
     "Build": {
       "extractionState": "manual"
     },
     "CPU": {
+      "extractionState": "manual"
+    },
+    "CPU 插槽数": {
+      "extractionState": "manual"
+    },
+    "CPU 权重": {
+      "extractionState": "manual"
+    },
+    "CPU 绑定": {
+      "extractionState": "manual"
+    },
+    "CPU 限制": {
       "extractionState": "manual"
     },
     "CT 卷": {
@@ -58,7 +103,49 @@
     "Commit": {
       "extractionState": "manual"
     },
+    "DHCP": {
+      "extractionState": "manual"
+    },
+    "DNS 域": {
+      "extractionState": "manual"
+    },
+    "DNS 服务器": {
+      "extractionState": "manual"
+    },
+    "Data": {
+      "extractionState": "manual"
+    },
+    "EFI 存储": {
+      "extractionState": "manual"
+    },
+    "GID": {
+      "extractionState": "manual"
+    },
+    "GZIP（好）": {
+      "extractionState": "manual"
+    },
+    "ID 映射": {
+      "extractionState": "manual"
+    },
+    "ID 类型": {
+      "extractionState": "manual"
+    },
     "IO 等待": {
+      "extractionState": "manual"
+    },
+    "IO 线程": {
+      "extractionState": "manual"
+    },
+    "IPv4": {
+      "extractionState": "manual"
+    },
+    "IPv4/CIDR": {
+      "extractionState": "manual"
+    },
+    "IPv6": {
+      "extractionState": "manual"
+    },
+    "IPv6/CIDR": {
       "extractionState": "manual"
     },
     "ISO 镜像": {
@@ -67,7 +154,22 @@
     "ISO 镜像的文件名须以 .iso 或 .img 结尾。": {
       "extractionState": "manual"
     },
+    "LZO（快）": {
+      "extractionState": "manual"
+    },
+    "MAC 地址": {
+      "extractionState": "manual"
+    },
+    "Metadata": {
+      "extractionState": "manual"
+    },
+    "PBS 变更检测模式": {
+      "extractionState": "manual"
+    },
     "PVE 只为 root@pam 提供免密 Shell，当前账号会先出现 login: 提示，需要输入节点上的 Linux 用户名和密码。": {
+      "extractionState": "manual"
+    },
+    "Proxmox Backup Server 存储始终使用 ZSTD 压缩。": {
       "extractionState": "manual"
     },
     "Proxmox VE 客户端": {
@@ -76,13 +178,31 @@
     "Proxmox VE 节点的 CPU、内存和运行中的虚拟机。": {
       "extractionState": "manual"
     },
+    "QEMU 映像格式 (qcow2)": {
+      "extractionState": "manual"
+    },
+    "Qemu 代理": {
+      "extractionState": "manual"
+    },
     "Realm": {
+      "extractionState": "manual"
+    },
+    "SCSI 控制器": {
       "extractionState": "manual"
     },
     "SHA-256": {
       "extractionState": "manual"
     },
     "SHA-256 指纹": {
+      "extractionState": "manual"
+    },
+    "SLAAC": {
+      "extractionState": "manual"
+    },
+    "SSD 仿真": {
+      "extractionState": "manual"
+    },
+    "SSH 公钥": {
       "extractionState": "manual"
     },
     "Secret（留空则不修改）": {
@@ -100,16 +220,34 @@
     "TOTP 验证码": {
       "extractionState": "manual"
     },
+    "TPM 存储": {
+      "extractionState": "manual"
+    },
     "Token ID": {
       "extractionState": "manual"
     },
     "Token 在“数据中心 › 权限 › API Token”中创建。启用“权限分离”的 Token 需要单独授予权限。用 Token 打开节点 Shell 时需要再输入一次 Linux 账号密码。": {
       "extractionState": "manual"
     },
+    "UID": {
+      "extractionState": "manual"
+    },
     "URL": {
       "extractionState": "manual"
     },
+    "VLAN 标签": {
+      "extractionState": "manual"
+    },
     "VM 磁盘": {
+      "extractionState": "manual"
+    },
+    "VMID %@ 已被使用": {
+      "extractionState": "manual"
+    },
+    "VMID 须为 100–999999999 之间的整数": {
+      "extractionState": "manual"
+    },
+    "VMware 映像格式 (vmdk)": {
       "extractionState": "manual"
     },
     "VNC 控制台": {
@@ -127,7 +265,49 @@
     "ZFS ARC": {
       "extractionState": "manual"
     },
+    "ZSTD（快且好）": {
+      "extractionState": "manual"
+    },
+    "any": {
+      "extractionState": "manual"
+    },
+    "auto": {
+      "extractionState": "manual"
+    },
+    "default": {
+      "extractionState": "manual"
+    },
     "noVNC": {
+      "extractionState": "manual"
+    },
+    "vCPU 架构": {
+      "extractionState": "manual"
+    },
+    "“从作业配置中清除”会把它从复制、高可用和备份作业中移除；“删除未引用磁盘”会扫描所有已启用的存储。被引用的磁盘总会被删除。": {
+      "extractionState": "manual"
+    },
+    "“刷新”执行 apt update；“升级”打开节点 Shell 并执行 apt dist-upgrade。": {
+      "extractionState": "manual"
+    },
+    "“唯一”会自动生成新的唯一属性，例如 MAC 地址。带宽填 0 表示不限制。": {
+      "extractionState": "manual"
+    },
+    "“备份”：在备份作业中包括卷。": {
+      "extractionState": "manual"
+    },
+    "上一步": {
+      "extractionState": "manual"
+    },
+    "上次同步：%@ · 耗时 %@": {
+      "extractionState": "manual"
+    },
+    "上滑加载更早的记录": {
+      "extractionState": "manual"
+    },
+    "下一步": {
+      "extractionState": "manual"
+    },
+    "下次同步：%@": {
       "extractionState": "manual"
     },
     "下次连接“%@”时需要重新确认证书。": {
@@ -148,16 +328,40 @@
     "下载链接（https://…）": {
       "extractionState": "manual"
     },
+    "不使用任何介质": {
+      "extractionState": "manual"
+    },
     "不校验": {
+      "extractionState": "manual"
+    },
+    "与源相同": {
+      "extractionState": "manual"
+    },
+    "与网桥相同": {
+      "extractionState": "manual"
+    },
+    "丢弃": {
       "extractionState": "manual"
     },
     "中号": {
       "extractionState": "manual"
     },
+    "为 VirtIO 驱动程序添加额外驱动器": {
+      "extractionState": "manual"
+    },
     "主机": {
       "extractionState": "manual"
     },
+    "主机 ID": {
+      "extractionState": "manual"
+    },
+    "主机名": {
+      "extractionState": "manual"
+    },
     "主机名或 IP": {
+      "extractionState": "manual"
+    },
+    "主机管理": {
       "extractionState": "manual"
     },
     "主题": {
@@ -169,10 +373,25 @@
     "二次验证": {
       "extractionState": "manual"
     },
+    "仅显示至少一个节点支持的标志": {
+      "extractionState": "manual"
+    },
+    "介质": {
+      "extractionState": "manual"
+    },
+    "仍然启用": {
+      "extractionState": "manual"
+    },
     "从 URL 下载": {
       "extractionState": "manual"
     },
+    "从作业配置中清除": {
+      "extractionState": "manual"
+    },
     "代码片段": {
+      "extractionState": "manual"
+    },
+    "仲裁": {
       "extractionState": "manual"
     },
     "任务": {
@@ -193,16 +412,88 @@
     "会话已结束。": {
       "extractionState": "manual"
     },
+    "使用 CD/DVD 光盘镜像文件（ISO）": {
+      "extractionState": "manual"
+    },
+    "使用 sendmail（旧版）": {
+      "extractionState": "manual"
+    },
+    "使用主机设置": {
+      "extractionState": "manual"
+    },
+    "使用全局设置": {
+      "extractionState": "manual"
+    },
+    "使用备份中的配置": {
+      "extractionState": "manual"
+    },
+    "使用物理 CD/DVD 驱动器": {
+      "extractionState": "manual"
+    },
     "使用系统信任的证书。连接到自签名证书的服务器时，会显示指纹由你确认。": {
+      "extractionState": "manual"
+    },
+    "使用默认值": {
       "extractionState": "manual"
     },
     "保存": {
       "extractionState": "manual"
     },
+    "保留属性": {
+      "extractionState": "manual"
+    },
+    "保留最近": {
+      "extractionState": "manual"
+    },
+    "保留每周": {
+      "extractionState": "manual"
+    },
+    "保留每小时": {
+      "extractionState": "manual"
+    },
+    "保留每年": {
+      "extractionState": "manual"
+    },
+    "保留每日": {
+      "extractionState": "manual"
+    },
+    "保留每月": {
+      "extractionState": "manual"
+    },
     "信任新证书": {
       "extractionState": "manual"
     },
+    "修改": {
+      "extractionState": "manual"
+    },
+    "修改内存": {
+      "extractionState": "manual"
+    },
+    "修改处理器": {
+      "extractionState": "manual"
+    },
+    "修改防火墙": {
+      "extractionState": "manual"
+    },
+    "停机": {
+      "extractionState": "manual"
+    },
     "停止": {
+      "extractionState": "manual"
+    },
+    "允许 KSM": {
+      "extractionState": "manual"
+    },
+    "允许恢复其他客户机的备份": {
+      "extractionState": "manual"
+    },
+    "克隆": {
+      "extractionState": "manual"
+    },
+    "克隆 %@": {
+      "extractionState": "manual"
+    },
+    "克隆 %@ → %@": {
       "extractionState": "manual"
     },
     "入站": {
@@ -211,10 +502,16 @@
     "全部": {
       "extractionState": "manual"
     },
+    "共享": {
+      "extractionState": "manual"
+    },
     "关于": {
       "extractionState": "manual"
     },
     "关机": {
+      "extractionState": "manual"
+    },
+    "关机超时": {
       "extractionState": "manual"
     },
     "关闭": {
@@ -223,7 +520,13 @@
     "关闭提示": {
       "extractionState": "manual"
     },
+    "其他": {
+      "extractionState": "manual"
+    },
     "内存": {
+      "extractionState": "manual"
+    },
+    "内存 (MiB)": {
       "extractionState": "manual"
     },
     "内容类型": {
@@ -233,6 +536,12 @@
       "extractionState": "manual"
     },
     "写入": {
+      "extractionState": "manual"
+    },
+    "写入限制 (MB/s)": {
+      "extractionState": "manual"
+    },
+    "写入限制 (ops/s)": {
       "extractionState": "manual"
     },
     "准备启动": {
@@ -250,16 +559,31 @@
     "创建": {
       "extractionState": "manual"
     },
+    "创建后启动": {
+      "extractionState": "manual"
+    },
+    "创建容器": {
+      "extractionState": "manual"
+    },
     "创建快照": {
       "extractionState": "manual"
     },
     "创建快照 %@": {
       "extractionState": "manual"
     },
+    "创建虚拟机": {
+      "extractionState": "manual"
+    },
     "删除": {
       "extractionState": "manual"
     },
+    "删除 %@": {
+      "extractionState": "manual"
+    },
     "删除“%@”": {
+      "extractionState": "manual"
+    },
+    "删除备份": {
       "extractionState": "manual"
     },
     "删除快照": {
@@ -271,7 +595,19 @@
     "删除服务器": {
       "extractionState": "manual"
     },
+    "删除该客户机拥有的未引用磁盘": {
+      "extractionState": "manual"
+    },
+    "刷新": {
+      "extractionState": "manual"
+    },
+    "刷新软件包列表": {
+      "extractionState": "manual"
+    },
     "剩余 %lld 个恢复码可用。": {
+      "extractionState": "manual"
+    },
+    "加载 SSH 密钥文件": {
       "extractionState": "manual"
     },
     "包含内存状态": {
@@ -280,7 +616,25 @@
     "包含内存状态时，回滚后虚拟机会恢复到拍快照时的运行状态，但快照更慢、占用更多空间。": {
       "extractionState": "manual"
     },
+    "升级": {
+      "extractionState": "manual"
+    },
+    "升级 · %@": {
+      "extractionState": "manual"
+    },
+    "升级只对 root@pam 账号密码登录可用（与 PVE 网页一致）。": {
+      "extractionState": "manual"
+    },
+    "单节点（未组建集群）": {
+      "extractionState": "manual"
+    },
     "危险操作二次确认": {
+      "extractionState": "manual"
+    },
+    "压缩": {
+      "extractionState": "manual"
+    },
+    "原始磁盘映像 (raw)": {
       "extractionState": "manual"
     },
     "发送 Ctrl+Alt+Del": {
@@ -292,22 +646,46 @@
     "发送 Tab": {
       "extractionState": "manual"
     },
+    "发送邮件至": {
+      "extractionState": "manual"
+    },
     "取消": {
       "extractionState": "manual"
     },
     "受保护": {
       "extractionState": "manual"
     },
+    "只提交四列都填写完整的行。": {
+      "extractionState": "manual"
+    },
+    "只读": {
+      "extractionState": "manual"
+    },
+    "只读。": {
+      "extractionState": "manual"
+    },
     "只读。修改配置请使用 PVE 网页。": {
       "extractionState": "manual"
     },
+    "只读。规则请在 PVE 网页中编辑。": {
+      "extractionState": "manual"
+    },
+    "可更新的软件包（%@）": {
+      "extractionState": "manual"
+    },
     "可用": {
+      "extractionState": "manual"
+    },
+    "可用的模板变量：%@": {
       "extractionState": "manual"
     },
     "同步失败：App Group 不可用，请检查签名。": {
       "extractionState": "manual"
     },
     "名称": {
+      "extractionState": "manual"
+    },
+    "名称无效": {
       "extractionState": "manual"
     },
     "名称须以英文字母开头，只能包含字母、数字、- 和 _，最长 40 个字符。": {
@@ -325,7 +703,31 @@
     "启动": {
       "extractionState": "manual"
     },
+    "启动/关机顺序": {
+      "extractionState": "manual"
+    },
+    "启动延时": {
+      "extractionState": "manual"
+    },
+    "启用": {
+      "extractionState": "manual"
+    },
+    "启用 NUMA": {
+      "extractionState": "manual"
+    },
+    "启用数据中心防火墙": {
+      "extractionState": "manual"
+    },
+    "启用配额": {
+      "extractionState": "manual"
+    },
+    "启用防火墙": {
+      "extractionState": "manual"
+    },
     "周": {
+      "extractionState": "manual"
+    },
+    "唯一": {
       "extractionState": "manual"
     },
     "回滚": {
@@ -341,6 +743,9 @@
       "extractionState": "manual"
     },
     "回滚快照": {
+      "extractionState": "manual"
+    },
+    "固件": {
       "extractionState": "manual"
     },
     "图形控制台（VNC）": {
@@ -361,7 +766,31 @@
     "地址": {
       "extractionState": "manual"
     },
+    "型号": {
+      "extractionState": "manual"
+    },
+    "增加": {
+      "extractionState": "manual"
+    },
+    "增加 (GiB)": {
+      "extractionState": "manual"
+    },
+    "处理器": {
+      "extractionState": "manual"
+    },
     "备份": {
+      "extractionState": "manual"
+    },
+    "备份 %@": {
+      "extractionState": "manual"
+    },
+    "备份与现有客户机的唯一 ID 不同。": {
+      "extractionState": "manual"
+    },
+    "备份与现有客户机的唯一 ID 不同，需要勾选“允许恢复其他客户机的备份”。": {
+      "extractionState": "manual"
+    },
+    "备注": {
       "extractionState": "manual"
     },
     "复制": {
@@ -379,10 +808,16 @@
     "外观": {
       "extractionState": "manual"
     },
+    "多个 DNS 服务器用空格、逗号或分号分隔。": {
+      "extractionState": "manual"
+    },
     "大小": {
       "extractionState": "manual"
     },
     "天": {
+      "extractionState": "manual"
+    },
+    "失败次数：%@": {
       "extractionState": "manual"
     },
     "失败：%@": {
@@ -394,10 +829,19 @@
     "存储": {
       "extractionState": "manual"
     },
+    "存储保留配置": {
+      "extractionState": "manual"
+    },
     "安全": {
       "extractionState": "manual"
     },
+    "安全组": {
+      "extractionState": "manual"
+    },
     "安全连接失败（%@）。": {
+      "extractionState": "manual"
+    },
+    "安装介质（%@）": {
       "extractionState": "manual"
     },
     "完成": {
@@ -406,10 +850,22 @@
     "完成（%@）": {
       "extractionState": "manual"
     },
+    "完整克隆": {
+      "extractionState": "manual"
+    },
     "官方模板": {
       "extractionState": "manual"
     },
+    "实时恢复": {
+      "extractionState": "manual"
+    },
+    "客户机操作系统": {
+      "extractionState": "manual"
+    },
     "容器": {
+      "extractionState": "manual"
+    },
+    "容器 ID": {
       "extractionState": "manual"
     },
     "宿主占用": {
@@ -427,10 +883,28 @@
     "导入": {
       "extractionState": "manual"
     },
+    "导入存储": {
+      "extractionState": "manual"
+    },
+    "导入磁盘 %@": {
+      "extractionState": "manual"
+    },
     "导出日志": {
       "extractionState": "manual"
     },
     "将同时删除保存在钥匙串中的凭据。": {
+      "extractionState": "manual"
+    },
+    "将永久删除 %@ 上 %@ 的备份，无法恢复。": {
+      "extractionState": "manual"
+    },
+    "将永久删除 %@（%@）及其配置，无法撤销。": {
+      "extractionState": "manual"
+    },
+    "将永久清除当前容器的数据，挂载点卷也会被清除。": {
+      "extractionState": "manual"
+    },
+    "将永久清除当前虚拟机的数据。": {
       "extractionState": "manual"
     },
     "小号": {
@@ -443,6 +917,9 @@
       "extractionState": "manual"
     },
     "小组件数据": {
+      "extractionState": "manual"
+    },
+    "嵌套": {
       "extractionState": "manual"
     },
     "左滑或长按快照可回滚或删除。": {
@@ -466,7 +943,13 @@
     "已停止": {
       "extractionState": "manual"
     },
+    "已关闭 Ballooning": {
+      "extractionState": "manual"
+    },
     "已取消二次验证。": {
+      "extractionState": "manual"
+    },
+    "已启用": {
       "extractionState": "manual"
     },
     "已复制": {
@@ -487,10 +970,22 @@
     "已用时间": {
       "extractionState": "manual"
     },
+    "已禁用": {
+      "extractionState": "manual"
+    },
     "已锁定：%@": {
       "extractionState": "manual"
     },
+    "带宽": {
+      "extractionState": "manual"
+    },
+    "带宽限制 (KiB/s)": {
+      "extractionState": "manual"
+    },
     "年": {
+      "extractionState": "manual"
+    },
+    "应用": {
       "extractionState": "manual"
     },
     "开启 Chelate 解锁": {
@@ -502,7 +997,16 @@
     "开始": {
       "extractionState": "manual"
     },
+    "开机自启动": {
+      "extractionState": "manual"
+    },
     "开源组件": {
+      "extractionState": "manual"
+    },
+    "异步 IO": {
+      "extractionState": "manual"
+    },
+    "强制": {
       "extractionState": "manual"
     },
     "强制停止": {
@@ -520,6 +1024,15 @@
     "当前使用 API Token 连接。PVE 只为 root@pam 账号密码登录提供免密 Shell，Token 会话会先出现 login: 提示，需要输入节点上的 Linux 用户名和密码。": {
       "extractionState": "manual"
     },
+    "当前大小": {
+      "extractionState": "manual"
+    },
+    "当前布局": {
+      "extractionState": "manual"
+    },
+    "当前状态": {
+      "extractionState": "manual"
+    },
     "当前状态将被快照“%@”覆盖，此后的所有改动都会丢失，且无法撤销。": {
       "extractionState": "manual"
     },
@@ -532,6 +1045,9 @@
     "快照“%@”将被永久删除，无法恢复。": {
       "extractionState": "manual"
     },
+    "总线": {
+      "extractionState": "manual"
+    },
     "总览": {
       "extractionState": "manual"
     },
@@ -541,6 +1057,21 @@
     "恢复": {
       "extractionState": "manual"
     },
+    "恢复…": {
+      "extractionState": "manual"
+    },
+    "恢复到": {
+      "extractionState": "manual"
+    },
+    "恢复到 %@": {
+      "extractionState": "manual"
+    },
+    "恢复后启动": {
+      "extractionState": "manual"
+    },
+    "恢复备份": {
+      "extractionState": "manual"
+    },
     "恢复码": {
       "extractionState": "manual"
     },
@@ -548,6 +1079,15 @@
       "extractionState": "manual"
     },
     "我确认证书是我自己更换的": {
+      "extractionState": "manual"
+    },
+    "所有协议": {
+      "extractionState": "manual"
+    },
+    "所有核心": {
+      "extractionState": "manual"
+    },
+    "所选模式下，%@ 无法访问该客户机的全部磁盘。": {
       "extractionState": "manual"
     },
     "打开 App 重新登录": {
@@ -562,6 +1102,21 @@
     "执行中…": {
       "extractionState": "manual"
     },
+    "扩容": {
+      "extractionState": "manual"
+    },
+    "扩容 %@": {
+      "extractionState": "manual"
+    },
+    "扩容到 %@": {
+      "extractionState": "manual"
+    },
+    "扩容后还需要在客户机内扩展分区和文件系统。": {
+      "extractionState": "manual"
+    },
+    "扩容磁盘": {
+      "extractionState": "manual"
+    },
     "批量停止": {
       "extractionState": "manual"
     },
@@ -571,7 +1126,19 @@
     "找不到服务器：主机名无法解析。": {
       "extractionState": "manual"
     },
+    "挂起": {
+      "extractionState": "manual"
+    },
+    "挂载点 ID": {
+      "extractionState": "manual"
+    },
+    "挂载选项": {
+      "extractionState": "manual"
+    },
     "指纹一致，信任此证书": {
+      "extractionState": "manual"
+    },
+    "按时间范围…": {
       "extractionState": "manual"
     },
     "控制台": {
@@ -595,6 +1162,9 @@
     "描述（可选）": {
       "extractionState": "manual"
     },
+    "搜索关键词": {
+      "extractionState": "manual"
+    },
     "搜索模板": {
       "extractionState": "manual"
     },
@@ -604,10 +1174,31 @@
     "操作未完成": {
       "extractionState": "manual"
     },
+    "支持 Markdown。保存后写入配置的 description。": {
+      "extractionState": "manual"
+    },
+    "放弃": {
+      "extractionState": "manual"
+    },
+    "放弃新建容器？": {
+      "extractionState": "manual"
+    },
+    "放弃新建虚拟机？": {
+      "extractionState": "manual"
+    },
     "数值": {
       "extractionState": "manual"
     },
     "数据": {
+      "extractionState": "manual"
+    },
+    "数据中心": {
+      "extractionState": "manual"
+    },
+    "数据中心防火墙": {
+      "extractionState": "manual"
+    },
+    "数据中心防火墙是总开关：关闭时节点和客户机的防火墙规则都不生效。": {
       "extractionState": "manual"
     },
     "文件": {
@@ -619,16 +1210,61 @@
     "文件名不能包含 /。": {
       "extractionState": "manual"
     },
+    "文件大小无效": {
+      "extractionState": "manual"
+    },
+    "断开": {
+      "extractionState": "manual"
+    },
+    "新大小": {
+      "extractionState": "manual"
+    },
+    "新建": {
+      "extractionState": "manual"
+    },
+    "新建容器": {
+      "extractionState": "manual"
+    },
+    "新建容器 %@": {
+      "extractionState": "manual"
+    },
+    "新建虚拟机": {
+      "extractionState": "manual"
+    },
+    "新建虚拟机 %@": {
+      "extractionState": "manual"
+    },
+    "新的%@": {
+      "extractionState": "manual"
+    },
+    "无": {
+      "extractionState": "manual"
+    },
+    "无 VLAN": {
+      "extractionState": "manual"
+    },
+    "无仲裁": {
+      "extractionState": "manual"
+    },
     "无权限": {
       "extractionState": "manual"
     },
     "无权限查看任务列表": {
       "extractionState": "manual"
     },
+    "无权限查看备份（需要存储上的 Datastore.Audit）": {
+      "extractionState": "manual"
+    },
     "无权限查看存储内容（需要 Datastore.Audit）": {
       "extractionState": "manual"
     },
     "无权限查看快照": {
+      "extractionState": "manual"
+    },
+    "无权限查看数据中心（需要 / 上的 Sys.Audit）": {
+      "extractionState": "manual"
+    },
+    "无权限查看更新（需要 Sys.Modify）": {
       "extractionState": "manual"
     },
     "无权限查看模板列表": {
@@ -640,10 +1276,19 @@
     "无权限查看监控数据": {
       "extractionState": "manual"
     },
+    "无权限查看硬件配置（需要 VM.Audit）": {
+      "extractionState": "manual"
+    },
+    "无权限查看系统日志（需要 Sys.Syslog）": {
+      "extractionState": "manual"
+    },
     "无权限查看节点状态（需要 Sys.Audit）": {
       "extractionState": "manual"
     },
     "无权限查看配置（需要 VM.Audit）": {
+      "extractionState": "manual"
+    },
+    "无权限查看防火墙（需要 %@ 上的 %@）": {
       "extractionState": "manual"
     },
     "无权限管理快照（需要 VM.Snapshot）": {
@@ -658,13 +1303,22 @@
     "无权限：需要 VM.PowerMgmt": {
       "extractionState": "manual"
     },
+    "无法%@：%@": {
+      "extractionState": "manual"
+    },
     "无法下载官方模板：缺少 %@ 上的 Datastore.AllocateTemplate": {
       "extractionState": "manual"
     },
     "无法从 URL 下载：%@": {
       "extractionState": "manual"
     },
+    "无法删除备份：%@": {
+      "extractionState": "manual"
+    },
     "无法建立控制台连接（HTTP %lld）。": {
+      "extractionState": "manual"
+    },
+    "无法编辑备注：%@": {
       "extractionState": "manual"
     },
     "无法获取文件信息：%@": {
@@ -682,6 +1336,18 @@
     "无法连接服务器：请确认 PVE 正在运行、端口（默认 8006）正确，且手机与服务器网络互通。": {
       "extractionState": "manual"
     },
+    "无特权": {
+      "extractionState": "manual"
+    },
+    "无特权的容器": {
+      "extractionState": "manual"
+    },
+    "无网络设备": {
+      "extractionState": "manual"
+    },
+    "无限制": {
+      "extractionState": "manual"
+    },
     "日志": {
       "extractionState": "manual"
     },
@@ -697,6 +1363,12 @@
     "时间范围": {
       "extractionState": "manual"
     },
+    "显卡": {
+      "extractionState": "manual"
+    },
+    "显示 KVM 下的标志。": {
+      "extractionState": "manual"
+    },
     "显示一个 Proxmox VE 节点的 CPU、内存和运行中的虚拟机。": {
       "extractionState": "manual"
     },
@@ -706,7 +1378,13 @@
     "显示完整内容": {
       "extractionState": "manual"
     },
+    "显示所有架构": {
+      "extractionState": "manual"
+    },
     "暂停": {
+      "extractionState": "manual"
+    },
+    "暂无备注": {
       "extractionState": "manual"
     },
     "暂无输出": {
@@ -715,10 +1393,37 @@
     "更多": {
       "extractionState": "manual"
     },
+    "更新": {
+      "extractionState": "manual"
+    },
     "更新于 %@": {
       "extractionState": "manual"
     },
     "更新软件包列表": {
+      "extractionState": "manual"
+    },
+    "最大突发写入 (MB)": {
+      "extractionState": "manual"
+    },
+    "最大突发写入 (ops)": {
+      "extractionState": "manual"
+    },
+    "最大突发读取 (MB)": {
+      "extractionState": "manual"
+    },
+    "最大突发读取 (ops)": {
+      "extractionState": "manual"
+    },
+    "最小内存": {
+      "extractionState": "manual"
+    },
+    "最小内存 (MiB)": {
+      "extractionState": "manual"
+    },
+    "最小内存不能大于内存。": {
+      "extractionState": "manual"
+    },
+    "最新记录": {
       "extractionState": "manual"
     },
     "月": {
@@ -745,6 +1450,9 @@
     "服务器证书不受系统信任（%@）。请核对指纹后决定是否信任。": {
       "extractionState": "manual"
     },
+    "未启用": {
+      "extractionState": "manual"
+    },
     "未知": {
       "extractionState": "manual"
     },
@@ -757,7 +1465,25 @@
     "未选择服务器": {
       "extractionState": "manual"
     },
+    "本地资源管理器": {
+      "extractionState": "manual"
+    },
+    "机型": {
+      "extractionState": "manual"
+    },
+    "来源": {
+      "extractionState": "manual"
+    },
+    "来自备份": {
+      "extractionState": "manual"
+    },
+    "查看系统日志": {
+      "extractionState": "manual"
+    },
     "查看证书": {
+      "extractionState": "manual"
+    },
+    "标签": {
       "extractionState": "manual"
     },
     "校验和": {
@@ -766,10 +1492,37 @@
     "校验算法": {
       "extractionState": "manual"
     },
+    "核心": {
+      "extractionState": "manual"
+    },
+    "核心总数": {
+      "extractionState": "manual"
+    },
     "根分区": {
       "extractionState": "manual"
     },
     "根磁盘": {
+      "extractionState": "manual"
+    },
+    "根磁盘（rootfs）不能删除。": {
+      "extractionState": "manual"
+    },
+    "格式": {
+      "extractionState": "manual"
+    },
+    "桥接": {
+      "extractionState": "manual"
+    },
+    "检查结果": {
+      "extractionState": "manual"
+    },
+    "检测文件变化并切换容器备份到 Proxmox Backup Server 的归档编码格式。不适用于虚拟机备份。": {
+      "extractionState": "manual"
+    },
+    "模式": {
+      "extractionState": "manual"
+    },
+    "模式未知": {
       "extractionState": "manual"
     },
     "模板": {
@@ -787,7 +1540,13 @@
     "正在连接…": {
       "extractionState": "manual"
     },
+    "正常": {
+      "extractionState": "manual"
+    },
     "此服务器的证书不受系统信任（PVE 默认使用自签名证书）。": {
+      "extractionState": "manual"
+    },
+    "每块磁盘的总线/设备不能重复。可以删除所有磁盘。": {
       "extractionState": "manual"
     },
     "没有任务": {
@@ -796,7 +1555,28 @@
     "没有内容": {
       "extractionState": "manual"
     },
+    "没有匹配的记录": {
+      "extractionState": "manual"
+    },
+    "没有可扩容的磁盘": {
+      "extractionState": "manual"
+    },
+    "没有可用的更新": {
+      "extractionState": "manual"
+    },
+    "没有备份": {
+      "extractionState": "manual"
+    },
+    "没有复制任务": {
+      "extractionState": "manual"
+    },
     "没有快照": {
+      "extractionState": "manual"
+    },
+    "没有放行规则时，启用后可能把自己锁在外面（包括 PVE 网页和本 App）。请先确认已放行 8006 端口（WebUI / API）和 SSH。": {
+      "extractionState": "manual"
+    },
+    "没有日志或未选择时间范围": {
       "extractionState": "manual"
     },
     "没有权限打开控制台（需要 %@）。": {
@@ -817,7 +1597,22 @@
     "没有权限连接控制台（HTTP 403，需要 VM.Console）。": {
       "extractionState": "manual"
     },
+    "没有磁盘": {
+      "extractionState": "manual"
+    },
+    "没有规则": {
+      "extractionState": "manual"
+    },
     "没有运行中的虚拟机": {
+      "extractionState": "manual"
+    },
+    "没有适用于该架构的模板。请打开下方的“显示所有架构”。": {
+      "extractionState": "manual"
+    },
+    "没有高可用资源": {
+      "extractionState": "manual"
+    },
+    "注意：实时恢复过程中如果出现问题，虚拟机新写入的数据可能会丢失。": {
       "extractionState": "manual"
     },
     "浅色": {
@@ -826,10 +1621,34 @@
     "深色": {
       "extractionState": "manual"
     },
+    "添加": {
+      "extractionState": "manual"
+    },
+    "添加 EFI 磁盘": {
+      "extractionState": "manual"
+    },
+    "添加 TPM": {
+      "extractionState": "manual"
+    },
     "添加一台 Proxmox VE 服务器开始使用。": {
       "extractionState": "manual"
     },
+    "添加到高可用": {
+      "extractionState": "manual"
+    },
+    "添加挂载点": {
+      "extractionState": "manual"
+    },
     "添加服务器": {
+      "extractionState": "manual"
+    },
+    "添加标签": {
+      "extractionState": "manual"
+    },
+    "清理旧备份": {
+      "extractionState": "manual"
+    },
+    "清除": {
       "extractionState": "manual"
     },
     "清除后下次连接会重新校验证书。": {
@@ -841,13 +1660,34 @@
     "渠道": {
       "extractionState": "manual"
     },
+    "源节点": {
+      "extractionState": "manual"
+    },
     "点击查看完整信息。": {
       "extractionState": "manual"
     },
     "点右上角 + 创建第一个快照。": {
       "extractionState": "manual"
     },
+    "点按备份可恢复；左滑或长按可删除。": {
+      "extractionState": "manual"
+    },
+    "点按磁盘扩容。磁盘只能扩大，不能缩小。": {
+      "extractionState": "manual"
+    },
+    "点按软件包查看更新日志。": {
+      "extractionState": "manual"
+    },
     "版本": {
+      "extractionState": "manual"
+    },
+    "特权": {
+      "extractionState": "manual"
+    },
+    "特权级别": {
+      "extractionState": "manual"
+    },
+    "特殊值 1 表示继承网桥的 MTU。": {
       "extractionState": "manual"
     },
     "状态": {
@@ -865,6 +1705,9 @@
     "电源": {
       "extractionState": "manual"
     },
+    "留空表示不限制。": {
+      "extractionState": "manual"
+    },
     "登录": {
       "extractionState": "manual"
     },
@@ -877,6 +1720,24 @@
     "监控图表": {
       "extractionState": "manual"
     },
+    "目标大小": {
+      "extractionState": "manual"
+    },
+    "目标大小 (GiB)": {
+      "extractionState": "manual"
+    },
+    "目标存储": {
+      "extractionState": "manual"
+    },
+    "目标节点": {
+      "extractionState": "manual"
+    },
+    "直通": {
+      "extractionState": "manual"
+    },
+    "硬件": {
+      "extractionState": "manual"
+    },
     "确定要关闭“%@”吗？将向系统发送关机请求。": {
       "extractionState": "manual"
     },
@@ -886,10 +1747,25 @@
     "确定要重启“%@”吗？": {
       "extractionState": "manual"
     },
+    "确认密码": {
+      "extractionState": "manual"
+    },
+    "确认扩容": {
+      "extractionState": "manual"
+    },
     "磁盘": {
       "extractionState": "manual"
     },
     "磁盘 IO": {
+      "extractionState": "manual"
+    },
+    "磁盘只能扩大：新大小必须大于当前大小。": {
+      "extractionState": "manual"
+    },
+    "磁盘大小 (GiB)": {
+      "extractionState": "manual"
+    },
+    "磁盘映像": {
       "extractionState": "manual"
     },
     "离线": {
@@ -898,10 +1774,25 @@
     "离线 · %@": {
       "extractionState": "manual"
     },
+    "立即备份": {
+      "extractionState": "manual"
+    },
     "端口": {
       "extractionState": "manual"
     },
+    "端口 %@": {
+      "extractionState": "manual"
+    },
     "第三方 CT 模板请选择「CT 模板」并填写真实的下载链接。": {
+      "extractionState": "manual"
+    },
+    "管理": {
+      "extractionState": "manual"
+    },
+    "管理器": {
+      "extractionState": "manual"
+    },
+    "管理网 SSH": {
       "extractionState": "manual"
     },
     "类型": {
@@ -916,13 +1807,28 @@
     "系统": {
       "extractionState": "manual"
     },
+    "系统日志": {
+      "extractionState": "manual"
+    },
     "系统证书": {
       "extractionState": "manual"
     },
     "紫": {
       "extractionState": "manual"
     },
+    "结束": {
+      "extractionState": "manual"
+    },
     "绿": {
+      "extractionState": "manual"
+    },
+    "缓存": {
+      "extractionState": "manual"
+    },
+    "编辑": {
+      "extractionState": "manual"
+    },
+    "编辑备注": {
       "extractionState": "manual"
     },
     "编辑服务器": {
@@ -937,6 +1843,12 @@
     "缺少 %@ 上的 %@（或 %@ 上的 Sys.AccessNetwork）": {
       "extractionState": "manual"
     },
+    "网关 (IPv4)": {
+      "extractionState": "manual"
+    },
+    "网关 (IPv6)": {
+      "extractionState": "manual"
+    },
     "网络": {
       "extractionState": "manual"
     },
@@ -949,16 +1861,46 @@
     "自动刷新": {
       "extractionState": "manual"
     },
+    "至少 5 个字符。填写了 SSH 公钥时可以不设密码。": {
+      "extractionState": "manual"
+    },
     "节点": {
       "extractionState": "manual"
     },
+    "节点 %@": {
+      "extractionState": "manual"
+    },
+    "节点 %@ 似乎处于离线状态！": {
+      "extractionState": "manual"
+    },
     "节点状态": {
+      "extractionState": "manual"
+    },
+    "范围大小": {
       "extractionState": "manual"
     },
     "蓝": {
       "extractionState": "manual"
     },
     "虚拟机": {
+      "extractionState": "manual"
+    },
+    "覆盖原 VMID %@": {
+      "extractionState": "manual"
+    },
+    "覆盖原有 %@ 前需要先将其停机。": {
+      "extractionState": "manual"
+    },
+    "覆盖并恢复": {
+      "extractionState": "manual"
+    },
+    "覆盖恢复": {
+      "extractionState": "manual"
+    },
+    "覆盖设置": {
+      "extractionState": "manual"
+    },
+    "规则": {
       "extractionState": "manual"
     },
     "解锁": {
@@ -985,6 +1927,9 @@
     "记住密码后密码保存在钥匙串中，登录票据彻底过期时自动重新登录；开启了二次验证的账号仍需输入验证码。": {
       "extractionState": "manual"
     },
+    "设备": {
+      "extractionState": "manual"
+    },
     "设备未连接网络。": {
       "extractionState": "manual"
     },
@@ -1000,6 +1945,15 @@
     "证书验证": {
       "extractionState": "manual"
     },
+    "该 CT ID 已被使用": {
+      "extractionState": "manual"
+    },
+    "该 VM ID 已被使用": {
+      "extractionState": "manual"
+    },
+    "该备份受保护，不能删除。请先在 PVE 网页中取消“受保护”再删除。": {
+      "extractionState": "manual"
+    },
     "该账号只配置了 WebAuthn/U2F 等本 App 不支持的二次验证方式。请在 PVE 中添加 TOTP 或恢复码，或改用 API Token。": {
       "extractionState": "manual"
     },
@@ -1009,10 +1963,28 @@
     "请在 PVE 网页的“节点 › 系统 › 证书”中核对下面的 SHA-256 指纹。确认一致后，Chelate 以后只接受这个证书。": {
       "extractionState": "manual"
     },
+    "请求 %@": {
+      "extractionState": "manual"
+    },
     "请求失败（HTTP %lld）。": {
       "extractionState": "manual"
     },
+    "请输入 VMID %@ 以确认": {
+      "extractionState": "manual"
+    },
+    "请选择": {
+      "extractionState": "manual"
+    },
+    "请选择目标存储": {
+      "extractionState": "manual"
+    },
     "读取": {
+      "extractionState": "manual"
+    },
+    "读取限制 (MB/s)": {
+      "extractionState": "manual"
+    },
+    "读取限制 (ops/s)": {
       "extractionState": "manual"
     },
     "负载": {
@@ -1033,7 +2005,34 @@
     "资源不存在。": {
       "extractionState": "manual"
     },
+    "资源池": {
+      "extractionState": "manual"
+    },
     "跟随系统": {
+      "extractionState": "manual"
+    },
+    "路径": {
+      "extractionState": "manual"
+    },
+    "跳过复制": {
+      "extractionState": "manual"
+    },
+    "转发": {
+      "extractionState": "manual"
+    },
+    "转换为模板": {
+      "extractionState": "manual"
+    },
+    "转换为模板 %@": {
+      "extractionState": "manual"
+    },
+    "转换为模板和删除只能在停机状态下进行。": {
+      "extractionState": "manual"
+    },
+    "转换为模板或删除": {
+      "extractionState": "manual"
+    },
+    "输入方式": {
       "extractionState": "manual"
     },
     "输入链接后会自动查询文件名和大小，文件名可以修改。": {
@@ -1042,7 +2041,19 @@
     "迁移": {
       "extractionState": "manual"
     },
+    "迁移 %@": {
+      "extractionState": "manual"
+    },
+    "迁移 %@（%@ → %@）": {
+      "extractionState": "manual"
+    },
     "运行中": {
+      "extractionState": "manual"
+    },
+    "运行中修改时，部分设置要在重启后才生效。": {
+      "extractionState": "manual"
+    },
+    "运行中的容器会先关机，迁移完成后在目标节点上重新启动。": {
       "extractionState": "manual"
     },
     "运行时间": {
@@ -1063,7 +2074,16 @@
     "适配 Proxmox VE 9.x。所有 API 请求直接发往你的服务器，不经过任何第三方。": {
       "extractionState": "manual"
     },
+    "选择镜像": {
+      "extractionState": "manual"
+    },
     "通用": {
+      "extractionState": "manual"
+    },
+    "通知": {
+      "extractionState": "manual"
+    },
+    "速率限制 (MB/s)": {
       "extractionState": "manual"
     },
     "邮件": {
@@ -1075,6 +2095,12 @@
     "重启": {
       "extractionState": "manual"
     },
+    "重启后生效": {
+      "extractionState": "manual"
+    },
+    "重启模式": {
+      "extractionState": "manual"
+    },
     "重新同步小组件数据": {
       "extractionState": "manual"
     },
@@ -1082,6 +2108,12 @@
       "extractionState": "manual"
     },
     "重试": {
+      "extractionState": "manual"
+    },
+    "链接克隆": {
+      "extractionState": "manual"
+    },
+    "链接克隆只能用于模板，与模板共用磁盘；完整克隆会复制全部磁盘。": {
       "extractionState": "manual"
     },
     "锁定": {
@@ -1093,13 +2125,34 @@
     "锁屏长条": {
       "extractionState": "manual"
     },
+    "错误": {
+      "extractionState": "manual"
+    },
     "长按小组件选择服务器": {
+      "extractionState": "manual"
+    },
+    "防火墙": {
+      "extractionState": "manual"
+    },
+    "集群": {
       "extractionState": "manual"
     },
     "集群内转发失败：目标节点不可达。": {
       "extractionState": "manual"
     },
     "集群内转发失败：连接目标节点出错。": {
+      "extractionState": "manual"
+    },
+    "静态": {
+      "extractionState": "manual"
+    },
+    "预注册密钥": {
+      "extractionState": "manual"
+    },
+    "预注册密钥：使用带标准发行版和 Microsoft 安全启动密钥的 EFIvars 映像。": {
+      "extractionState": "manual"
+    },
+    "额外 CPU 标志": {
       "extractionState": "manual"
     },
     "验证": {
@@ -1109,6 +2162,30 @@
       "extractionState": "manual"
     },
     "验证证书": {
+      "extractionState": "manual"
+    },
+    "高可用": {
+      "extractionState": "manual"
+    },
+    "高可用资源": {
+      "extractionState": "manual"
+    },
+    "高级": {
+      "extractionState": "manual"
+    },
+    "默认": {
+      "extractionState": "manual"
+    },
+    "默认 (%@)": {
+      "extractionState": "manual"
+    },
+    "默认 (1000)": {
+      "extractionState": "manual"
+    },
+    "默认为目标存储的恢复限制": {
+      "extractionState": "manual"
+    },
+    "默认（宿主架构）": {
       "extractionState": "manual"
     },
     "；": {
