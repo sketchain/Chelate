@@ -92,18 +92,19 @@ python3 -m unittest discover -s scripts/tests -p 'test_*.py'
 
 演示模式下设置里多一个「小组件展示」页，用假数据按真实尺寸渲染四种小组件（以及小号的离线状态）；不会改动真实设置、App Group 和钥匙串。
 
-UI 测试 `ChelateUITests`（只在小组件版上跑）在演示模式下依次截取首页（并检查标题位置）、总览、节点详情、节点监控（含长按浮层）、guest 详情、存储详情、从 URL 下载表单、官方模板列表、任务列表、设置、服务器详情和小组件展示页，浅色、深色各一套，用 `XCTAttachment` 保存截图。
+UI 测试 `ChelateUITests`（只在小组件版上跑）在演示模式下依次截取首页（并检查标题位置）、总览、节点详情、节点监控（含长按浮层）、guest 详情、存储详情、从 URL 下载表单、官方模板列表、任务列表、设置、服务器详情和小组件展示页，浅色、深色各一套，用 `XCTAttachment` 保存截图。这些测试只在手动触发 *Test widget variant* 时运行。
 
 ## CI 与产物
 
 | 触发 | Workflow | 内容 |
 | --- | --- | --- |
-| push 到 `dev`、所有 PR | `CI` | 三组 job 并行：Linux：生成器测试 + 检查生成代码是否最新 + PVEKit `swift build && swift test`；macOS 测试（小组件版）：`xcodebuild test`（模拟器，单元测试和截图 UI 测试，UI 测试按「页面 × 浅色/深色」拆成多个类在并行模拟器上跑），导出截图；macOS 打包（两个变体各一个 job）：无签名 archive + 打包 ipa，不跑测试 |
-| push 到 `main` | `Release` | 按 `VERSION` 计算 `vX.Y.Z` → 两个变体测试与构建 → 全部成功后才打 tag 并推送 → 创建 GitHub Release |
+| push 到 `dev`、所有 PR | `CI` | 三个 job 并行：Linux：生成器测试 + 检查生成代码是否最新 + PVEKit `swift build && swift test`；macOS 打包（标准版、小组件版各一个 job）：无签名 archive + 打包 ipa。不跑 XCTest |
+| 手动（Actions › *Test widget variant* › *Run workflow*，可选分支） | `Test widget variant` | 小组件版 `xcodebuild test`（模拟器，单元测试和截图 UI 测试，UI 测试按「页面 × 浅色/深色」拆成多个类在并行模拟器上跑），导出截图 |
+| push 到 `main`，或在 `main` 上手动运行 | `Release` | 按 `VERSION` 计算 `vX.Y.Z` → 两个变体构建、无签名 archive、打包 → 校验和 → release notes → 全部成功后才打 tag 并推送 → 创建 GitHub Release。不跑任何 XCTest；手动运行与 push 触发逻辑相同，已发布过的 commit 复用已有 tag |
 
 - **dev 构建**：在 Actions 对应运行的 *Artifacts* 中下载 `Chelate-dev-<short sha>-unsigned.ipa`（标准版）和 `Chelate-dev-<short sha>-widget-unsigned.ipa`（小组件版），保留 30 天。其 `CFBundleShortVersionString` 为最近一个已发布 tag 的版本（还没有 tag 时为 `0.0.0`）。
-- **截图**：同一运行的 *Artifacts* 中的 `Chelate-screenshots-<short sha>`，内含 `01-overview-<short sha>.png` 等 PNG（保留 30 天，由 `scripts/export-screenshots.sh` 从 xcresult 导出）。
-- **正式版**：在 GitHub Releases 下载 `Chelate-vX.Y.Z-unsigned.ipa`（标准版）或 `Chelate-vX.Y.Z-widget-unsigned.ipa`（小组件版），各附一份 `.sha256`；release notes 末尾写明两个包的区别。补丁号 = 同一「主.次」下已有 tag 的最大补丁号 + 1（没有则为 0）。tag 只在构建和测试全部通过后才创建，构建失败不会留下 tag，也不会跳号；同一 commit 重跑时复用已有 tag；要升主/次版本，修改 `VERSION`。
+- **截图**：手动运行 *Test widget variant* 后，该运行的 *Artifacts* 中的 `Chelate-screenshots-<short sha>`，内含 `01-overview-<short sha>.png` 等 PNG（保留 30 天，由 `scripts/export-screenshots.sh` 从 xcresult 导出）。
+- **正式版**：在 GitHub Releases 下载 `Chelate-vX.Y.Z-unsigned.ipa`（标准版）或 `Chelate-vX.Y.Z-widget-unsigned.ipa`（小组件版），各附一份 `.sha256`；release notes 末尾写明两个包的区别。补丁号 = 同一「主.次」下已有 tag 的最大补丁号 + 1（没有则为 0）。tag 只在两个变体都构建、打包成功后才创建，构建失败不会留下 tag，也不会跳号；同一 commit 重跑时复用已有 tag；要升主/次版本，修改 `VERSION`。
 - 所有构建的 `CFBundleVersion` 为当前 commit 的 `git rev-list --count HEAD`（dev 与正式版同一计数，随提交单调递增，main 上的正式版不会比之前的 dev 包小）；Info.plist 中额外写入 `ChelateGitCommit`（short sha）和 `ChelateChannel`（`dev` / `release`），“设置 › 关于”显示「版本 (build) · 渠道 · commit」。
 
 ### 分支约定

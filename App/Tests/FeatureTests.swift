@@ -141,3 +141,35 @@ struct LogTests {
         log.clear()
     }
 }
+
+@Suite("Chart selection popover")
+struct ChartPopoverTests {
+    let plot = CGRect(x: 40, y: 0, width: 300, height: 200)
+    let size = CGSize(width: 140, height: 50)
+
+    private func frame(ruleX: CGFloat, pointYs: [CGFloat]) -> CGRect {
+        let center = SeriesChart.popoverCenter(size: size, plot: plot, ruleX: ruleX, pointYs: pointYs)
+        return CGRect(x: center.x - size.width / 2, y: center.y - size.height / 2, width: size.width, height: size.height)
+    }
+
+    @Test func flipsToTheFarSideOfTheRule() {
+        let left = frame(ruleX: 80, pointYs: [150])
+        #expect(left.minX > 80, "point on the left → popover right of the rule")
+        let right = frame(ruleX: 300, pointYs: [150])
+        #expect(right.maxX < 300, "point on the right → popover left of the rule")
+    }
+
+    @Test func movesDownWhenThePointIsHigh() {
+        #expect(frame(ruleX: 80, pointYs: [150]).minY < 20)
+        #expect(frame(ruleX: 80, pointYs: [20]).maxY > 180)
+    }
+
+    @Test func staysInsideThePlot() {
+        for x in stride(from: plot.minX, through: plot.maxX, by: 10) {
+            for y in stride(from: plot.minY, through: plot.maxY, by: 25) {
+                let rect = frame(ruleX: x, pointYs: [y])
+                #expect(plot.contains(rect), "x \(x), y \(y): \(rect)")
+            }
+        }
+    }
+}

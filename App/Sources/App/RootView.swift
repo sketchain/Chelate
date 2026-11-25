@@ -75,9 +75,9 @@ struct RootView: View {
 /// Home screen: title, one card per server (总览 / 任务), then 添加服务器 and 设置.
 ///
 /// On iPhone the navigation bar is hidden (the title keeps "Chelate" for the back button and
-/// accessibility) and the list is moved up so the title's top sits about 8 pt below the top of
+/// accessibility) and the list is moved up so the title's top sits about 20 pt below the top of
 /// the safe area: the list ignores the top safe area and gets a top content margin of
-/// `safe area + 8 − the list's own leading padding`, where that padding is measured once from
+/// `safe area + 20 − the list's own leading padding`, where that padding is measured once from
 /// the title's actual position. On iPad the sidebar keeps its (empty, inline) bar.
 struct SidebarView: View {
     @Environment(AppModel.self) private var model
@@ -90,7 +90,7 @@ struct SidebarView: View {
     /// How far the list is scrolled away from its resting position (0 at rest).
     @State private var scrollDisplacement: CGFloat = 0
 
-    static let titleOffset: CGFloat = 8
+    static let titleOffset: CGFloat = 20
 
     private var compact: Bool { sizeClass == .compact }
 

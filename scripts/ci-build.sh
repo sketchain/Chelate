@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 # Shared build pipeline for CI (dev) and release. STEPS selects what runs (space separated):
 #
-#   pvekit   swift test of PVEKit on macOS (CI covers this in its Linux job; release runs it)
+#   pvekit   swift test of PVEKit on macOS (optional; CI covers PVEKit in its Linux job)
 #   test     widget variant: xcodebuild test on the simulator (unit + screenshot UI tests,
 #            UI test classes spread over parallel simulator clones)
 #   package  VARIANT: unsigned archive → Payload/Chelate.app (+ PlugIns/*.appex) → .ipa
 #
-# CI runs "test" and "package" in separate parallel jobs; release runs all three in one job.
+# CI (push / PR) and release run "package" only, one variant per call; the manual test
+# workflow (test.yml) runs "test".
 #
 # Environment:
-#   STEPS               default "test package"
+#   STEPS               default "package"
 #   VARIANT             standard | widget (for package; tests always use the widget variant)
 #   MARKETING_VERSION   e.g. 0.2.0
 #   BUILD_NUMBER        CURRENT_PROJECT_VERSION (git rev-list --count HEAD)
@@ -18,7 +19,7 @@
 #   IPA_NAME            output file name, written to ./build/ (package only)
 set -euo pipefail
 
-STEPS=" ${STEPS:-test package} "
+STEPS=" ${STEPS:-package} "
 VARIANT="${VARIANT:-widget}"
 : "${MARKETING_VERSION:?}" "${BUILD_NUMBER:?}" "${GIT_SHA:?}" "${CHANNEL:?}"
 has_step() { [[ "$STEPS" == *" $1 "* ]]; }

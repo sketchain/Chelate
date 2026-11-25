@@ -1,12 +1,17 @@
 name: Release
 
-# Version → test & build → (only if everything succeeded) tag → GitHub Release, all in one
-# workflow: tags pushed with GITHUB_TOKEN do not trigger other workflows. Tagging after the
-# build means a failed build never leaves an orphan tag (which would skip a patch number and
-# leak an unreleased version into dev builds).
+# Version → build both variants (unsigned archive + ipa, no XCTest) → checksums → release
+# notes → (only if everything succeeded) tag → GitHub Release, all in one workflow: tags pushed
+# with GITHUB_TOKEN do not trigger other workflows. Tagging after the build means a failed
+# build never leaves an orphan tag (which would skip a patch number and leak an unreleased
+# version into dev builds). Tests run separately, by hand (test.yml).
+#
+# Manual runs (workflow_dispatch) must target main and behave like a push: a commit that was
+# already released reuses its tag.
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -20,6 +25,12 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 120
     steps:
+      - name: Require main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Release only runs on main (got ${GITHUB_REF})"
+          exit 1
+
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
@@ -56,9 +67,9 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Build pipeline (widget variant, with tests)
+      - name: Build pipeline (widget variant)
         env:
-          STEPS: pvekit test package
+          STEPS: package
           VARIANT: widget
           MARKETING_VERSION: ${{ steps.version.outputs.version }}
           BUILD_NUMBER: ${{ steps.version.outputs.build }}
