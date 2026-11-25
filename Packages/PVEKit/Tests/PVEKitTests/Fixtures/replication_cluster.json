@@ -1,0 +1,6 @@
+{
+  "data": [
+    { "id": "100-0", "type": "local", "guest": 100, "jobnum": 0, "target": "pve2", "schedule": "*/15", "source": "pve" },
+    { "id": "200-0", "type": "local", "guest": 200, "jobnum": 0, "target": "pve2", "schedule": "*/30", "disable": 1, "comment": "dns" }
+  ]
+}

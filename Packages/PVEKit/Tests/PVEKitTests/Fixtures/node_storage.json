@@ -1,0 +1,11 @@
+{
+  "data": [
+    { "storage": "local", "type": "dir", "content": "iso,vztmpl,backup,images", "active": 1, "enabled": 1, "shared": 0,
+      "avail": 72696619008, "total": 100823040000, "used": 22978871296,
+      "formats": { "supported": ["raw", "qcow2", "vmdk", "subvol"], "default": "qcow2" } },
+    { "storage": "local-zfs", "type": "zfspool", "content": "images,rootdir", "active": 1, "enabled": 1, "shared": 0,
+      "avail": 1450000000000, "total": 1890000000000, "used": 440000000000,
+      "format": [ { "raw": 1, "subvol": 1 }, "raw" ] },
+    { "storage": "pbs", "type": "pbs", "content": "backup", "active": "1", "enabled": 1, "shared": 1 }
+  ]
+}

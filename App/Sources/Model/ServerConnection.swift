@@ -324,6 +324,21 @@ final class ServerConnection {
         requirement.missing { allows($0, on: $1) }
     }
 
+    /// Privileges of `needs` that are not granted (empty when allowed or not yet known).
+    func missing(_ needs: [PermissionNeed]) -> [PermissionNeed] {
+        needs.missing { allows($0, on: $1) }
+    }
+
+    func loadPermissions(paths: [String]) async {
+        for path in Set(paths) { await loadPermissions(path: path) }
+    }
+
+    /// 「缺少 /vms/100 上的 VM.Backup；缺少 /storage/local 上的 Datastore.AllocateSpace」
+    static func describe(_ missing: [PermissionNeed]) -> String {
+        missing.map { String(localized: "缺少 \($0.path) 上的 \($0.privilege.rawValue)") }
+            .joined(separator: String(localized: "；"))
+    }
+
     func markDenied(_ privilege: Privilege, on path: String) {
         deniedActions.insert(key(privilege, path))
     }

@@ -1,0 +1,11 @@
+{
+  "data": {
+    "running": 0,
+    "allowed_nodes": ["pve3"],
+    "not_allowed_nodes": { "pve2": { "unavailable_storages": ["local-zfs"] } },
+    "local_disks": [ { "volid": "local-zfs:vm-100-disk-0", "size": 34359738368, "cdrom": 0, "is_unused": 0 } ],
+    "local_resources": ["hostpci0"],
+    "mapped-resources": [],
+    "has-dbus-vmstate": 1
+  }
+}

@@ -249,3 +249,179 @@ class ChartSelectionScreenshots: ScreenshotTestCase {
 final class ChartSelectionScreenshotsDark: ChartSelectionScreenshots {
     override var appearance: XCUIDevice.Appearance { .dark }
 }
+
+class WizardScreenshots: ScreenshotTestCase {
+    func nextStep() {
+        let next = app.buttons["wizard-next"].firstMatch
+        XCTAssertTrue(next.waitForExistence(timeout: 10))
+        let enabled = expectation(for: NSPredicate(format: "isEnabled == true"), evaluatedWith: next)
+        XCTAssertEqual(XCTWaiter.wait(for: [enabled], timeout: 10), .completed, "next step is disabled")
+        next.tap()
+        settle(1)
+    }
+
+    /// Create VM wizard: general, OS, system, disks and the confirm page.
+    func testVMWizardScreenshots() {
+        inAppearance {
+            launch()
+            tap("overview-menu", scrolling: false)
+            app.buttons["新建虚拟机"].firstMatch.tap()
+            XCTAssertTrue(element("wizard-step-0").waitForExistence(timeout: 10), "VM wizard did not open")
+            settle(2)
+            snapshot("13-vm-wizard-general")
+            nextStep()
+            let noMedia = app.buttons["不使用任何介质"].firstMatch
+            if noMedia.waitForExistence(timeout: 5) { noMedia.tap() }
+            settle()
+            snapshot("13-vm-wizard-os")
+            nextStep()
+            snapshot("13-vm-wizard-system")
+            nextStep()
+            snapshot("13-vm-wizard-disks")
+            nextStep() // CPU
+            nextStep() // memory
+            nextStep() // network
+            nextStep() // confirm
+            XCTAssertTrue(app.buttons["wizard-create"].waitForExistence(timeout: 10), "confirm page missing")
+            snapshot("13-vm-wizard-confirm")
+        }
+    }
+
+    /// Create CT wizard: general, template, disks and the confirm page.
+    func testCTWizardScreenshots() {
+        inAppearance {
+            launch()
+            tap("overview-menu", scrolling: false)
+            app.buttons["新建容器"].firstMatch.tap()
+            XCTAssertTrue(element("wizard-step-0").waitForExistence(timeout: 10), "CT wizard did not open")
+            settle(2)
+            let password = app.secureTextFields["密码"].firstMatch
+            XCTAssertTrue(password.waitForExistence(timeout: 5))
+            password.tap()
+            password.typeText("demo-password")
+            let confirm = app.secureTextFields["确认密码"].firstMatch
+            confirm.tap()
+            confirm.typeText("demo-password")
+            snapshot("14-ct-wizard-general")
+            nextStep()
+            let picker = app.buttons["模板"].firstMatch
+            if picker.waitForExistence(timeout: 5) {
+                picker.tap()
+                let item = app.buttons["debian-13-standard_13.1-2_amd64.tar.zst"].firstMatch
+                if item.waitForExistence(timeout: 5) { item.tap() }
+            }
+            settle()
+            snapshot("14-ct-wizard-template")
+            nextStep()
+            snapshot("14-ct-wizard-disks")
+            nextStep() // CPU
+            nextStep() // memory
+            nextStep() // network
+            nextStep() // DNS
+            nextStep() // confirm
+            XCTAssertTrue(app.buttons["wizard-create"].waitForExistence(timeout: 10), "confirm page missing")
+            snapshot("14-ct-wizard-confirm")
+        }
+    }
+}
+
+final class WizardScreenshotsDark: WizardScreenshots {
+    override var appearance: XCUIDevice.Appearance { .dark }
+}
+
+class GuestManagementScreenshots: ScreenshotTestCase {
+    func cancelSheet() {
+        let cancel = app.buttons["取消"].firstMatch
+        XCTAssertTrue(cancel.waitForExistence(timeout: 5))
+        cancel.tap()
+        settle(1)
+    }
+
+    /// Backups, backup now, restore, clone, migrate, remove and the hardware page.
+    func testGuestManagementScreenshots() {
+        inAppearance {
+            launch()
+            tap("guest-100")
+            XCTAssertTrue(element("guest-charts").waitForExistence(timeout: 10))
+            tap("backup-row")
+            XCTAssertTrue(element("restore-start").waitForExistence(timeout: 10), "restore form did not open")
+            settle(2)
+            snapshot("17-restore")
+            cancelSheet()
+            snapshot("15-backups")
+
+            tap("backup-now")
+            XCTAssertTrue(element("backup-start").waitForExistence(timeout: 10), "backup form did not open")
+            settle(2)
+            snapshot("16-backup-now")
+            cancelSheet()
+
+            tap("guest-clone")
+            XCTAssertTrue(element("clone-start").waitForExistence(timeout: 10), "clone form did not open")
+            settle(2)
+            snapshot("18-clone")
+            cancelSheet()
+
+            tap("guest-migrate")
+            XCTAssertTrue(element("migrate-start").waitForExistence(timeout: 10), "migrate form did not open")
+            settle(2)
+            snapshot("19-migrate")
+            cancelSheet()
+
+            app.swipeDown()
+            app.swipeDown()
+            tap("guest-hardware")
+            XCTAssertTrue(element("hardware-edit-cpu").waitForExistence(timeout: 10), "hardware page did not open")
+            settle()
+            snapshot("21-hardware")
+            goBack()
+            goBack()
+
+            tap("guest-201")
+            XCTAssertTrue(element("guest-charts").waitForExistence(timeout: 10))
+            tap("guest-destroy")
+            XCTAssertTrue(element("destroy-confirmation").waitForExistence(timeout: 10), "remove form did not open")
+            settle()
+            snapshot("20-destroy")
+        }
+    }
+}
+
+final class GuestManagementScreenshotsDark: GuestManagementScreenshots {
+    override var appearance: XCUIDevice.Appearance { .dark }
+}
+
+class NodeAndDatacenterScreenshots: ScreenshotTestCase {
+    /// System log, updates, the datacenter page and its firewall.
+    func testNodeAndDatacenterScreenshots() {
+        inAppearance {
+            launch()
+            tap("node-pve")
+            tap("node-syslog")
+            XCTAssertTrue(element("syslog-list").waitForExistence(timeout: 10), "system log did not open")
+            settle(2)
+            snapshot("22-syslog")
+            goBack()
+
+            tap("node-updates")
+            XCTAssertTrue(element("apt-package").waitForExistence(timeout: 10), "updates did not open")
+            settle()
+            snapshot("23-updates")
+            app.terminate()
+
+            launch(openOverview: false)
+            tap("home-datacenter")
+            XCTAssertTrue(element("datacenter-firewall").waitForExistence(timeout: 15), "datacenter did not open")
+            settle(2)
+            snapshot("24-datacenter")
+            tap("datacenter-firewall")
+            XCTAssertTrue(element("firewall-enable").waitForExistence(timeout: 10), "firewall did not open")
+            settle()
+            snapshot("25-firewall")
+        }
+    }
+}
+
+final class NodeAndDatacenterScreenshotsDark: NodeAndDatacenterScreenshots {
+    override var appearance: XCUIDevice.Appearance { .dark }
+}

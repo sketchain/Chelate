@@ -1,0 +1,7 @@
+{
+  "data": [
+    { "Package": "zfsutils-linux", "Title": "command-line tools to manage OpenZFS filesystems", "OldVersion": "2.3.4-pve1", "Version": "2.3.5-pve1", "Origin": "Proxmox", "Priority": "optional", "Section": "admin", "Arch": "amd64" },
+    { "Package": "curl", "Title": "command line tool for transferring data with URL syntax", "OldVersion": "8.14.1-2", "Version": "8.14.1-2+deb13u1", "Origin": "Debian", "Priority": "optional", "Section": "web", "Arch": "amd64" },
+    { "Package": "proxmox-kernel-7.0.15-1-pve-signed", "Title": "Proxmox Kernel Image (signed)", "Version": "7.0.15-1", "Origin": "Proxmox", "Arch": "amd64" }
+  ]
+}

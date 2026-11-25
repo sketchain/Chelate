@@ -7,12 +7,57 @@ public enum Privilege: String, Sendable, Hashable, CaseIterable {
     case vmSnapshot = "VM.Snapshot"
     case vmSnapshotRollback = "VM.Snapshot.Rollback"
     case vmConsole = "VM.Console"
+    case vmBackup = "VM.Backup"
+    case vmAllocate = "VM.Allocate"
+    case vmClone = "VM.Clone"
+    case vmMigrate = "VM.Migrate"
+    case vmConfigCPU = "VM.Config.CPU"
+    case vmConfigMemory = "VM.Config.Memory"
+    case vmConfigDisk = "VM.Config.Disk"
+    case vmConfigOptions = "VM.Config.Options"
+    case vmConfigNetwork = "VM.Config.Network"
+    case vmConfigCDROM = "VM.Config.CDROM"
+    case vmConfigHWType = "VM.Config.HWType"
+    case vmConfigCloudinit = "VM.Config.Cloudinit"
     case sysAudit = "Sys.Audit"
     case sysModify = "Sys.Modify"
     case sysAccessNetwork = "Sys.AccessNetwork"
     case sysConsole = "Sys.Console"
+    case sysSyslog = "Sys.Syslog"
     case datastoreAudit = "Datastore.Audit"
     case datastoreAllocateTemplate = "Datastore.AllocateTemplate"
+    case datastoreAllocate = "Datastore.Allocate"
+    case datastoreAllocateSpace = "Datastore.AllocateSpace"
+    case poolAllocate = "Pool.Allocate"
+    case sdnUse = "SDN.Use"
+}
+
+/// One privilege on one ACL path, e.g. `VM.Backup` on `/vms/100`.
+public struct PermissionNeed: Sendable, Hashable {
+    public var privilege: Privilege
+    public var path: String
+
+    public init(_ privilege: Privilege, on path: String) {
+        self.privilege = privilege
+        self.path = path
+    }
+
+    /// The ACL path of a guest (`/vms/{vmid}`).
+    public static func vm(_ vmid: Int) -> String { "/vms/\(vmid)" }
+    public static func node(_ node: String) -> String { "/nodes/\(node)" }
+    public static func storage(_ storage: String) -> String { "/storage/\(storage)" }
+}
+
+extension Array where Element == PermissionNeed {
+    /// The needs not granted by `granted`, in order and without duplicates.
+    public func missing(_ granted: (Privilege, String) -> Bool) -> [PermissionNeed] {
+        var seen: Set<PermissionNeed> = []
+        return filter { need in
+            guard !granted(need.privilege, need.path), !seen.contains(need) else { return false }
+            seen.insert(need)
+            return true
+        }
+    }
 }
 
 /// Result of `GET /access/permissions[?path=...]`: `{ "<path>": { "<priv>": 0|1 } }`.

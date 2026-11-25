@@ -27,32 +27,35 @@ public enum PowerAction: String, Sendable, Hashable, CaseIterable, Identifiable 
 /// Where a termproxy console is opened.
 public enum ConsoleTarget: Sendable, Hashable {
     case nodeShell(node: String)
+    /// Node shell running the WebUI's 「Upgrade」 command (`termproxy` with `cmd=upgrade`,
+    /// effective for `root@pam` only).
+    case nodeUpgrade(node: String)
     case lxc(GuestRef)
 
     var proxyPath: String {
         switch self {
-        case .nodeShell(let node): return PathBuilder.path("nodes", node, "termproxy")
+        case .nodeShell(let node), .nodeUpgrade(let node): return PathBuilder.path("nodes", node, "termproxy")
         case .lxc(let guest): return guest.basePath + "/termproxy"
         }
     }
 
     var webSocketPath: String {
         switch self {
-        case .nodeShell(let node): return PathBuilder.path("nodes", node, "vncwebsocket")
+        case .nodeShell(let node), .nodeUpgrade(let node): return PathBuilder.path("nodes", node, "vncwebsocket")
         case .lxc(let guest): return guest.basePath + "/vncwebsocket"
         }
     }
 
     public var aclPath: String {
         switch self {
-        case .nodeShell(let node): return "/nodes/\(node)"
+        case .nodeShell(let node), .nodeUpgrade(let node): return "/nodes/\(node)"
         case .lxc(let guest): return guest.aclPath
         }
     }
 
     public var requiredPrivilege: Privilege {
         switch self {
-        case .nodeShell: return .sysConsole
+        case .nodeShell, .nodeUpgrade: return .sysConsole
         case .lxc: return .vmConsole
         }
     }
@@ -248,6 +251,10 @@ extension PVEClient {
         switch target {
         case .nodeShell(let node):
             return try await send(PVEAPI.PostNodesTermproxy(node: node), as: ProxyTicket.self)
+        case .nodeUpgrade(let node):
+            var request = PVEAPI.PostNodesTermproxy(node: node)
+            request.cmd = .upgrade
+            return try await send(request, as: ProxyTicket.self)
         case .lxc(let guest):
             return try await send(PVEAPI.PostNodesLxcTermproxy(node: guest.node, vmid: guest.vmid), as: ProxyTicket.self)
         }

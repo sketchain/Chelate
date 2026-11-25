@@ -13,6 +13,18 @@ struct GuestDetailView: View {
     @State private var actionMessage: String?
     @State private var tracked: TrackedTask?
     @State private var busy = false
+    @State private var sheet: ManagementSheet?
+    @State private var confirmTemplate = false
+
+    enum ManagementSheet: String, Identifiable {
+        case clone, migrate, destroy
+        var id: String { rawValue }
+    }
+
+    private var isStopped: Bool { status.map { !$0.isRunning } ?? false }
+    private var isTemplate: Bool { status?.template ?? connection.resource(for: guest)?.template ?? false }
+    /// Migration needs another node.
+    private var hasOtherNodes: Bool { connection.nodeGroups.count > 1 }
 
     private var name: String {
         status?.name ?? connection.resource(for: guest)?.name ?? "\(guest.vmid)"
@@ -30,6 +42,13 @@ struct GuestDetailView: View {
                     Label("监控图表", systemImage: "chart.xyaxis.line")
                 }
                 .accessibilityIdentifier("guest-charts")
+                NavigationLink(value: Route.hardware(guest)) {
+                    Label("硬件", systemImage: "cpu")
+                }
+                .accessibilityIdentifier("guest-hardware")
+                NavigationLink(value: Route.firewall(.guest(guest))) {
+                    Label("防火墙", systemImage: "flame")
+                }
                 NavigationLink(value: Route.config(guest)) {
                     Label("配置", systemImage: "slider.horizontal.3")
                 }
@@ -41,6 +60,16 @@ struct GuestDetailView: View {
                 }
             }
             consoleSection
+            GuestBackupSection(connection: connection, guest: guest, guestName: name, isStopped: isStopped) { task in
+                tracked = task
+            }
+            NotesSection(
+                canEdit: connection.missing([PermissionNeed(.vmConfigOptions, on: guest.aclPath)]).isEmpty,
+                missingText: notesMissing,
+                load: { try await connection.client.guestNotes(guest) },
+                save: { text in try await connection.client.setGuestNotes(guest, text) }
+            )
+            managementSection
         }
         .navigationTitle(name)
         .navigationBarTitleDisplayMode(.inline)
@@ -71,6 +100,100 @@ struct GuestDetailView: View {
             TaskMonitorSheet(connection: connection, task: task) {
                 Task { await load() }
             }
+        }
+        .sheet(item: $sheet) { sheet in
+            switch sheet {
+            case .clone:
+                CloneView(connection: connection, guest: guest, guestName: name, isTemplate: isTemplate) { task in
+                    self.sheet = nil
+                    tracked = task
+                }
+            case .migrate:
+                MigrateView(connection: connection, guest: guest, guestName: name, isRunning: status?.isRunning ?? false) { task in
+                    self.sheet = nil
+                    tracked = task
+                }
+            case .destroy:
+                DestroyGuestView(connection: connection, guest: guest, guestName: name) { task in
+                    self.sheet = nil
+                    tracked = task
+                }
+            }
+        }
+        .confirmationDialog("转换为模板", isPresented: $confirmTemplate, titleVisibility: .visible) {
+            Button("转换为模板", role: .destructive) { Task { await convertToTemplate() } }
+        } message: {
+            Text("\(name) 将转换为模板，此操作不可逆：模板无法再启动，只能用来克隆。")
+        }
+    }
+
+    private var notesMissing: String? {
+        let missing = connection.missing([PermissionNeed(.vmConfigOptions, on: guest.aclPath)])
+        return missing.isEmpty ? nil : ServerConnection.describe(missing)
+    }
+
+    /// Clone, migrate, convert to template and remove.
+    @ViewBuilder
+    private var managementSection: some View {
+        let cloneMissing = connection.missing([PermissionNeed(.vmClone, on: guest.aclPath)])
+        let migrateMissing = connection.missing([PermissionNeed(.vmMigrate, on: guest.aclPath)])
+        let allocateMissing = connection.missing([PermissionNeed(.vmAllocate, on: guest.aclPath)])
+        Section {
+            Button { sheet = .clone } label: {
+                Label("克隆", systemImage: "plus.square.on.square")
+            }
+            .disabled(!cloneMissing.isEmpty || status == nil)
+            .accessibilityIdentifier("guest-clone")
+            if hasOtherNodes {
+                Button { sheet = .migrate } label: {
+                    Label("迁移", systemImage: "arrow.right.arrow.left")
+                }
+                .disabled(!migrateMissing.isEmpty || status == nil)
+                .accessibilityIdentifier("guest-migrate")
+            }
+            if !isTemplate {
+                Button { confirmTemplate = true } label: {
+                    Label("转换为模板", systemImage: "doc.on.doc")
+                }
+                .disabled(!allocateMissing.isEmpty || !isStopped)
+                .accessibilityIdentifier("guest-template")
+            }
+            Button(role: .destructive) { sheet = .destroy } label: {
+                Label("删除", systemImage: "trash")
+                    .foregroundStyle(.red)
+            }
+            .disabled(!allocateMissing.isEmpty || !isStopped)
+            .accessibilityIdentifier("guest-destroy")
+        } header: {
+            Text("管理")
+        } footer: {
+            VStack(alignment: .leading, spacing: 4) {
+                MissingPermissionLabel(action: "克隆", missing: cloneMissing)
+                if hasOtherNodes { MissingPermissionLabel(action: "迁移", missing: migrateMissing) }
+                MissingPermissionLabel(action: "转换为模板或删除", missing: allocateMissing)
+                if status != nil && !isStopped {
+                    Text("转换为模板和删除只能在停机状态下进行。")
+                }
+            }
+        }
+    }
+
+    private func convertToTemplate() async {
+        busy = true
+        defer { busy = false }
+        let result = await connection.run(.vmAllocate, on: guest.aclPath) { client in
+            try await client.convertToTemplate(guest)
+        }
+        switch result {
+        case .success(let upid):
+            if let upid {
+                tracked = TrackedTask(upid: upid, title: String(localized: "转换为模板 \(name)"))
+            } else {
+                await load()
+                await connection.refreshResources()
+            }
+        case .failure(let error):
+            actionMessage = error.message
         }
     }
 

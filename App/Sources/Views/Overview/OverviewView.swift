@@ -8,6 +8,8 @@ struct OverviewView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(AppSettings.self) private var settings
     @State private var showStorage = true
+    @State private var creating: CreateGuestKind?
+    @State private var tracked: TrackedTask?
 
     var body: some View {
         List {
@@ -65,6 +67,9 @@ struct OverviewView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
+                    Button("新建虚拟机", systemImage: "desktopcomputer.and.arrow.down") { creating = .vm }
+                    Button("新建容器", systemImage: "shippingbox") { creating = .ct }
+                    Divider()
                     Toggle("显示存储", isOn: $showStorage)
                     if connection.config.authMethod == .password {
                         Button("退出登录", systemImage: "rectangle.portrait.and.arrow.right") {
@@ -74,6 +79,18 @@ struct OverviewView: View {
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
+                .accessibilityIdentifier("overview-menu")
+            }
+        }
+        .sheet(item: $creating) { kind in
+            CreateGuestWizard(connection: connection, kind: kind, presetNode: nil) { task in
+                creating = nil
+                tracked = task
+            }
+        }
+        .sheet(item: $tracked) { task in
+            TaskMonitorSheet(connection: connection, task: task) {
+                Task { await connection.refreshResources() }
             }
         }
         .refreshable {

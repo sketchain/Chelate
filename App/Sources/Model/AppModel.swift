@@ -15,11 +15,16 @@ enum Route: Hashable {
     case vnc(GuestRef)
     case tasks(node: String?, vmid: Int?)
     case storage(node: String, storage: String)
+    case hardware(GuestRef)
+    case syslog(String)
+    case aptUpdates(String)
+    case firewall(FirewallScope)
 }
 
 enum SidebarItem: Hashable {
     case overview(UUID)
     case tasks(UUID)
+    case datacenter(UUID)
     case settings
 }
 

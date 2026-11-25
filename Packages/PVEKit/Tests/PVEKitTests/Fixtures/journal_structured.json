@@ -1,0 +1,10 @@
+{
+  "data": [
+    { "ty": "cursor", "c": "s=old;i=1" },
+    { "ty": "host", "h": "pve" },
+    { "t": 1764000000000000, "id": "systemd", "pid": 1, "msg": "Started pveproxy.service.", "p": 6 },
+    { "ty": "reboot", "t": 1764000060000000 },
+    { "t": 1764000120000000, "id": "kernel", "msg": "line one\nline two", "p": 3 },
+    { "ty": "cursor", "c": "s=new;i=9" }
+  ]
+}

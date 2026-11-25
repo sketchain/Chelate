@@ -58,6 +58,12 @@ enum DemoData {
             "id": "node/\(node)", "type": "node", "node": node, "status": "online",
             "cpu": 0.046, "maxcpu": 32, "mem": 61 * gib, "maxmem": memTotal,
             "disk": 21.4 * gib, "maxdisk": 93.9 * gib, "uptime": 2_527_200 + 21_600, "level": "",
+            "host-arch": "x86_64", "cgroup-mode": 2,
+        ], [
+            "id": "node/\(secondNode)", "type": "node", "node": secondNode, "status": "online",
+            "cpu": 0.012, "maxcpu": 8, "mem": 6 * gib, "maxmem": 32 * gib,
+            "disk": 8.2 * gib, "maxdisk": 58 * gib, "uptime": 864_000, "level": "",
+            "host-arch": "x86_64", "cgroup-mode": 2,
         ]]
         for guest in guests {
             var entry: [String: Any] = [
@@ -82,8 +88,7 @@ enum DemoData {
 
     /// Like PVE with `?path=`: the effective privileges are keyed by the queried path.
     static func permissions(path: String?) -> [String: Any] {
-        let privileges = ["VM.Audit", "VM.PowerMgmt", "VM.Snapshot", "VM.Snapshot.Rollback", "VM.Console",
-                          "Sys.Audit", "Sys.Modify", "Sys.AccessNetwork", "Sys.Console", "Datastore.Audit", "Datastore.AllocateTemplate"]
+        let privileges = Privilege.allCases.map(\.rawValue)
         let map = Dictionary(uniqueKeysWithValues: privileges.map { ($0, 1) })
         var result: [String: Any] = ["/": map]
         if let path, !path.isEmpty { result[path] = map }
@@ -210,6 +215,7 @@ enum DemoData {
                 "rootfs": "local-zfs:subvol-\(vmid)-disk-0,size=\(Int(guest.maxdisk / gib))G",
                 "net0": "name=eth0,bridge=vmbr0,firewall=1,hwaddr=BC:24:11:5E:2A:\(String(format: "%02X", vmid % 256)),ip=dhcp,type=veth",
                 "onboot": 1, "unprivileged": 1, "features": "nesting=1", "digest": "0123456789abcdef",
+                "description": guestNotes(vmid: vmid),
             ]
         }
         return [
@@ -219,6 +225,8 @@ enum DemoData {
             "scsi0": "local-zfs:vm-\(vmid)-disk-0,iothread=1,size=\(Int(guest.maxdisk / gib))G",
             "efidisk0": "local-zfs:vm-\(vmid)-disk-1,efitype=4m,size=1M",
             "net0": "virtio=BC:24:11:3F:7A:\(String(format: "%02X", vmid % 256)),bridge=vmbr0,firewall=1",
+            "ide2": "local:iso/debian-13.2.0-amd64-netinst.iso,media=cdrom,size=754M",
+            "description": guestNotes(vmid: vmid),
             "digest": "0123456789abcdef",
         ]
     }
@@ -332,7 +340,7 @@ enum DemoData {
     }
 
     /// Finished history (relative to now) plus tasks started in this session.
-    static func tasks(started: [StartedTask], vmid: Int?) -> [[String: Any]] {
+    static func tasks(started: [StartedTask], vmid: Int?, typefilter: String? = nil) -> [[String: Any]] {
         let now = Int(Date().timeIntervalSince1970)
         let history: [(Int, String, String, Int, String)] = [
             (600, "qmstart", "100", 4, "OK"),
@@ -340,6 +348,8 @@ enum DemoData {
             (3_700, "vzdump", "100", 310, "OK"),
             (7_200, "qmsnapshot", "100", 12, "OK"),
             (86_400, "download", "local", 48, "OK"),
+            (86_405, "vzdump", "100", 300, "OK"),
+            (86_410, "vzdump", "200", 90, "OK"),
             (90_000, "vzstart", "201", 2, "startup for container '201' failed"),
             (172_800, "aptupdate", "", 21, "WARNINGS: 1"),
             (259_200, "qmshutdown", "101", 38, "OK"),
@@ -365,6 +375,9 @@ enum DemoData {
         }
         if let vmid {
             list = list.filter { ($0["id"] as? String) == String(vmid) }
+        }
+        if let typefilter, !typefilter.isEmpty {
+            list = list.filter { ($0["type"] as? String) == typefilter }
         }
         return list.sorted { ($0["starttime"] as? Int ?? 0) > ($1["starttime"] as? Int ?? 0) }
     }
@@ -399,6 +412,8 @@ enum DemoData {
                 lines.append("download of '\(sampleDownloadURL)' to '/var/lib/vz/template/iso/debian-13.2.0-amd64-netinst.iso' finished")
                 lines.append("TASK OK")
             }
+        } else if let parsed = UPID(upid), parsed.type == "vzdump", started == nil || started?.isRunning() == false {
+            lines = vzdumpLog(objectID: parsed.objectID)
         } else if let started {
             lines = ["starting \(started.type) for \(started.objectID)"]
             if !started.isRunning() { lines.append("TASK OK") }
