@@ -6,6 +6,8 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Tests (unit + UI + screenshots) live in test.yml and only run when started by hand.
+
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -20,14 +22,29 @@ jobs:
     container: swift:6.2-noble
     steps:
       - uses: actions/checkout@v6
+      - name: Install Python
+        run: command -v python3 >/dev/null || (apt-get update && apt-get install -y --no-install-recommends python3)
+      - name: Generator tests
+        run: python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+      - name: Generated API is up to date
+        run: python3 scripts/generate-pvekit-api.py --check
       - name: swift build && swift test
         working-directory: Packages/PVEKit
         run: swift build && swift test
 
-  build:
-    name: Build, test & package (iOS)
+  # Unsigned archives of both variants (no tests).
+  package:
+    name: Package ${{ matrix.variant }} (iOS)
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: widget
+            suffix: "-widget"
+          - variant: standard
+            suffix: ""
     steps:
       - uses: actions/checkout@v6
         with:
@@ -50,41 +67,21 @@ jobs:
           echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
           echo "build=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Build pipeline
+      - name: Archive and package
         env:
+          STEPS: package
+          VARIANT: ${{ matrix.variant }}
           MARKETING_VERSION: ${{ steps.version.outputs.marketing }}
           BUILD_NUMBER: ${{ steps.version.outputs.build }}
           GIT_SHA: ${{ steps.version.outputs.sha }}
           CHANNEL: dev
-          IPA_NAME: Chelate-dev-${{ steps.version.outputs.sha }}-unsigned.ipa
+          IPA_NAME: Chelate-dev-${{ steps.version.outputs.sha }}${{ matrix.suffix }}-unsigned.ipa
         run: scripts/ci-build.sh
 
       - name: Upload unsigned ipa
         uses: actions/upload-artifact@v6
         with:
-          name: Chelate-dev-${{ steps.version.outputs.sha }}-unsigned.ipa
-          path: build/Chelate-dev-${{ steps.version.outputs.sha }}-unsigned.ipa
+          name: Chelate-dev-${{ steps.version.outputs.sha }}${{ matrix.suffix }}-unsigned.ipa
+          path: build/Chelate-dev-${{ steps.version.outputs.sha }}${{ matrix.suffix }}-unsigned.ipa
           if-no-files-found: error
           retention-days: 30
-
-      - name: Export screenshots
-        if: always()
-        run: scripts/export-screenshots.sh build/TestResults.xcresult build/screenshots "${{ steps.version.outputs.sha }}"
-
-      - name: Upload screenshots
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: Chelate-screenshots-${{ steps.version.outputs.sha }}
-          path: build/screenshots/*.png
-          if-no-files-found: warn
-          retention-days: 30
-
-      - name: Upload test results
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: TestResults-${{ github.run_number }}
-          path: build/TestResults.xcresult
-          if-no-files-found: ignore
-          retention-days: 7

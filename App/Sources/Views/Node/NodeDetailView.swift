@@ -6,6 +6,7 @@ struct NodeDetailView: View {
     let node: String
 
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(AppSettings.self) private var settings
     @State private var status: NodeStatus?
     @State private var error: ActionError?
 
@@ -79,13 +80,10 @@ struct NodeDetailView: View {
         .navigationTitle(node)
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await load() }
-        .task(id: scenePhase) {
+        .task(id: RefreshTrigger(phase: scenePhase, interval: settings.autoRefresh)) {
             guard scenePhase == .active else { return }
             await connection.loadPermissions(path: aclPath)
-            while !Task.isCancelled {
-                await load()
-                try? await Task.sleep(for: .seconds(10))
-            }
+            await autoRefresh(settings.autoRefresh) { await load() }
         }
     }
 

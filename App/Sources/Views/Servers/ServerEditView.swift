@@ -7,6 +7,8 @@ struct ServerEditView: View {
 
     let original: ServerConfig
     let isNew: Bool
+    /// Opening the new server's overview after saving (home screen); Settings adds without.
+    var selectsNewServer: Bool = true
 
     @State private var config = ServerConfig()
     @State private var portText = "8006"
@@ -132,7 +134,7 @@ struct ServerEditView: View {
         result.tokenID = config.tokenID.trimmingCharacters(in: .whitespaces)
         if resetPin { result.pinnedFingerprint = nil }
         let secret = tokenSecret.trimmingCharacters(in: .whitespacesAndNewlines)
-        model.save(result, tokenSecret: secret.isEmpty ? nil : secret)
+        model.save(result, tokenSecret: secret.isEmpty ? nil : secret, select: selectsNewServer)
         dismiss()
     }
 }

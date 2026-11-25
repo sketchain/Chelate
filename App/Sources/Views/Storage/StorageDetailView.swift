@@ -6,6 +6,7 @@ struct StorageDetailView: View {
     let connection: ServerConnection
     let node: String
     let storage: String
+    @Environment(\.chelateAccent) private var accent
 
     enum ActiveSheet: Identifiable {
         case downloadURL
@@ -200,7 +201,7 @@ struct StorageDetailView: View {
         guard let fraction else { return .gray }
         if fraction > 0.9 { return .red }
         if fraction > 0.75 { return .orange }
-        return .accentColor
+        return accent
     }
 
     private func load() async {

@@ -91,6 +91,8 @@ enum Names {
             return String(localized: "强制停止“\(name)”相当于直接断电，未保存的数据会丢失。")
         case .reboot:
             return String(localized: "确定要重启“\(name)”吗？")
+        case .suspend:
+            return String(localized: "确定要暂停“\(name)”吗？虚拟机会停止运行，直到恢复。")
         case .shutdown:
             return String(localized: "确定要关闭“\(name)”吗？将向系统发送关机请求。")
         default:
@@ -284,6 +286,7 @@ struct UsageBar: View {
     let title: LocalizedStringKey
     let fraction: Double?
     let detail: String
+    @Environment(\.chelateAccent) private var accent
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -307,7 +310,7 @@ struct UsageBar: View {
         guard let fraction else { return .gray }
         if fraction > 0.9 { return .red }
         if fraction > 0.75 { return .orange }
-        return .accentColor
+        return accent
     }
 }
 
@@ -341,5 +344,25 @@ struct ErrorBanner: View {
         }
         .padding(10)
         .background(.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+    }
+}
+
+/// `.task(id:)` key for screens that refresh periodically: restarts the loop when the scene
+/// becomes active again or the interval setting changes.
+struct RefreshTrigger: Hashable {
+    var phase: ScenePhase
+    var interval: AppSettings.AutoRefresh
+}
+
+/// Runs `load` once, then again every `setting` interval until the task is cancelled
+/// (only once when automatic refresh is off).
+@MainActor
+func autoRefresh(_ setting: AppSettings.AutoRefresh, _ load: () async -> Void) async {
+    await load()
+    guard let interval = setting.interval else { return }
+    while !Task.isCancelled {
+        try? await Task.sleep(for: interval)
+        if Task.isCancelled { break }
+        await load()
     }
 }

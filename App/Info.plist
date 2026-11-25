@@ -24,6 +24,17 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>org.sketchain.chelate</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>chelate</string>
+			</array>
+		</dict>
+	</array>
 	<key>ChelateChannel</key>
 	<string>$(CHELATE_CHANNEL)</string>
 	<key>ChelateGitCommit</key>
@@ -37,6 +48,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSFaceIDUsageDescription</key>
+	<string>开启“Face ID 解锁”后，Chelate 用 Face ID 确认是你本人在使用。</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Chelate 需要访问局域网，才能连接你的 Proxmox VE 服务器。</string>
 	<key>UIApplicationSceneManifest</key>
